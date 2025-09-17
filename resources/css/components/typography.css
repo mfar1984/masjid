@@ -1,0 +1,123 @@
+/* Typography Component - Poppins Font */
+/* Note: Poppins font imported in main app.css */
+
+/* Base Typography */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Font Size Classes (10px - 14px as per rules) */
+.text-2xs {
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.text-xs {
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.text-sm {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.text-base {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.text-lg {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Font Weight Classes */
+.font-light {
+    font-weight: 300;
+}
+
+.font-normal {
+    font-weight: 400;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+/* Table Typography */
+.table-header {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.table-data {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.table-data-important {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Code/Monospace Override for Kod Masjid */
+.font-mono-poppins {
+    font-family: 'Poppins', monospace;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Mobile Typography */
+.mobile-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.mobile-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.mobile-data {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Button Typography */
+.btn-text {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Form Typography */
+.form-label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+

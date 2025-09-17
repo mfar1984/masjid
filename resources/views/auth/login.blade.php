@@ -3,11 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - E-Masjid</title>
+    
+    <!-- Favicon -->
+    <x-favicon />
+    
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Suppress Vite Development Logs -->
+    <script>
+        // Override console methods to suppress Vite/HMR messages
+        (function() {
+            const originalLog = console.log;
+            const originalInfo = console.info;
+            const originalWarn = console.warn;
+
+            console.log = function(...args) {
+                const message = args.join(' ');
+                if (message.includes('[vite]') ||
+                    message.includes('[HMR]') ||
+                    message.includes('connecting') ||
+                    message.includes('connected') ||
+                    message.includes('client:') ||
+                    message.includes('[DOM]') ||
+                    message.includes('autocomplete')) {
+                    return; // Suppress Vite development and DOM messages
+                }
+                return originalLog.apply(console, args);
+            };
+
+            console.info = function(...args) {
+                const message = args.join(' ');
+                if (message.includes('[vite]') ||
+                    message.includes('[HMR]') ||
+                    message.includes('connecting') ||
+                    message.includes('connected') ||
+                    message.includes('client:') ||
+                    message.includes('[DOM]') ||
+                    message.includes('autocomplete')) {
+                    return; // Suppress Vite development and DOM messages
+                }
+                return originalInfo.apply(console, args);
+            };
+
+            console.warn = function(...args) {
+                const message = args.join(' ');
+                if (message.includes('[vite]') ||
+                    message.includes('[HMR]') ||
+                    message.includes('connecting') ||
+                    message.includes('connected') ||
+                    message.includes('client:') ||
+                    message.includes('[DOM]') ||
+                    message.includes('autocomplete')) {
+                    return; // Suppress Vite development and DOM messages
+                }
+                return originalWarn.apply(console, args);
+            };
+        })();
+    </script>
 </head>
 <body class="bg-gray-100 font-sans" data-theme="corporate">
     <div class="min-h-screen flex items-center justify-center">
@@ -21,7 +77,8 @@
                 <div class="space-y-4">
                     <div>
                         <label for="email" class="block text-xs font-medium text-gray-700">Email address</label>
-                        <input id="email" name="email" type="email" required 
+                        <input id="email" name="email" type="email" required
+                               autocomplete="email"
                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                                value="{{ old('email') }}"
                                placeholder="Enter your email">
@@ -31,7 +88,8 @@
                     </div>
                     <div>
                         <label for="password" class="block text-xs font-medium text-gray-700">Password</label>
-                        <input id="password" name="password" type="password" required 
+                        <input id="password" name="password" type="password" required
+                               autocomplete="current-password"
                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                                placeholder="Enter your password">
                     </div>

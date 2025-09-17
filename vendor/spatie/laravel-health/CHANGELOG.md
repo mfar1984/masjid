@@ -2,6 +2,26 @@
 
 All notable changes to `laravel-health` will be documented in this file.
 
+## 1.34.6 - 2025-08-18
+
+### What's Changed
+
+* Improvement: DRY DB connection related stuff on checks by @glioympas in https://github.com/spatie/laravel-health/pull/284
+
+### New Contributors
+
+* @glioympas made their first contribution in https://github.com/spatie/laravel-health/pull/284
+
+**Full Changelog**: https://github.com/spatie/laravel-health/compare/1.34.5...1.34.6
+
+## 1.34.5 - 2025-07-25
+
+### What's Changed
+
+* rename: fix Meilisearch name by @ralphjsmit in https://github.com/spatie/laravel-health/pull/282
+
+**Full Changelog**: https://github.com/spatie/laravel-health/compare/1.34.4...1.34.5
+
 ## 1.34.4 - 2025-07-22
 
 ### What's Changed

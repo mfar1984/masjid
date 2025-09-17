@@ -1,0 +1,53 @@
+/* Statistics Card Component Styles */
+.statistics-card {
+    @apply bg-white rounded-lg shadow-sm p-4 border border-gray-200;
+}
+
+.statistics-card-container {
+    @apply flex items-center;
+}
+
+.statistics-card-icon {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center;
+}
+
+.statistics-card-icon .material-icons {
+    @apply text-xl;
+}
+
+.statistics-card-content {
+    @apply ml-3;
+}
+
+.statistics-card-title {
+    @apply text-xs font-medium text-gray-600;
+}
+
+.statistics-card-value {
+    @apply text-lg font-semibold text-gray-900;
+}
+
+/* Color Variants */
+.statistics-card-blue {
+    @apply bg-blue-100 text-blue-600;
+}
+
+.statistics-card-green {
+    @apply bg-green-100 text-green-600;
+}
+
+.statistics-card-yellow {
+    @apply bg-yellow-100 text-yellow-600;
+}
+
+.statistics-card-red {
+    @apply bg-red-100 text-red-600;
+}
+
+.statistics-card-gray {
+    @apply bg-gray-100 text-gray-600;
+}
+
+.statistics-card-purple {
+    @apply bg-purple-100 text-purple-600;
+}

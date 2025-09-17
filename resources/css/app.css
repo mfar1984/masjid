@@ -1,5 +1,6 @@
-/* Import Figtree font */
+/* Import all fonts first */
 @import url('https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 @plugin "daisyui";
@@ -39,8 +40,170 @@
   --noise: 1;
 }
 
+/* Import Component Styles */
+@import './components/typography.css';
+@import './components/statistics-card.css';
+@import './components/action-icons.css';
+@import './components/forms.css';
+@import './components/modals.css';
+
 /* Global styles for Material Icons */
 .material-icons {
   font-size: inherit;
   line-height: inherit;
+}
+
+/* EMERGENCY CHECKBOX OVERRIDE - HIGHEST PRIORITY */
+/* This must be at the end to override DaisyUI and all other frameworks */
+html input[type="checkbox"],
+body input[type="checkbox"],
+div input[type="checkbox"],
+form input[type="checkbox"],
+table input[type="checkbox"],
+.permission-matrix input[type="checkbox"],
+[data-theme] input[type="checkbox"],
+.daisy-checkbox,
+input.checkbox {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background: white !important;
+    background-color: white !important;
+    background-image: none !important;
+    border: 2px solid #d1d5db !important;
+    border-radius: 2px !important;
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+}
+
+html input[type="checkbox"]:hover,
+body input[type="checkbox"]:hover,
+div input[type="checkbox"]:hover,
+form input[type="checkbox"]:hover,
+table input[type="checkbox"]:hover,
+.permission-matrix input[type="checkbox"]:hover,
+[data-theme] input[type="checkbox"]:hover,
+.daisy-checkbox:hover,
+input.checkbox:hover {
+    border-color: #3b82f6 !important;
+}
+
+html input[type="checkbox"]:focus,
+body input[type="checkbox"]:focus,
+div input[type="checkbox"]:focus,
+form input[type="checkbox"]:focus,
+table input[type="checkbox"]:focus,
+.permission-matrix input[type="checkbox"]:focus,
+[data-theme] input[type="checkbox"]:focus,
+.daisy-checkbox:focus,
+input.checkbox:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+    border-color: #3b82f6 !important;
+}
+
+html input[type="checkbox"]:checked,
+body input[type="checkbox"]:checked,
+div input[type="checkbox"]:checked,
+form input[type="checkbox"]:checked,
+table input[type="checkbox"]:checked,
+.permission-matrix input[type="checkbox"]:checked,
+[data-theme] input[type="checkbox"]:checked,
+.daisy-checkbox:checked,
+input.checkbox:checked {
+    background-color: #3b82f6 !important;
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    background-image: none !important;
+}
+
+html input[type="checkbox"]:checked::before,
+body input[type="checkbox"]:checked::before,
+div input[type="checkbox"]:checked::before,
+form input[type="checkbox"]:checked::before,
+table input[type="checkbox"]:checked::before,
+.permission-matrix input[type="checkbox"]:checked::before,
+[data-theme] input[type="checkbox"]:checked::before,
+.daisy-checkbox:checked::before,
+input.checkbox:checked::before {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+    display: block !important;
+    z-index: 1 !important;
+}
+
+/* NUCLEAR OPTION - Override everything with highest specificity */
+html body div form table .permission-matrix input[type="checkbox"],
+html body div form .permission-matrix input[type="checkbox"],
+html body div .permission-matrix input[type="checkbox"],
+html body .permission-matrix input[type="checkbox"],
+html .permission-matrix input[type="checkbox"],
+.permission-matrix input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background: white !important;
+    background-color: white !important;
+    background-image: none !important;
+    border: 2px solid #d1d5db !important;
+    border-radius: 2px !important;
+    width: 16px !important;
+    height: 16px !important;
+    position: relative !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+    display: inline-block !important;
+    box-sizing: border-box !important;
+}
+
+html body div form table .permission-matrix input[type="checkbox"]:checked,
+html body div form .permission-matrix input[type="checkbox"]:checked,
+html body div .permission-matrix input[type="checkbox"]:checked,
+html body .permission-matrix input[type="checkbox"]:checked,
+html .permission-matrix input[type="checkbox"]:checked,
+.permission-matrix input[type="checkbox"]:checked {
+    background-color: #3b82f6 !important;
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    background-image: none !important;
+}
+
+html body div form table .permission-matrix input[type="checkbox"]:checked::before,
+html body div form .permission-matrix input[type="checkbox"]:checked::before,
+html body div .permission-matrix input[type="checkbox"]:checked::before,
+html body .permission-matrix input[type="checkbox"]:checked::before,
+html .permission-matrix input[type="checkbox"]:checked::before,
+.permission-matrix input[type="checkbox"]:checked::before {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+    display: block !important;
+    z-index: 999 !important;
 }

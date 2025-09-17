@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - E-Masjid</title>
+    <title>E-Masjid - Sistem Pengurusan Masjid</title>
+    
+    <!-- Favicon -->
+    <x-favicon />
+    
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -101,6 +105,42 @@
                             <span class="material-icons text-sm mr-1">check_circle</span>
                             Baik
                         </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Widget Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- System Status Widget -->
+                <x-dashboard-status-widget class="lg:col-span-1" />
+
+                <!-- Quick Actions -->
+                <div class="bg-white border border-gray-200 rounded-sm overflow-hidden lg:col-span-2">
+                    <div class="px-4 py-3 border-b border-gray-200">
+                        <h3 class="text-sm font-semibold text-gray-900 flex items-center">
+                            <span class="material-icons text-sm mr-2">flash_on</span>
+                            Tindakan Pantas
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <a href="{{ route('senarai-masjid.index') }}" class="flex flex-col items-center p-3 bg-blue-50 hover:bg-blue-100 rounded-sm transition-colors">
+                                <span class="material-icons text-blue-600 text-lg mb-1">mosque</span>
+                                <span class="text-xs text-gray-700 text-center">Senarai Masjid</span>
+                            </a>
+                            <a href="{{ route('kariah.index') }}" class="flex flex-col items-center p-3 bg-green-50 hover:bg-green-100 rounded-sm transition-colors">
+                                <span class="material-icons text-green-600 text-lg mb-1">group</span>
+                                <span class="text-xs text-gray-700 text-center">Kariah</span>
+                            </a>
+                            <a href="{{ route('bantuan.status-sistem') }}" class="flex flex-col items-center p-3 bg-purple-50 hover:bg-purple-100 rounded-sm transition-colors">
+                                <span class="material-icons text-purple-600 text-lg mb-1">monitor_heart</span>
+                                <span class="text-xs text-gray-700 text-center">Status Sistem</span>
+                            </a>
+                            <a href="{{ route('settings.global-config') }}" class="flex flex-col items-center p-3 bg-gray-50 hover:bg-gray-100 rounded-sm transition-colors">
+                                <span class="material-icons text-gray-600 text-lg mb-1">settings</span>
+                                <span class="text-xs text-gray-700 text-center">Tetapan</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -229,7 +269,7 @@
                                 </div>
                                 <p class="text-sm text-gray-600 mb-2">Kutipan khairat kematian</p>
                                 <div class="flex items-center text-xs text-gray-500">
-                                    <span class="material-icons text-sm mr-1">schedule</span>
+                                    <img src="{{ asset('images/icon.png') }}" alt="Icon" class="w-3 h-3 mr-1">
                                     2:00 PM - 4:00 PM
                                 </div>
                             </div>
@@ -241,7 +281,7 @@
                                 </div>
                                 <p class="text-sm text-gray-600 mb-2">Mesyuarat bulanan jawatankuasa</p>
                                 <div class="text-xs text-gray-500">
-                                    <span class="material-icons text-sm mr-1">schedule</span>
+                                    <img src="{{ asset('images/icon.png') }}" alt="Icon" class="w-3 h-3 mr-1">
                                     10:00 AM - 12:00 PM
                                 </div>
                             </div>
@@ -259,13 +299,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Set timeout to prevent hanging
             const chartTimeout = setTimeout(() => {
-                console.warn('Chart.js loading timeout, showing fallback content');
                 showChartFallbacks();
             }, 5000); // 5 second timeout
 
             // Check if Chart.js is loaded
             if (typeof Chart === 'undefined') {
-                console.warn('Chart.js not loaded, showing fallback content');
                 clearTimeout(chartTimeout);
                 showChartFallbacks();
                 return;
@@ -356,7 +394,6 @@
                     });
                 }
             } catch (error) {
-                console.error('Error creating charts:', error);
                 showChartFallbacks();
             }
         });

@@ -1,0 +1,384 @@
+/* Form Components Styles */
+
+/* Form Input Styles */
+.form-input {
+    font-family: 'Poppins', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+    color: #111827 !important; /* text-gray-900 */
+    @apply transition-all duration-200;
+    @apply placeholder-gray-400;
+}
+
+.form-input::placeholder {
+    color: #9ca3af !important; /* gray-400 */
+    opacity: 1 !important;
+}
+
+.form-input:focus {
+    @apply ring-2 ring-blue-500/50;
+}
+
+/* Removed duplicate placeholder styles - already defined above */
+
+.form-input.error {
+    @apply border-red-500 ring-2 ring-red-500/50;
+}
+
+/* Form Label Styles */
+.form-label {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* Form Help Text */
+.form-help {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+/* Form Error Text */
+.form-error {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1.4;
+    @apply text-red-500;
+}
+
+/* Fix for raw input/select elements in edit forms */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+    color: #111827 !important; /* text-gray-900 */
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    background-color: white !important;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="password"]::placeholder,
+textarea::placeholder {
+    color: #9ca3af !important; /* gray-400 */
+    opacity: 1 !important;
+}
+
+/* Specific fixes for edit forms */
+form input,
+form select,
+form textarea {
+    color: #111827 !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 12px !important;
+}
+
+/* Override DaisyUI theme colors for form elements */
+.bg-gray-50 input,
+.bg-gray-50 select,
+.bg-gray-50 textarea {
+    color: #111827 !important;
+    background-color: white !important;
+}
+
+/* Search Input */
+.search-input-container {
+    @apply flex-1;
+}
+
+.search-input-wrapper {
+    @apply relative;
+}
+
+.search-input-icon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm;
+}
+
+.search-input {
+    @apply w-full h-[32px] pl-9 pr-3 py-1 border border-gray-300 rounded text-xs;
+    @apply focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+    color: #111827 !important; /* text-gray-900 */
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.search-input::placeholder {
+    color: #6b7280 !important; /* gray-500 */
+    opacity: 1 !important;
+}
+
+/* Filter Dropdown */
+.filter-dropdown {
+    @apply h-[32px] px-3 py-1 border border-gray-300 rounded text-xs;
+    @apply focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+    @apply bg-white min-w-[140px];
+    color: #111827 !important; /* text-gray-900 */
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* Action Buttons */
+.action-button {
+    @apply rounded flex items-center justify-center min-w-[80px];
+}
+
+.action-button-sm {
+    @apply h-[28px] px-3 py-1 text-xs;
+}
+
+.action-button-md {
+    @apply h-[32px] px-4 py-1 text-xs;
+}
+
+.action-button-lg {
+    @apply h-[36px] px-5 py-2 text-sm;
+}
+
+/* Button Colors */
+.action-button-blue {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+.action-button-red {
+    @apply bg-red-100 text-red-700 hover:bg-red-200;
+}
+
+.action-button-green {
+    @apply bg-green-100 text-gray-700 hover:bg-green-200;
+}
+
+.action-button-gray {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+}
+
+/* Button Icons */
+.action-button .material-icons {
+    @apply text-sm mr-1;
+}
+
+/* Form Layout */
+.form-filters {
+    @apply flex flex-col md:flex-row gap-3 items-stretch md:items-center;
+}
+
+.form-filters-dropdowns {
+    @apply flex gap-2;
+}
+
+.form-filters-actions {
+    @apply flex gap-2;
+}
+
+/* Emergency CSS fixes for visibility issues */
+/* Force text visibility in all form elements */
+* input[type="text"],
+* input[type="email"],
+* input[type="tel"],
+* input[type="password"],
+* input[type="number"],
+* select,
+* textarea {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+    opacity: 1 !important;
+}
+
+/* Force placeholder visibility */
+* input::placeholder,
+* textarea::placeholder {
+    color: #9ca3af !important;
+    -webkit-text-fill-color: #9ca3af !important;
+    opacity: 1 !important;
+}
+
+/* Specific targeting for edit forms */
+[action*="update"] input,
+[action*="update"] select,
+[action*="update"] textarea {
+    color: #111827 !important;
+    -webkit-text-fill-color: #111827 !important;
+}
+
+/* Checkbox Styling - Fix black checkbox issue */
+input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 16px !important;
+    height: 16px !important;
+    border: 2px solid #d1d5db !important; /* gray-300 */
+    border-radius: 2px !important;
+    background-color: white !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+input[type="checkbox"]:hover {
+    border-color: #3b82f6 !important; /* blue-500 */
+}
+
+input[type="checkbox"]:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important; /* blue-500/50 */
+    border-color: #3b82f6 !important; /* blue-500 */
+}
+
+input[type="checkbox"]:checked {
+    background-color: #3b82f6 !important; /* blue-500 */
+    border-color: #3b82f6 !important; /* blue-500 */
+}
+
+input[type="checkbox"]:checked::before {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+/* Specific styling for permission matrix checkboxes */
+.permission-matrix input[type="checkbox"] {
+    width: 16px !important;
+    height: 16px !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    border: 2px solid #d1d5db !important; /* gray-300 */
+    border-radius: 2px !important;
+    background-color: white !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.permission-matrix input[type="checkbox"]:checked {
+    background-color: #3b82f6 !important; /* blue-500 */
+    border-color: #3b82f6 !important; /* blue-500 */
+}
+
+.permission-matrix input[type="checkbox"]:checked::before {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+/* Ensure checkbox styling works in all contexts */
+form input[type="checkbox"],
+.form-group input[type="checkbox"],
+.permission-matrix input[type="checkbox"],
+table input[type="checkbox"],
+div input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 16px !important;
+    height: 16px !important;
+    border: 2px solid #d1d5db !important;
+    border-radius: 2px !important;
+    background-color: white !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+form input[type="checkbox"]:checked,
+.form-group input[type="checkbox"]:checked,
+.permission-matrix input[type="checkbox"]:checked,
+table input[type="checkbox"]:checked,
+div input[type="checkbox"]:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+form input[type="checkbox"]:checked::before,
+.form-group input[type="checkbox"]:checked::before,
+.permission-matrix input[type="checkbox"]:checked::before,
+table input[type="checkbox"]:checked::before,
+div input[type="checkbox"]:checked::before {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+/* Ultra-aggressive checkbox styling to override all frameworks */
+* input[type="checkbox"],
+*:not(.ignore-checkbox-styling) input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    border: 2px solid #d1d5db !important;
+    border-radius: 2px !important;
+    background-color: white !important;
+    background-image: none !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: middle !important;
+}
+
+* input[type="checkbox"]:hover,
+*:not(.ignore-checkbox-styling) input[type="checkbox"]:hover {
+    border-color: #3b82f6 !important;
+}
+
+* input[type="checkbox"]:focus,
+*:not(.ignore-checkbox-styling) input[type="checkbox"]:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important;
+    border-color: #3b82f6 !important;
+}
+
+* input[type="checkbox"]:checked,
+*:not(.ignore-checkbox-styling) input[type="checkbox"]:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    background-image: none !important;
+}
+
+* input[type="checkbox"]:checked::before,
+*:not(.ignore-checkbox-styling) input[type="checkbox"]:checked::before {
+    content: '✓' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+    display: block !important;
+}

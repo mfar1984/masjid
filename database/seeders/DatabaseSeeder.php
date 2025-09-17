@@ -15,9 +15,11 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        // Seed default administrator account
+        // Seed default administrator account and kariah data
         $this->call([
             AdminUserSeeder::class,
+            MasjidSeeder::class,
+            KariahSeeder::class,
         ]);
     }
 }
