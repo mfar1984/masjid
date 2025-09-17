@@ -21,7 +21,21 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
+        // First, check if user exists and credentials are correct
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Check if email is verified
+            if (!$user->hasVerifiedEmail()) {
+                // Logout the user immediately
+                Auth::logout();
+
+                // Return with verification error
+                return back()->withErrors([
+                    'verification' => 'Akaun anda belum disahkan. Sila hubungi pentadbir untuk pengesahan akaun.',
+                ])->onlyInput('email');
+            }
+
             $request->session()->regenerate();
             return redirect()->intended('/overview');
         }
