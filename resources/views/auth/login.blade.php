@@ -104,17 +104,17 @@
         </div>
     </div>
 
-    <!-- Verification Error Modal -->
+    <!-- Email Verification Error Modal -->
     @error('verification')
         <div id="verificationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white rounded-md shadow-lg max-w-md w-full mx-4">
                 <div class="p-6 text-center">
-                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                        <span class="material-icons text-red-600" style="font-size: 24px !important;">error</span>
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100 mb-4">
+                        <span class="material-icons text-orange-600" style="font-size: 24px !important;">pending</span>
                     </div>
                     <h3 class="text-lg font-medium text-gray-900 mb-3">Akaun Belum Disahkan</h3>
                     <p class="text-sm text-gray-500 mb-6">{{ $message }}</p>
-                    <button id="closeModal" class="w-full px-4 py-2 bg-red-500 text-white text-sm font-medium rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-colors">
+                    <button id="closeVerificationModal" class="w-full px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-300 transition-colors">
                         Tutup
                     </button>
                 </div>
@@ -122,13 +122,45 @@
         </div>
 
         <script>
-            // Close modal when clicking close button or outside modal
-            document.getElementById('closeModal').onclick = function() {
+            // Close verification modal when clicking close button or outside modal
+            document.getElementById('closeVerificationModal').onclick = function() {
                 document.getElementById('verificationModal').style.display = 'none';
             }
 
             window.onclick = function(event) {
                 const modal = document.getElementById('verificationModal');
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        </script>
+    @enderror
+
+    <!-- Role Inactive Error Modal -->
+    @error('role_inactive')
+        <div id="roleInactiveModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-md shadow-lg max-w-md w-full mx-4">
+                <div class="p-6 text-center">
+                    <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                        <span class="material-icons text-red-600" style="font-size: 24px !important;">block</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-3">Kumpulan Tidak Aktif</h3>
+                    <p class="text-sm text-gray-500 mb-6">{{ $message }}</p>
+                    <button id="closeRoleModal" class="w-full px-4 py-2 bg-red-500 text-white text-sm font-medium rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300 transition-colors">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Close role inactive modal when clicking close button or outside modal
+            document.getElementById('closeRoleModal').onclick = function() {
+                document.getElementById('roleInactiveModal').style.display = 'none';
+            }
+
+            window.onclick = function(event) {
+                const modal = document.getElementById('roleInactiveModal');
                 if (event.target == modal) {
                     modal.style.display = 'none';
                 }

@@ -25,7 +25,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
-            // Check if email is verified
+            // Priority 1: Check if user's role is active (higher priority than email verification)
+            if (!$user->hasActiveRole()) {
+                // Logout the user immediately
+                Auth::logout();
+
+                // Return with role inactive error - different error key for different modal
+                return back()->withErrors([
+                    'role_inactive' => 'Kumpulan pengguna anda telah dinyahaktifkan. Sila hubungi pentadbir untuk maklumat lanjut.',
+                ])->onlyInput('email');
+            }
+
+            // Priority 2: Check if email is verified (only if role is active)
             if (!$user->hasVerifiedEmail()) {
                 // Logout the user immediately
                 Auth::logout();

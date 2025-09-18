@@ -159,6 +159,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user's role is active.
+     */
+    public function hasActiveRole(): bool
+    {
+        return $this->role && $this->role->is_active;
+    }
+
+    /**
      * Get user avatar initials.
      */
     public function getInitialsAttribute(): string

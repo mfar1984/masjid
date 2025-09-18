@@ -34,9 +34,9 @@
 
                 <!-- Current Version Banner -->
                 <x-release-notes.banner
-                    version="v1.3"
+                    version="v1.5"
                     title="Versi Semasa"
-                    description="Kemaskini Major - Permission System & Data Isolation"
+                    description="Kemaskini Major - Advanced Login Security & Role Management"
                 />
 
                 <!-- Version Filter -->
@@ -44,6 +44,186 @@
 
                 <!-- Release Notes -->
                 <div class="space-y-6">
+                    <!-- Version 1.5 - Major Update -->
+                    <x-release-notes.version
+                        version="v1.5"
+                        title="Kemaskini Major"
+                        description="Advanced Login Security & Role Management"
+                        date="18 September 2025"
+                        type="major"
+                        bg-color="bg-purple-50"
+                        badge-color="bg-purple-100 text-purple-800"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- New Features -->
+                                <x-release-notes.feature-section
+                                    title="Ciri Baharu"
+                                    icon="add_circle"
+                                    icon-color="text-purple-600"
+                                >
+                                    <x-release-notes.feature-item
+                                        title="Advanced Login Validation"
+                                        description="Multi-layer validation dengan priority-based error handling untuk login security"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Role Status Login Restriction"
+                                        description="Users dengan role tidak aktif akan diblok dari login dengan immediate effect"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Dual Modal Error System"
+                                        description="Separate modals untuk email verification dan role inactive dengan visual differentiation"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Smart Error Prioritization"
+                                        description="Role status check mendapat priority lebih tinggi daripada email verification"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Improvements -->
+                                <x-release-notes.feature-section
+                                    title="Penambahbaikan"
+                                    icon="upgrade"
+                                    icon-color="text-purple-600"
+                                >
+                                    <x-release-notes.feature-item
+                                        title="Enhanced User Model Methods"
+                                        description="Added hasActiveRole() method untuk cleaner code dan better maintainability"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Improved Modal UX Design"
+                                        description="Color-coded modals dengan different icons untuk better user understanding"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Validation Logic Optimization"
+                                        description="Streamlined login flow dengan proper error handling dan immediate logout"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Admin Role Management Impact"
+                                        description="Role deactivation sekarang ada immediate effect pada semua users dengan role tersebut"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Security Enhancements -->
+                            <div class="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                                <h4 class="text-sm font-medium text-red-800 mb-2 flex items-center">
+                                    <span class="material-icons text-red-600 mr-2" style="font-size: 16px;">security</span>
+                                    Penambahbaikan Keselamatan
+                                </h4>
+                                <ul class="text-xs text-red-700 space-y-1">
+                                    <li>• <strong>Priority-Based Validation:</strong> Role status check sebelum email verification untuk better security</li>
+                                    <li>• <strong>Immediate Role Effect:</strong> Role deactivation langsung block semua users tanpa delay</li>
+                                    <li>• <strong>Enhanced Error Handling:</strong> Separate error keys untuk prevent confusion dan better debugging</li>
+                                    <li>• <strong>Session Security:</strong> Immediate logout untuk unauthorized users dengan proper cleanup</li>
+                                </ul>
+                            </div>
+
+                            <!-- Technical Details -->
+                            <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-md">
+                                <h4 class="text-sm font-medium text-gray-800 mb-2 flex items-center">
+                                    <span class="material-icons text-gray-600 mr-2" style="font-size: 16px;">code</span>
+                                    Butiran Teknikal
+                                </h4>
+                                <ul class="text-xs text-gray-600 space-y-1">
+                                    <li>• <strong>AuthController:</strong> Reordered validation priority dengan role status check first</li>
+                                    <li>• <strong>User Model:</strong> Added hasActiveRole() method untuk better code organization</li>
+                                    <li>• <strong>Blade Templates:</strong> Dual modal system dengan separate error keys (verification vs role_inactive)</li>
+                                    <li>• <strong>Modal Design:</strong> Color-coded system - Orange untuk email issues, Red untuk role issues</li>
+                                    <li>• <strong>Error Handling:</strong> Enhanced error messages dengan proper user guidance</li>
+                                </ul>
+                            </div>
+                    </x-release-notes.version>
+
+                    <!-- Version 1.4 - Major Update -->
+                    <x-release-notes.version
+                        version="v1.4"
+                        title="Kemaskini Major"
+                        description="Email Verification & Security Enhancements"
+                        date="17 September 2025"
+                        type="major"
+                        bg-color="bg-green-50"
+                        badge-color="bg-green-100 text-green-800"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- New Features -->
+                                <x-release-notes.feature-section
+                                    title="Ciri Baharu"
+                                    icon="add_circle"
+                                    icon-color="text-green-600"
+                                >
+                                    <x-release-notes.feature-item
+                                        title="Email Verification System"
+                                        description="Sistem pengesahan email untuk keselamatan login - user pending tidak boleh login"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Login Restriction Modal"
+                                        description="Modal popup error yang cantik untuk user yang belum disahkan"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Admin Verification Controls"
+                                        description="Admin boleh verify/unverify user dengan one-click action buttons"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Role Filtering Enhancement"
+                                        description="Admin Masjid hanya nampak roles untuk masjid mereka (no Super Admin access)"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Improvements -->
+                                <x-release-notes.feature-section
+                                    title="Penambahbaikan"
+                                    icon="upgrade"
+                                    icon-color="text-orange-600"
+                                >
+                                    <x-release-notes.feature-item
+                                        title="Permission-Based UI Controls"
+                                        description="Show page buttons (Edit/Delete) sekarang respect role permissions"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Performance Optimization"
+                                        description="Removed unnecessary Alpine.js CDN dependencies untuk faster loading"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Form Auto-Selection"
+                                        description="Create user form auto-select masjid dan role yang sesuai"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Data Validation Enhancement"
+                                        description="Improved role-masjid validation dengan proper type handling"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Security Improvements -->
+                            <div class="mt-6 p-4 bg-red-50 rounded border border-red-200">
+                                <h4 class="text-sm font-semibold text-red-800 mb-2 flex items-center">
+                                    <span class="material-icons mr-2 text-red-600" style="font-size: 16px !important;">security</span>
+                                    Penambahbaikan Keselamatan
+                                </h4>
+                                <ul class="text-xs text-red-700 space-y-1">
+                                    <li>• <strong>Login Security:</strong> Immediate logout untuk unverified users</li>
+                                    <li>• <strong>Privilege Escalation Prevention:</strong> Admin Masjid tidak boleh create Super Admin</li>
+                                    <li>• <strong>UI Security:</strong> Hide action buttons based on permissions</li>
+                                    <li>• <strong>Data Integrity:</strong> Enhanced role-masjid validation</li>
+                                </ul>
+                            </div>
+
+                            <!-- Technical Details -->
+                            <div class="mt-6 p-4 bg-gray-50 rounded border border-gray-200">
+                                <h4 class="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+                                    <span class="material-icons mr-2 text-gray-600" style="font-size: 16px !important;">code</span>
+                                    Butiran Teknikal
+                                </h4>
+                                <ul class="text-xs text-gray-600 space-y-1">
+                                    <li>• <strong>AuthController:</strong> Added email verification check in login method</li>
+                                    <li>• <strong>UserController:</strong> Enhanced role filtering logic untuk create/edit forms</li>
+                                    <li>• <strong>Blade Templates:</strong> Added permission checks untuk show page buttons</li>
+                                    <li>• <strong>Modal System:</strong> Improved centering dan responsive design</li>
+                                    <li>• <strong>Performance:</strong> Selective Alpine.js loading untuk faster page loads</li>
+                                </ul>
+                            </div>
+                    </x-release-notes.version>
+
                     <!-- Version 1.3 - Major Update -->
                     <x-release-notes.version
                         version="v1.3"
