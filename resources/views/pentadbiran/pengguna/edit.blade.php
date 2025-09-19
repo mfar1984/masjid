@@ -105,18 +105,19 @@
                             <!-- Password -->
                             <div>
                                 <label for="password" class="block text-xs font-medium text-gray-700 mb-1">Kata Laluan Baru</label>
-                                <input type="password" name="password" id="password"
+                                <input type="password" name="password" id="password" autocomplete="new-password"
                                        class="w-full h-[32px] px-3 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('password') border-red-500 @enderror">
                                 @error('password')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                                 <p class="mt-1 text-xs text-gray-500">Kosongkan jika tidak mahu tukar kata laluan</p>
+                                <div id="password-strength" class="mt-1 text-xs" style="display: none;"></div>
                             </div>
 
                             <!-- Confirm Password -->
                             <div>
                                 <label for="password_confirmation" class="block text-xs font-medium text-gray-700 mb-1">Sahkan Kata Laluan Baru</label>
-                                <input type="password" name="password_confirmation" id="password_confirmation"
+                                <input type="password" name="password_confirmation" id="password_confirmation" autocomplete="new-password"
                                        class="w-full h-[32px] px-3 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
@@ -208,5 +209,83 @@
     </main>
 
     <x-footer />
+
+    <script>
+        // Clear password fields on page load to prevent browser autocomplete issues
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordField = document.getElementById('password');
+            const confirmPasswordField = document.getElementById('password_confirmation');
+            const strengthIndicator = document.getElementById('password-strength');
+
+            // Clear fields on load
+            passwordField.value = '';
+            confirmPasswordField.value = '';
+
+            // Password strength indicator
+            passwordField.addEventListener('input', function() {
+                const password = this.value;
+                if (password.length > 0) {
+                    strengthIndicator.style.display = 'block';
+                    if (password.length < 8) {
+                        strengthIndicator.textContent = 'Kata laluan terlalu pendek (minimum 8 aksara)';
+                        strengthIndicator.className = 'mt-1 text-xs text-red-600';
+                    } else {
+                        strengthIndicator.textContent = 'Kata laluan mencukupi';
+                        strengthIndicator.className = 'mt-1 text-xs text-green-600';
+                    }
+                } else {
+                    strengthIndicator.style.display = 'none';
+                }
+            });
+
+            // Confirm password matching
+            confirmPasswordField.addEventListener('input', function() {
+                const password = passwordField.value;
+                const confirmPassword = this.value;
+
+                if (confirmPassword.length > 0) {
+                    if (password === confirmPassword) {
+                        this.style.borderColor = '#10b981'; // green
+                    } else {
+                        this.style.borderColor = '#ef4444'; // red
+                    }
+                } else {
+                    this.style.borderColor = '#d1d5db'; // default gray
+                }
+            });
+
+            // Add form validation and debugging
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                const password = passwordField.value;
+                const confirmPassword = confirmPasswordField.value;
+
+                console.log('Form submission debug:', {
+                    password_length: password.length,
+                    confirm_password_length: confirmPassword.length,
+                    passwords_match: password === confirmPassword
+                });
+
+                // Only validate if password is entered
+                if (password || confirmPassword) {
+                    if (password !== confirmPassword) {
+                        e.preventDefault();
+                        alert('Kata laluan dan pengesahan kata laluan tidak sepadan.');
+                        confirmPasswordField.focus();
+                        return false;
+                    }
+
+                    if (password.length < 8) {
+                        e.preventDefault();
+                        alert('Kata laluan mesti sekurang-kurangnya 8 aksara.');
+                        passwordField.focus();
+                        return false;
+                    }
+
+                    console.log('Password validation passed, submitting form...');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

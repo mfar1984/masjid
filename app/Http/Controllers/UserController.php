@@ -245,7 +245,12 @@ class UserController extends Controller
 
         // Data Integrity Validation: Ensure role belongs to the same masjid or is global
         $role = Role::find($request->role_id);
-        $masjidId = $request->masjid_id;
+        $masjidId = $request->masjid_id ?: null; // Convert empty string to null (SAME AS CREATE)
+
+        // Convert masjidId to integer if it's a numeric string (SAME AS CREATE)
+        if ($masjidId && is_numeric($masjidId)) {
+            $masjidId = (int) $masjidId;
+        }
 
         if ($role && $role->masjid_id !== null && $role->masjid_id !== $masjidId) {
             return back()->withErrors([
@@ -258,13 +263,13 @@ class UserController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'role_id' => $request->role_id,
-            'masjid_id' => $request->masjid_id,
+            'masjid_id' => $masjidId, // Use processed masjidId (SAME AS CREATE)
         ];
-        
+
         if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
         }
-        
+
         $user->update($updateData);
         
         return redirect()->route('senarai-pengguna.index')

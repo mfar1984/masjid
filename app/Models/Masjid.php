@@ -161,15 +161,48 @@ class Masjid extends Model
             return $this->kod_masjid;
         }
 
-        $negeriCode = $this->getNegeriCode($this->negeri);
-        $sequence = static::where('negeri', $this->negeri)->count() + 1;
-        $kodMasjid = $negeriCode . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-        
+        // Generate new 6-character unique ID format (e.g., H61PZ6)
+        $kodMasjid = $this->generateUniqueCode();
+
         $this->update(['kod_masjid' => $kodMasjid]);
-        
+
         return $kodMasjid;
     }
 
+    /**
+     * Generate a unique 6-character code with uppercase letters and numbers
+     * Format: XXXXXX (e.g., H61PZ6, A9B2C4, etc.)
+     */
+    private function generateUniqueCode()
+    {
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $maxAttempts = 100; // Prevent infinite loop
+        $attempts = 0;
+
+        do {
+            $code = '';
+            for ($i = 0; $i < 6; $i++) {
+                $code .= $characters[random_int(0, strlen($characters) - 1)];
+            }
+
+            $attempts++;
+
+            // Check if code already exists
+            $exists = static::where('kod_masjid', $code)->exists();
+
+        } while ($exists && $attempts < $maxAttempts);
+
+        if ($attempts >= $maxAttempts) {
+            throw new \Exception('Unable to generate unique kod_masjid after ' . $maxAttempts . ' attempts');
+        }
+
+        return $code;
+    }
+
+    /**
+     * Legacy method - kept for backward compatibility
+     * @deprecated Use generateUniqueCode() instead
+     */
     private function getNegeriCode($negeri)
     {
         $codes = [

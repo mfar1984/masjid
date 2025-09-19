@@ -34,9 +34,9 @@
 
                 <!-- Current Version Banner -->
                 <x-release-notes.banner
-                    version="v1.5"
+                    version="v1.7"
                     title="Versi Semasa"
-                    description="Kemaskini Major - Advanced Login Security & Role Management"
+                    description="Kemaskini Major - Sistem Pengurusan Aset & Jualan Lengkap"
                 />
 
                 <!-- Version Filter -->
@@ -44,6 +44,391 @@
 
                 <!-- Release Notes -->
                 <div class="space-y-6">
+                    <!-- Version 1.7 - Major Update -->
+                    <x-release-notes.version
+                        version="v1.7"
+                        title="Kemaskini Major"
+                        description="Sistem Pengurusan Aset & Jualan Lengkap"
+                        date="18 September 2025"
+                        type="major"
+                        bg-color="bg-emerald-50"
+                        badge-color="bg-emerald-100 text-emerald-800"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- New Features -->
+                                <x-release-notes.feature-section
+                                    title="Ciri Baharu"
+                                    icon="new_releases"
+                                    color="text-emerald-600"
+                                >
+                                    <x-release-notes.feature-item
+                                        title="🏛️ Sistem Pengurusan Aset Lengkap"
+                                        description="Menu navigasi aset dengan 5 kategori utama: Pengurusan Aset, Penyelenggaraan, Penyusutan & Nilai, Pelupusan Aset, dan Laporan Aset"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="💰 Modul Jualan Komprehensif"
+                                        description="Sistem jualan lengkap dalam Kewangan: Sebut Harga, Pesanan Jualan, Invois Proforma, Pesanan Penghantaran, Invois Jualan, Pulangan Jualan, Nota Kredit, dan Resit Rasmi"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="📦 Integrasi Operasi-Aset-Kewangan"
+                                        description="Workflow terintegrasi dari booking fasiliti (Operasi) → tracking pergerakan (Aset) → billing & payment (Kewangan)"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="🔄 Sistem Pemindahan & Pergerakan Aset"
+                                        description="Pemindahan Aset untuk proses transfer dan Pergerakan Aset untuk tracking & analytics dalam satu menu Pengurusan Aset"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Improvements -->
+                                <x-release-notes.feature-section
+                                    title="Penambahbaikan"
+                                    icon="trending_up"
+                                    color="text-blue-600"
+                                >
+                                    <x-release-notes.feature-item
+                                        title="🎯 Menu Navigasi Terstruktur"
+                                        description="Reorganisasi menu dengan nested submenus, colored ribbons, dan logical grouping untuk better user experience"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="📋 Workflow Jualan Masjid"
+                                        description="Proses jualan yang sesuai untuk konteks masjid: sewaan fasiliti, produk halal, perkhidmatan majlis, dan merchandise"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="🏢 Pengurusan Modul Baru"
+                                        description="Tambahan menu untuk Ahli Jawatankuasa Masjid, Asnaf, dan Kebajikan dengan submenu lengkap"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="⚡ Performance & UX"
+                                        description="Optimized navigation dengan proper Alpine.js implementation dan responsive design patterns"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Technical Improvements -->
+                            <div class="mt-6">
+                                <x-release-notes.feature-section
+                                    title="Penambahbaikan Teknikal"
+                                    icon="code"
+                                    color="text-purple-600"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <x-release-notes.feature-item
+                                            title="🔧 Alpine.js Integration"
+                                            description="Proper Alpine.js loading dalam app.js bundle untuk production stability"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="🎨 Z-index Optimization"
+                                            description="Fixed navigation z-index conflicts dengan high priority values (z-[9999])"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="📱 Variable Name Conflicts"
+                                            description="Resolved Alpine.js variable conflicts dengan unique naming untuk setiap submenu"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="🚀 Production Ready"
+                                            description="Fixed navigation overlapping issues dalam production environment"
+                                        />
+                                    </div>
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Database & Architecture -->
+                            <div class="mt-6">
+                                <x-release-notes.feature-section
+                                    title="Seni Bina & Database"
+                                    icon="storage"
+                                    color="text-orange-600"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <x-release-notes.feature-item
+                                            title="🗄️ Asset Management Schema"
+                                            description="Database design untuk comprehensive asset tracking, depreciation, maintenance, dan disposal"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="💳 Sales Transaction Schema"
+                                            description="Complete sales workflow database dengan quotation, orders, invoices, dan receipts"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="🔗 Integration Architecture"
+                                            description="Seamless integration antara Operasi, Aset, dan Kewangan modules dengan proper data flow"
+                                        />
+                                    </div>
+                                </x-release-notes.feature-section>
+                            </div>
+                    </x-release-notes.version>
+
+                    <!-- Version 1.6 - Major Update -->
+                    <x-release-notes.version
+                        version="v1.6"
+                        title="Kemaskini Major"
+                        description="Sistem Integrasi Lengkap - Email, Cuaca, API & Tetapan"
+                        date="18 September 2025"
+                        type="major"
+                        bg-color="bg-indigo-50"
+                        badge-color="bg-indigo-100 text-indigo-800"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- New Features -->
+                                <x-release-notes.feature-section
+                                    title="Ciri Baharu"
+                                    icon="add_circle"
+                                    icon-color="text-indigo-600"
+                                >
+                                    <x-release-notes.feature-item
+                                        title="Sistem Integrasi Email (SMTP)"
+                                        description="Konfigurasi email lengkap dengan SMTP settings, authentication, encryption, dan test email functionality"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Integrasi Cuaca Komprehensif"
+                                        description="Sistem cuaca dengan multiple providers (OpenWeatherMap, WeatherAPI), location settings, dan API key management"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Weather Widget dalam Navbar"
+                                        description="Real-time weather display dalam navigation bar dengan temperature, condition, dan detailed tooltip"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Sistem Konfigurasi API Lengkap"
+                                        description="API configuration dengan rate limiting, timeout settings, SSL verification, logging level, dan token management"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Tetapan Umum & Azan"
+                                        description="General settings dengan azan audio file management, prayer time configurations, dan system preferences"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="System Version Management"
+                                        description="Automatic version display dalam footer yang sync dengan release notes untuk better version tracking"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Major Fixes & Improvements -->
+                                <x-release-notes.feature-section
+                                    title="Pembaikan & Peningkatan"
+                                    icon="build"
+                                    icon-color="text-green-600"
+                                >
+                                    <x-release-notes.feature-item
+                                        title="UV Index Display Fix"
+                                        description="Fixed UV Index display dalam weather widget navbar untuk menunjukkan data yang tepat dan real-time"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Email Configuration Persistence"
+                                        description="Resolved SMTP configuration saving issues dengan proper validation dan error handling"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Weather API Integration"
+                                        description="Enhanced weather data fetching dengan fallback mechanisms dan error recovery"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="API Configuration Form"
+                                        description="Fixed form field enabling, data persistence, dan token management issues"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="System Version Sync"
+                                        description="Implemented automatic version updates dari release notes untuk consistent version display"
+                                    />
+                                    <x-release-notes.feature-item
+                                        title="Multi-Provider Support"
+                                        description="Added support untuk multiple weather providers dengan seamless switching capabilities"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Integration Modules -->
+                            <div class="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                                <h4 class="text-sm font-medium text-blue-800 mb-2 flex items-center">
+                                    <span class="material-icons text-blue-600 mr-2" style="font-size: 16px;">integration_instructions</span>
+                                    Modul Integrasi Lengkap
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-blue-700">
+                                    <div>
+                                        <strong>Email Integration:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>SMTP configuration dengan authentication</li>
+                                            <li>Email encryption (TLS/SSL) support</li>
+                                            <li>Test email functionality</li>
+                                            <li>From name dan reply-to settings</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Weather Integration:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Multiple weather providers support</li>
+                                            <li>Real-time weather data dalam navbar</li>
+                                            <li>UV Index, humidity, wind speed display</li>
+                                            <li>Location-based weather configuration</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>API Management:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Complete API configuration system</li>
+                                            <li>Sanctum token management</li>
+                                            <li>Rate limiting dan timeout controls</li>
+                                            <li>SSL verification settings</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>General Settings:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Azan audio file management</li>
+                                            <li>Prayer time configurations</li>
+                                            <li>System preferences</li>
+                                            <li>Version management system</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Technical Architecture -->
+                            <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-md">
+                                <h4 class="text-sm font-medium text-gray-800 mb-2 flex items-center">
+                                    <span class="material-icons text-gray-600 mr-2" style="font-size: 16px;">code</span>
+                                    Arkitektur Teknikal
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-600">
+                                    <div>
+                                        <strong>Backend Controllers:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>IntegrationController - Main integration hub</li>
+                                            <li>WeatherController - Weather data management</li>
+                                            <li>WeatherConfigurationController - Weather settings</li>
+                                            <li>ApiConfigurationController - API management</li>
+                                            <li>TetapanController - General settings</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Frontend Components:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Weather widget dalam double-navbar</li>
+                                            <li>Integration tabs (Email, Weather, API)</li>
+                                            <li>Real-time weather tooltip</li>
+                                            <li>Form validation dan error handling</li>
+                                            <li>Token management interface</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Database Models:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>WeatherConfiguration - Weather settings</li>
+                                            <li>ApiConfiguration - API configurations</li>
+                                            <li>Tetapan - General system settings</li>
+                                            <li>Integration - Integration management</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>API Integrations:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>OpenWeatherMap API integration</li>
+                                            <li>WeatherAPI.com support</li>
+                                            <li>SMTP email service integration</li>
+                                            <li>Laravel Sanctum token system</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Bug Fixes & Improvements -->
+                            <div class="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+                                <h4 class="text-sm font-medium text-green-800 mb-3 flex items-center">
+                                    <span class="material-icons text-green-600 mr-2" style="font-size: 16px;">bug_report</span>
+                                    Pembaikan Terkini & Peningkatan (v1.6 Updates)
+                                </h4>
+                                <div class="space-y-4">
+                                    <!-- Email Integration Fixes -->
+                                    <div>
+                                        <h5 class="text-xs font-semibold text-green-700 mb-2">📧 Email Integration Fixes</h5>
+                                        <ul class="list-disc list-inside text-xs text-green-600 space-y-1 ml-4">
+                                            <li><strong>Email Test Status Tracking:</strong> Fixed email test status tidak update dalam database selepas test berjaya/gagal</li>
+                                            <li><strong>Real-time Status Display:</strong> Email test status dan timestamp kini update secara real-time tanpa refresh page</li>
+                                            <li><strong>Test Email Modal Text Color:</strong> Fixed text "Maklumat Konfigurasi" dan labels dalam modal yang warna putih tidak nampak</li>
+                                            <li><strong>Database Integration:</strong> Proper integration dengan Tetapan model untuk smtp_last_test dan smtp_test_status</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- API Integration Fixes -->
+                                    <div>
+                                        <h5 class="text-xs font-semibold text-green-700 mb-2">🔌 API Integration Fixes</h5>
+                                        <ul class="list-disc list-inside text-xs text-green-600 space-y-1 ml-4">
+                                            <li><strong>TEST API Function:</strong> Fixed TEST API button yang tidak berfungsi dengan proper error handling dan loading states</li>
+                                            <li><strong>SYNC Data Function:</strong> Implemented complete SYNC Data functionality dengan multi-endpoint sync dan status tracking</li>
+                                            <li><strong>Save Configuration Persistence:</strong> Fixed data tidak kekal di page selepas save - kini update secara real-time tanpa refresh</li>
+                                            <li><strong>Success Notification:</strong> Added "Konfigurasi API berjaya dikemas kini" notification yang sebelumnya missing</li>
+                                            <li><strong>Button Height Consistency:</strong> Fixed button height untuk sama dengan Email dan Weather tabs</li>
+                                            <li><strong>Database Status Updates:</strong> API test dan sync kini update status dalam database dengan proper timestamp</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- User Guide Improvements -->
+                                    <div>
+                                        <h5 class="text-xs font-semibold text-green-700 mb-2">📚 User Guide Improvements</h5>
+                                        <ul class="list-disc list-inside text-xs text-green-600 space-y-1 ml-4">
+                                            <li><strong>Navigation Button Alignment:</strong> Fixed icon dan text alignment dalam navigation buttons dengan proper flexbox</li>
+                                            <li><strong>Font Size Optimization:</strong> Updated icon size kepada 20px dan font size kepada 13px untuk better readability</li>
+                                            <li><strong>Dynamic Version Display:</strong> System version kini load dari Tetapan model secara dynamic</li>
+                                            <li><strong>Comprehensive Content:</strong> Complete user guide untuk semua v1.6 features termasuk integration setup</li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- System Cleanup -->
+                                    <div>
+                                        <h5 class="text-xs font-semibold text-green-700 mb-2">🧹 System Cleanup</h5>
+                                        <ul class="list-disc list-inside text-xs text-green-600 space-y-1 ml-4">
+                                            <li><strong>Debug Code Removal:</strong> Comprehensive cleanup semua debug console.log, debug routes, dan test files</li>
+                                            <li><strong>Production Ready:</strong> Removed debug routes (/debug-*, /test-*) dan debug logging statements</li>
+                                            <li><strong>Clean Codebase:</strong> Maintained legitimate error logging sambil remove development debug code</li>
+                                            <li><strong>Security Enhancement:</strong> Removed potential security risks dari debug routes dalam production</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Technical Implementation Details -->
+                            <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
+                                <h4 class="text-sm font-medium text-blue-800 mb-3 flex items-center">
+                                    <span class="material-icons text-blue-600 mr-2" style="font-size: 16px;">settings</span>
+                                    Technical Implementation Details
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-blue-700">
+                                    <div>
+                                        <strong>Backend Enhancements:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Enhanced ApiConfigurationController dengan testApi() dan syncData() methods</li>
+                                            <li>Improved IntegrationController untuk load real test status dari database</li>
+                                            <li>Updated routes dengan proper CSRF protection dan middleware</li>
+                                            <li>Database integration untuk test status tracking</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Frontend Improvements:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Real-time data updates tanpa page refresh</li>
+                                            <li>Consistent button styling across all integration tabs</li>
+                                            <li>Enhanced error handling dengan user-friendly notifications</li>
+                                            <li>Loading states dengan proper button animations</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Database Updates:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>smtp_last_test dan smtp_test_status tracking</li>
+                                            <li>api_last_test dan api_test_status implementation</li>
+                                            <li>api_last_sync dan api_sync_status untuk sync operations</li>
+                                            <li>Proper multi-tenant data isolation</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>User Experience:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Consistent notification system across all modules</li>
+                                            <li>Improved modal text visibility dengan !important styling</li>
+                                            <li>Better button height consistency (32px standard)</li>
+                                            <li>Enhanced user guide dengan proper navigation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                    </x-release-notes.version>
+
                     <!-- Version 1.5 - Major Update -->
                     <x-release-notes.version
                         version="v1.5"

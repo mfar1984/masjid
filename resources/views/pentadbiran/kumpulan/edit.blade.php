@@ -200,6 +200,11 @@
                                                         <span class="material-icons" style="font-size: 14px !important;">close</span>
                                                     </span>
                                                 @endif
+                                            @elseif($moduleKey === 'fail')
+                                                {{-- Fail: Header sahaja, tiada checkbox --}}
+                                                <span class="inline-flex items-center justify-center w-5 h-5 bg-gray-100 text-gray-400 rounded-full" title="Header sahaja">
+                                                    <span class="material-icons" style="font-size: 14px !important;">remove</span>
+                                                </span>
                                             @elseif($moduleKey === 'masjids')
                                                 {{-- Senarai Masjid: Hanya Super Admin sahaja --}}
                                                 <div class="flex flex-col items-center">
@@ -210,6 +215,11 @@
                                                 </div>
                                             @elseif(in_array($moduleKey, $readOnlyModules) && $actionKey !== 'read')
                                                 {{-- Read-Only Modules: Hanya ada checkbox Lihat sahaja --}}
+                                                <span class="inline-flex items-center justify-center w-5 h-5 bg-gray-100 text-gray-400 rounded-full" title="Tidak berkenaan untuk {{ $moduleName }}">
+                                                    <span class="material-icons" style="font-size: 14px !important;">remove</span>
+                                                </span>
+                                            @elseif(in_array($moduleKey, $settingsOnlyModules) && !in_array($actionKey, ['read', 'update']))
+                                                {{-- Settings Modules: Hanya ada checkbox Lihat dan Kemaskini sahaja --}}
                                                 <span class="inline-flex items-center justify-center w-5 h-5 bg-gray-100 text-gray-400 rounded-full" title="Tidak berkenaan untuk {{ $moduleName }}">
                                                     <span class="material-icons" style="font-size: 14px !important;">remove</span>
                                                 </span>

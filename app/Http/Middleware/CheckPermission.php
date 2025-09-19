@@ -18,6 +18,9 @@ class CheckPermission
         $user = auth()->user();
 
         if (!$user) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
             return redirect()->route('login');
         }
 
@@ -28,6 +31,12 @@ class CheckPermission
 
         // Check if user has permission for this module and action
         if (!$this->hasPermission($user, $module, $action)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Anda tidak mempunyai kebenaran untuk mengakses sumber ini.',
+                    'error' => 'Forbidden'
+                ], 403);
+            }
             abort(403, 'Anda tidak mempunyai kebenaran untuk mengakses halaman ini.');
         }
 

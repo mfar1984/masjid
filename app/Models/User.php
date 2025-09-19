@@ -8,11 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -215,5 +216,47 @@ class User extends Authenticatable
     public function updatedKariah(): HasMany
     {
         return $this->hasMany(Kariah::class, 'updated_by');
+    }
+
+    /**
+     * Get storage usage for this user's masjid
+     */
+    public function getStorageUsage(): array
+    {
+        if (!$this->masjid_id) {
+            return [
+                'used' => 0,
+                'total' => 1073741824, // 1GB default
+                'percentage' => 0,
+                'formatted_used' => '0 B',
+                'formatted_total' => '1 GB',
+            ];
+        }
+
+        // Calculate total file size for this masjid
+        $totalSize = Document::where('masjid_id', $this->masjid_id)->sum('file_size') ?? 0;
+        $totalLimit = 1073741824; // 1GB limit per masjid
+        $percentage = $totalLimit > 0 ? min(100, ($totalSize / $totalLimit) * 100) : 0;
+
+        return [
+            'used' => $totalSize,
+            'total' => $totalLimit,
+            'percentage' => round($percentage, 1),
+            'formatted_used' => $this->formatFileSize($totalSize),
+            'formatted_total' => $this->formatFileSize($totalLimit),
+        ];
+    }
+
+    /**
+     * Format file size in human readable format
+     */
+    private function formatFileSize($bytes): string
+    {
+        if ($bytes == 0) return '0 B';
+
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $factor = floor(log($bytes, 1024));
+
+        return round($bytes / pow(1024, $factor), 1) . ' ' . $units[$factor];
     }
 }

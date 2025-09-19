@@ -4,31 +4,69 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use App\Models\WeatherConfiguration;
 
 class WeatherController extends Controller
 {
-    private $apiKey = 'UINsXMQBMJemd36Z2AUaQ4e65nWw7i9V';
-    private $baseUrl = 'https://api.tomorrow.io/v4';
-
     public function getWeather()
     {
         try {
-            // Sibu coordinates: 2.2876° N, 111.8303° E
-            $lat = 2.2876;
-            $lon = 111.8303;
+            // Get weather configuration based on user's masjid or super admin personal settings
+            $user = Auth::user();
+            $masjidId = null;
+
+            if ($user && $user->isSuperAdmin()) {
+                // Super Admin: Use personal settings (masjid_id = null)
+                $masjidId = null;
+            } elseif ($user) {
+                // Regular user: Use their masjid settings
+                $masjidId = $user->masjid_id;
+            }
+
+            // Get weather configuration
+            $weatherConfig = WeatherConfiguration::where('masjid_id', $masjidId)->first();
+
+            // If no configuration found, create default or use fallback
+            if (!$weatherConfig || !$weatherConfig->api_key) {
+                return $this->getFallbackWeather();
+            }
+
+            // Use configuration from database
+            $lat = $weatherConfig->latitude;
+            $lon = $weatherConfig->longitude;
+            $apiKey = $weatherConfig->api_key;
+            $baseUrl = $weatherConfig->base_url;
+            $location = $weatherConfig->default_location;
             
+            // Get weather data based on provider
+            if ($weatherConfig->provider === 'OpenWeatherMap') {
+                return $this->getOpenWeatherMapData($weatherConfig);
+            } else {
+                // Default to Tomorrow.io (AccuWeather or custom)
+                return $this->getTomorrowIOData($weatherConfig);
+            }
+
+        } catch (\Exception $e) {
+            return $this->getFallbackWeather();
+        }
+    }
+
+    private function getTomorrowIOData($config)
+    {
+        try {
             // Get current weather
-            $currentResponse = Http::get($this->baseUrl . '/weather/realtime', [
-                'location' => $lat . ',' . $lon,
-                'apikey' => $this->apiKey,
-                'units' => 'metric'
+            $currentResponse = Http::get($config->base_url . '/weather/realtime', [
+                'location' => $config->latitude . ',' . $config->longitude,
+                'apikey' => $config->api_key,
+                'units' => $config->units
             ]);
 
             // Get forecast for tomorrow
-            $forecastResponse = Http::get($this->baseUrl . '/weather/forecast', [
-                'location' => $lat . ',' . $lon,
-                'apikey' => $this->apiKey,
-                'units' => 'metric',
+            $forecastResponse = Http::get($config->base_url . '/weather/forecast', [
+                'location' => $config->latitude . ',' . $config->longitude,
+                'apikey' => $config->api_key,
+                'units' => $config->units,
                 'timesteps' => '1d',
                 'startTime' => 'now',
                 'endTime' => 'nowPlus2d'
@@ -40,9 +78,9 @@ class WeatherController extends Controller
                     'current' => null,
                     'forecast' => null,
                     'location' => [
-                        'city' => 'Sibu',
-                        'latitude' => $lat,
-                        'longitude' => $lon,
+                        'city' => $config->default_location,
+                        'latitude' => $config->latitude,
+                        'longitude' => $config->longitude,
                         'country' => 'Malaysia',
                         'timezone' => 'Asia/Kuala_Lumpur'
                     ]
@@ -133,44 +171,135 @@ class WeatherController extends Controller
             return response()->json($weatherData, 200);
 
         } catch (\Exception $e) {
-            return response()->json([
+            return $this->getFallbackWeather($config->default_location ?? 'Bintulu');
+        }
+    }
+
+    private function getOpenWeatherMapData($config)
+    {
+        try {
+            // Get current weather from OpenWeatherMap
+            $currentResponse = Http::get($config->base_url . '/weather', [
+                'lat' => $config->latitude,
+                'lon' => $config->longitude,
+                'appid' => $config->api_key,
+                'units' => $config->units,
+                'lang' => $config->language
+            ]);
+
+            // Get UV index from separate endpoint
+            $uvResponse = Http::get($config->base_url . '/uvi', [
+                'lat' => $config->latitude,
+                'lon' => $config->longitude,
+                'appid' => $config->api_key
+            ]);
+
+            $weatherData = [
                 'success' => false,
-                'message' => 'Weather service unavailable',
                 'data' => [
-                    'current' => [
-                        'temperature' => 24,
-                        'weatherCode' => 1000,
-                        'condition' => 'Cerah',
-                        'humidity' => 70,
-                        'windSpeed' => 5,
-                        'pressure' => 1013,
-                        'visibility' => 10,
-                        'uvIndex' => 5,
-                        'feelsLike' => 26
-                    ],
-                    'forecast' => [
-                        'date' => date('Y-m-d', strtotime('+1 day')),
-                        'temperature' => ['min' => 22, 'max' => 28],
-                        'weatherCode' => 1000,
-                        'condition' => 'Cerah',
-                        'precipitation' => 10,
-                        'humidity' => 75
-                    ],
+                    'current' => null,
+                    'forecast' => null,
                     'location' => [
-                        'city' => 'Sibu',
-                        'latitude' => 2.2876,
-                        'longitude' => 111.8303,
+                        'city' => $config->default_location,
+                        'latitude' => $config->latitude,
+                        'longitude' => $config->longitude,
                         'country' => 'Malaysia',
                         'timezone' => 'Asia/Kuala_Lumpur'
                     ]
                 ]
-            ]);
+            ];
+
+            // Get UV index from response
+            $uvIndex = null;
+            if ($uvResponse->successful()) {
+                $uvData = $uvResponse->json();
+                $uvIndex = isset($uvData['value']) ? round($uvData['value'], 1) : null;
+            }
+
+            if ($currentResponse->successful()) {
+                $data = $currentResponse->json();
+                if (isset($data['main'])) {
+                    $weatherCode = $data['weather'][0]['id'] ?? 800;
+                    $weatherData['data']['current'] = [
+                        'temperature' => round($data['main']['temp']),
+                        'weatherCode' => $weatherCode,
+                        'condition' => $this->getWeatherCondition($weatherCode),
+                        'humidity' => $data['main']['humidity'] ?? null,
+                        'windSpeed' => isset($data['wind']['speed']) ? round($data['wind']['speed']) : null,
+                        'pressure' => $data['main']['pressure'] ?? null,
+                        'visibility' => isset($data['visibility']) ? round($data['visibility'] / 1000) : null,
+                        'uvIndex' => $uvIndex,
+                        'feelsLike' => isset($data['main']['feels_like']) ? round($data['main']['feels_like']) : null
+                    ];
+                }
+            }
+
+            // Set defaults if no data
+            if ($weatherData['data']['current'] === null) {
+                $weatherData['data']['current'] = $this->getDefaultCurrentWeather();
+            }
+            $weatherData['data']['forecast'] = $this->getDefaultForecast();
+            $weatherData['success'] = true;
+
+            return response()->json($weatherData, 200);
+
+        } catch (\Exception $e) {
+            return $this->getFallbackWeather($config->default_location ?? 'Bintulu');
         }
+    }
+
+
+
+    private function getFallbackWeather($location = 'Bintulu')
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Using fallback weather data',
+            'data' => [
+                'current' => $this->getDefaultCurrentWeather(),
+                'forecast' => $this->getDefaultForecast(),
+                'location' => [
+                    'city' => $location,
+                    'latitude' => 3.1667,
+                    'longitude' => 113.0333,
+                    'country' => 'Malaysia',
+                    'timezone' => 'Asia/Kuala_Lumpur'
+                ]
+            ]
+        ]);
+    }
+
+    private function getDefaultCurrentWeather()
+    {
+        return [
+            'temperature' => 24,
+            'weatherCode' => 1000,
+            'condition' => 'Cerah',
+            'humidity' => 70,
+            'windSpeed' => 5,
+            'pressure' => 1013,
+            'visibility' => 10,
+            'uvIndex' => 5,
+            'feelsLike' => 26
+        ];
+    }
+
+    private function getDefaultForecast()
+    {
+        return [
+            'date' => date('Y-m-d', strtotime('+1 day')),
+            'temperature' => ['min' => 22, 'max' => 28],
+            'weatherCode' => 1000,
+            'condition' => 'Cerah',
+            'precipitation' => 10,
+            'humidity' => 75
+        ];
     }
 
     private function getWeatherCondition($code)
     {
-        $conditions = [
+        // Tomorrow.io Weather Codes
+        $tomorrowIOConditions = [
             1000 => 'Cerah',
             1001 => 'Mendung',
             1100 => 'Sebahagian Cerah',
@@ -194,7 +323,87 @@ class WeatherController extends Controller
             8000 => 'Ribut Petir'
         ];
 
-        return $conditions[$code] ?? 'Tidak Diketahui';
+        // OpenWeatherMap Weather Codes
+        $openWeatherConditions = [
+            // Clear
+            800 => 'Cerah',
+            // Clouds
+            801 => 'Sedikit Berawan',
+            802 => 'Berawan Sebahagian',
+            803 => 'Berawan',
+            804 => 'Mendung',
+            // Rain
+            500 => 'Hujan Ringan',
+            501 => 'Hujan Sederhana',
+            502 => 'Hujan Lebat',
+            503 => 'Hujan Sangat Lebat',
+            504 => 'Hujan Ekstrem',
+            511 => 'Hujan Sejuk',
+            520 => 'Hujan Ringan',
+            521 => 'Hujan Sederhana',
+            522 => 'Hujan Lebat',
+            531 => 'Hujan Tidak Menentu',
+            // Drizzle
+            300 => 'Gerimis Ringan',
+            301 => 'Gerimis',
+            302 => 'Gerimis Lebat',
+            310 => 'Gerimis Ringan',
+            311 => 'Gerimis',
+            312 => 'Gerimis Lebat',
+            313 => 'Hujan dan Gerimis',
+            314 => 'Hujan Lebat dan Gerimis',
+            321 => 'Gerimis',
+            // Thunderstorm
+            200 => 'Ribut Petir dengan Gerimis Ringan',
+            201 => 'Ribut Petir dengan Gerimis',
+            202 => 'Ribut Petir dengan Gerimis Lebat',
+            210 => 'Ribut Petir Ringan',
+            211 => 'Ribut Petir',
+            212 => 'Ribut Petir Kuat',
+            221 => 'Ribut Petir Tidak Menentu',
+            230 => 'Ribut Petir dengan Gerimis Ringan',
+            231 => 'Ribut Petir dengan Gerimis',
+            232 => 'Ribut Petir dengan Gerimis Lebat',
+            // Snow
+            600 => 'Salji Ringan',
+            601 => 'Salji',
+            602 => 'Salji Lebat',
+            611 => 'Hujan Ais',
+            612 => 'Hujan Ais Ringan',
+            613 => 'Hujan Ais',
+            615 => 'Hujan Ringan dan Salji',
+            616 => 'Hujan dan Salji',
+            620 => 'Salji Ringan',
+            621 => 'Salji',
+            622 => 'Salji Lebat',
+            // Atmosphere
+            701 => 'Kabus',
+            711 => 'Asap',
+            721 => 'Jerebu',
+            731 => 'Ribut Pasir/Debu',
+            741 => 'Kabus',
+            751 => 'Pasir',
+            761 => 'Debu',
+            762 => 'Abu Vulkanik',
+            771 => 'Ribut Angin',
+            781 => 'Puting Beliung'
+        ];
+
+
+
+        // Check Tomorrow.io codes first (4-digit codes)
+        if (isset($tomorrowIOConditions[$code])) {
+            return $tomorrowIOConditions[$code];
+        }
+
+        // Check OpenWeatherMap codes (3-digit codes)
+        if (isset($openWeatherConditions[$code])) {
+            return $openWeatherConditions[$code];
+        }
+
+
+
+        return 'Tidak Diketahui';
     }
 
     public function getWeatherIcon($code)

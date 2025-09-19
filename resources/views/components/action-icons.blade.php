@@ -12,9 +12,13 @@
     <!-- Desktop Action Icons -->
     <td class="px-4 py-2 table-data text-center space-x-1">
         <!-- Accept/Reject for Pending Status -->
-        @if($record->status === 'pending')
-            <x-icons.approve-icon :id="$record->id" :nama="$record->nama" size="desktop" />
-            <x-icons.reject-icon :id="$record->id" :nama="$record->nama" size="desktop" />
+        @if($record->status === 'pending' || $record->status === 'Menunggu')
+            @if($module && auth()->user()->hasPermission($module, 'approve'))
+                <x-icons.approve-icon :id="$record->id" :nama="$record->nama" size="desktop" />
+            @endif
+            @if($module && auth()->user()->hasPermission($module, 'reject'))
+                <x-icons.reject-icon :id="$record->id" :nama="$record->nama" size="desktop" />
+            @endif
         @endif
 
         <!-- Standard Actions -->
@@ -24,9 +28,9 @@
         @endif
 
         <!-- Suspend/Unsuspend Actions -->
-        @if($record->status === 'active')
+        @if(($record->status === 'active' || $record->status === 'Aktif') && $module && auth()->user()->hasPermission($module, 'suspend'))
             <x-icons.suspend-icon :id="$record->id" :nama="$record->nama" size="desktop" />
-        @elseif($record->status === 'suspended')
+        @elseif(($record->status === 'suspended' || $record->status === 'Digantung') && $module && auth()->user()->hasPermission($module, 'reactivate'))
             <x-icons.unsuspend-icon :id="$record->id" :nama="$record->nama" size="desktop" />
         @endif
 
@@ -38,9 +42,13 @@
     <!-- Mobile Action Icons -->
     <div class="flex items-center space-x-2">
         <!-- Accept/Reject for Pending Status -->
-        @if($record->status === 'pending')
-            <x-icons.approve-icon :id="$record->id" :nama="$record->nama" size="mobile" />
-            <x-icons.reject-icon :id="$record->id" :nama="$record->nama" size="mobile" />
+        @if($record->status === 'pending' || $record->status === 'Menunggu')
+            @if($module && auth()->user()->hasPermission($module, 'approve'))
+                <x-icons.approve-icon :id="$record->id" :nama="$record->nama" size="mobile" />
+            @endif
+            @if($module && auth()->user()->hasPermission($module, 'reject'))
+                <x-icons.reject-icon :id="$record->id" :nama="$record->nama" size="mobile" />
+            @endif
         @endif
 
         <!-- Standard Actions -->
@@ -50,9 +58,9 @@
         @endif
 
         <!-- Suspend/Unsuspend Actions -->
-        @if($record->status === 'active')
+        @if(($record->status === 'active' || $record->status === 'Aktif') && $module && auth()->user()->hasPermission($module, 'suspend'))
             <x-icons.suspend-icon :id="$record->id" :nama="$record->nama" size="mobile" />
-        @elseif($record->status === 'suspended')
+        @elseif(($record->status === 'suspended' || $record->status === 'Digantung') && $module && auth()->user()->hasPermission($module, 'reactivate'))
             <x-icons.unsuspend-icon :id="$record->id" :nama="$record->nama" size="mobile" />
         @endif
 

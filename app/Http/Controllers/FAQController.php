@@ -28,8 +28,8 @@ class FAQController extends Controller
                         'answer' => 'Sistem ini direka untuk pentadbir masjid, ahli jawatankuasa masjid, imam, dan kakitangan yang terlibat dalam pengurusan masjid.'
                     ],
                     [
-                        'question' => 'Apakah yang baharu dalam versi 1.3?',
-                        'answer' => 'Versi 1.3 memperkenalkan sistem kebenaran yang komprehensif, pengasingan data multi-masjid, kad statistik dinamik, dan penambahbaikan UI yang signifikan untuk pengalaman pengguna yang lebih baik.'
+                        'question' => 'Apakah yang baharu dalam versi 1.6?',
+                        'answer' => 'Versi 1.6 memperkenalkan sistem integrasi lengkap dengan Email (SMTP), Cuaca, API Management, dan Tetapan Umum. Termasuk weather widget dalam navbar dengan UV Index, token management, dan system version yang auto-update.'
                     ],
                     [
                         'question' => 'Adakah sistem ini selamat untuk data sensitif?',
@@ -210,6 +210,14 @@ class FAQController extends Controller
                     [
                         'question' => 'Bagaimana untuk mengemaskini status sistem?',
                         'answer' => 'Klik butang "Kemaskini" pada halaman Status Sistem untuk mendapatkan status terkini semua komponen sistem.'
+                    ],
+                    [
+                        'question' => 'Bagaimana untuk semak status integrasi eksternal?',
+                        'answer' => 'Status integrasi seperti email SMTP, weather API, dan external services boleh disemak dalam Status Sistem. Jika ada masalah connectivity, ia akan ditunjukkan dalam health checks.'
+                    ],
+                    [
+                        'question' => 'Mengapa weather widget tidak menunjukkan data?',
+                        'answer' => 'Semak Status Sistem untuk connectivity issues. Pastikan weather API key valid dan tidak exceed rate limits. Jika masalah berterusan, sistem akan menggunakan fallback data.'
                     ]
                 ]
             ],
@@ -245,6 +253,61 @@ class FAQController extends Controller
                     [
                         'question' => 'Apakah yang dimaksudkan dengan "masjid isolation"?',
                         'answer' => 'Masjid isolation memastikan setiap masjid hanya dapat mengakses data mereka sendiri. Ini dilaksanakan melalui filtering berdasarkan masjid_id pada semua database queries dan middleware permission checks.'
+                    ],
+                    [
+                        'question' => 'Mengapa form integrasi tidak dapat di-edit?',
+                        'answer' => 'Isu ini telah diperbaiki dalam v1.6. Pastikan anda klik butang "Edit Konfigurasi" untuk enable form fields. Jika masih bermasalah, refresh page dan cuba lagi.'
+                    ],
+                    [
+                        'question' => 'Bagaimana data integrasi disimpan dengan selamat?',
+                        'answer' => 'Semua data integrasi disimpan dalam database dengan encryption. API keys dan sensitive information tidak disimpan dalam plain text. Sistem menggunakan Laravel\'s built-in security features.'
+                    ]
+                ]
+            ],
+            [
+                'category' => 'Sistem Integrasi',
+                'icon' => 'integration_instructions',
+                'color' => 'indigo',
+                'questions' => [
+                    [
+                        'question' => 'Apakah itu Sistem Integrasi dalam E-Masjid v1.6?',
+                        'answer' => 'Sistem Integrasi adalah hub pusat untuk mengkonfigurasi semua integrasi eksternal seperti Email (SMTP), Cuaca, dan API. Ia membolehkan masjid menyambung dengan platform luar untuk fungsi yang diperluas.'
+                    ],
+                    [
+                        'question' => 'Bagaimana untuk mengkonfigurasi email SMTP?',
+                        'answer' => 'Pergi ke menu Integrasi > tab Email. Masukkan maklumat SMTP server, port, username, password, dan pilih jenis encryption (TLS/SSL). Anda boleh test email untuk memastikan konfigurasi betul.'
+                    ],
+                    [
+                        'question' => 'Apakah itu Weather Widget dalam navbar?',
+                        'answer' => 'Weather Widget menunjukkan cuaca real-time dalam navigation bar termasuk suhu, keadaan cuaca, UV Index, kelembapan, kelajuan angin, dan ramalan cuaca. Data diambil dari provider cuaca yang dikonfigurasi.'
+                    ],
+                    [
+                        'question' => 'Bagaimana untuk setup integrasi cuaca?',
+                        'answer' => 'Pergi ke Integrasi > tab Cuaca. Pilih provider (OpenWeatherMap atau WeatherAPI), masukkan API key, set lokasi, dan konfigurasi settings lain. Weather widget akan mula menunjukkan data selepas konfigurasi siap.'
+                    ],
+                    [
+                        'question' => 'Apakah itu API Configuration dan Token Management?',
+                        'answer' => 'API Configuration membolehkan anda setup API endpoints, rate limiting, timeout, dan SSL verification. Token Management menggunakan Laravel Sanctum untuk generate, display, dan revoke API tokens dengan abilities yang specific.'
+                    ],
+                    [
+                        'question' => 'Bagaimana untuk generate API token baharu?',
+                        'answer' => 'Dalam tab API, scroll ke bahagian Token Management dan klik "Generate Token". Pilih abilities yang diperlukan dan token akan di-generate. Token akan dipaparkan dalam senarai dengan maklumat created date dan last used.'
+                    ],
+                    [
+                        'question' => 'Mengapa UV Index tidak menunjukkan data yang betul?',
+                        'answer' => 'Isu UV Index telah diperbaiki dalam v1.6. Pastikan weather configuration setup dengan betul dan API key valid. UV Index akan menunjukkan nilai real-time dari weather provider yang dipilih.'
+                    ],
+                    [
+                        'question' => 'Apakah itu Tetapan Umum dalam integrasi?',
+                        'answer' => 'Tetapan Umum mengandungi konfigurasi sistem seperti azan audio files, prayer time settings, dan system preferences. Ia membolehkan customization pengalaman masjid mengikut keperluan tempatan.'
+                    ],
+                    [
+                        'question' => 'Bagaimana system version di-update secara automatik?',
+                        'answer' => 'System version dalam footer kini sync dengan release notes. Apabila versi baharu dikeluarkan, version number akan auto-update untuk menunjukkan versi semasa yang sedang digunakan.'
+                    ],
+                    [
+                        'question' => 'Adakah integrasi ini selamat untuk digunakan?',
+                        'answer' => 'Ya, semua integrasi menggunakan encryption dan secure connections. API keys disimpan dengan selamat, SMTP menggunakan TLS/SSL, dan token management menggunakan Laravel Sanctum yang industry-standard untuk keselamatan API.'
                     ]
                 ]
             ]

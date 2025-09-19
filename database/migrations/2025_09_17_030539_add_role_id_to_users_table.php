@@ -12,14 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Custom Role System: Users have one role
-            $table->unsignedBigInteger('role_id')->nullable()->after('masjid_id');
+            // Check if column doesn't exist before adding
+            if (!Schema::hasColumn('users', 'role_id')) {
+                // Custom Role System: Users have one role
+                $table->unsignedBigInteger('role_id')->nullable()->after('masjid_id');
 
-            // Add index for performance
-            $table->index(['role_id']);
+                // Add index for performance
+                $table->index(['role_id']);
 
-            // Foreign key constraint
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
+                // Foreign key constraint
+                $table->foreign('role_id')->references('id')->on('roles')->onDelete('set null');
+            }
         });
     }
 
@@ -29,10 +32,17 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Drop foreign key and column
-            $table->dropForeign(['role_id']);
-            $table->dropIndex(['role_id']);
-            $table->dropColumn('role_id');
+            // Check if column exists before dropping
+            if (Schema::hasColumn('users', 'role_id')) {
+                try {
+                    // Drop foreign key and column
+                    $table->dropForeign(['role_id']);
+                    $table->dropIndex(['role_id']);
+                    $table->dropColumn('role_id');
+                } catch (\Exception $e) {
+                    // Foreign key or index might not exist
+                }
+            }
         });
     }
 };

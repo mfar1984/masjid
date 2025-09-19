@@ -12,27 +12,54 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('roles', function (Blueprint $table) {
-            // Multi-Masjid Support: Roles isolated by masjid_id
-            // NULL masjid_id = System/Global roles (Super Admin only)
-            // Non-NULL masjid_id = Masjid-specific roles (Admin Masjid can create)
-            $table->unsignedBigInteger('masjid_id')->nullable()->after('is_active');
+            // Check if column doesn't exist before adding
+            if (!Schema::hasColumn('roles', 'masjid_id')) {
+                // Multi-Masjid Support: Roles isolated by masjid_id
+                // NULL masjid_id = System/Global roles (Super Admin only)
+                // Non-NULL masjid_id = Masjid-specific roles (Admin Masjid can create)
+                $table->unsignedBigInteger('masjid_id')->nullable()->after('is_active');
 
-            // Add index for performance
-            $table->index(['masjid_id']);
+                // Add index for performance
+                $table->index(['masjid_id']);
 
-            // Foreign key constraint
-            $table->foreign('masjid_id')->references('id')->on('masjids')->onDelete('cascade');
+                // Foreign key constraint
+                $table->foreign('masjid_id')->references('id')->on('masjids')->onDelete('cascade');
+            }
         });
 
         // Update unique constraint to include masjid_id scope
         Schema::table('roles', function (Blueprint $table) {
-            // Drop existing unique constraint
-            $table->dropUnique(['name']);
+            // Get database connection type
+            $connection = Schema::getConnection();
+            $driver = $connection->getDriverName();
 
-            // Add new unique constraint: name must be unique within same masjid scope
-            // System roles (masjid_id = NULL) have global unique names
-            // Masjid roles can have same name across different masjids
-            $table->unique(['name', 'masjid_id']);
+            // Handle different database drivers
+            if ($driver === 'sqlite') {
+                // SQLite doesn't support dropping unique constraints easily
+                // We'll handle this differently for SQLite
+                try {
+                    $table->unique(['name', 'masjid_id'], 'roles_name_masjid_unique');
+                } catch (\Exception $e) {
+                    // Constraint might already exist, continue
+                }
+            } else {
+                // For MySQL/PostgreSQL
+                try {
+                    // Drop existing unique constraint
+                    $table->dropUnique(['name']);
+                } catch (\Exception $e) {
+                    // Constraint might not exist, continue
+                }
+
+                try {
+                    // Add new unique constraint: name must be unique within same masjid scope
+                    // System roles (masjid_id = NULL) have global unique names
+                    // Masjid roles can have same name across different masjids
+                    $table->unique(['name', 'masjid_id']);
+                } catch (\Exception $e) {
+                    // Constraint might already exist, continue
+                }
+            }
         });
     }
 
@@ -42,16 +69,45 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('roles', function (Blueprint $table) {
-            // Drop new unique constraint
-            $table->dropUnique(['name', 'masjid_id']);
+            // Check if column exists before dropping
+            if (Schema::hasColumn('roles', 'masjid_id')) {
+                // Get database connection type
+                $connection = Schema::getConnection();
+                $driver = $connection->getDriverName();
 
-            // Restore original unique constraint
-            $table->unique(['name']);
+                if ($driver === 'sqlite') {
+                    // SQLite handling
+                    try {
+                        $table->dropUnique('roles_name_masjid_unique');
+                    } catch (\Exception $e) {
+                        // Constraint might not exist
+                    }
+                } else {
+                    // MySQL/PostgreSQL handling
+                    try {
+                        // Drop new unique constraint
+                        $table->dropUnique(['name', 'masjid_id']);
+                    } catch (\Exception $e) {
+                        // Constraint might not exist
+                    }
 
-            // Drop foreign key and column
-            $table->dropForeign(['masjid_id']);
-            $table->dropIndex(['masjid_id']);
-            $table->dropColumn('masjid_id');
+                    try {
+                        // Restore original unique constraint
+                        $table->unique(['name']);
+                    } catch (\Exception $e) {
+                        // Constraint might already exist
+                    }
+                }
+
+                try {
+                    // Drop foreign key and column
+                    $table->dropForeign(['masjid_id']);
+                    $table->dropIndex(['masjid_id']);
+                    $table->dropColumn('masjid_id');
+                } catch (\Exception $e) {
+                    // Foreign key or index might not exist
+                }
+            }
         });
     }
 };

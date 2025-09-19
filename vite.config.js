@@ -20,37 +20,7 @@ const suppressViteClientLogs = () => {
                 return originalSend.call(this, payload);
             };
         },
-        transformIndexHtml: {
-            enforce: 'pre',
-            transform(html) {
-                // Inject script to suppress client-side Vite logs
-                return html.replace(
-                    '<head>',
-                    `<head>
-                    <script>
-                        // Suppress Vite client logs
-                        if (typeof console !== 'undefined') {
-                            const originalLog = console.log;
-                            const originalInfo = console.info;
-                            console.log = function(...args) {
-                                const message = args.join(' ');
-                                if (message.includes('[vite]') || message.includes('[HMR]')) {
-                                    return; // Suppress Vite/HMR messages
-                                }
-                                return originalLog.apply(console, args);
-                            };
-                            console.info = function(...args) {
-                                const message = args.join(' ');
-                                if (message.includes('[vite]') || message.includes('[HMR]')) {
-                                    return; // Suppress Vite/HMR messages
-                                }
-                                return originalInfo.apply(console, args);
-                            };
-                        }
-                    </script>`
-                );
-            }
-        }
+
     };
 };
 

@@ -51,7 +51,7 @@
             <!-- Mobile - Quick Info -->
             <div class="text-center pt-3 border-t border-gray-100">
                 <div class="text-xs text-gray-400">
-                    Versi 1.0.0 | Kemaskini Terakhir: {{ date('d/m/Y') }}
+                    Versi {{ \App\Models\Tetapan::getSystemVersion() }} | Kemaskini Terakhir: {{ date('d/m/Y') }}
                 </div>
             </div>
         </div>

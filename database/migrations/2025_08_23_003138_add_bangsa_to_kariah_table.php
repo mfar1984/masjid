@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('kariah', function (Blueprint $table) {
-            $table->string('bangsa')->after('telefon');
-            $table->index('bangsa');
+            // Check if column doesn't exist before adding
+            if (!Schema::hasColumn('kariah', 'bangsa')) {
+                $table->string('bangsa')->after('telefon');
+                $table->index('bangsa');
+            }
         });
     }
 
@@ -23,8 +26,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('kariah', function (Blueprint $table) {
-            $table->dropIndex(['bangsa']);
-            $table->dropColumn('bangsa');
+            // Check if column exists before dropping
+            if (Schema::hasColumn('kariah', 'bangsa')) {
+                $table->dropIndex(['bangsa']);
+                $table->dropColumn('bangsa');
+            }
         });
     }
 };

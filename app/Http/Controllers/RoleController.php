@@ -148,6 +148,7 @@ class RoleController extends Controller
         $modules = $this->getAvailableModules();
         $actions = $this->getAvailableActions();
         $readOnlyModules = $this->getReadOnlyModules();
+        $settingsOnlyModules = $this->getSettingsOnlyModules();
         $workflowModules = $this->getWorkflowModules();
 
         // Get masjids for Super Admin to choose from
@@ -158,7 +159,7 @@ class RoleController extends Controller
                                         ->get(['id', 'nama']);
         }
 
-        return view('pentadbiran.kumpulan.create', compact('modules', 'actions', 'readOnlyModules', 'workflowModules', 'masjids'));
+        return view('pentadbiran.kumpulan.create', compact('modules', 'actions', 'readOnlyModules', 'settingsOnlyModules', 'workflowModules', 'masjids'));
     }
 
     /**
@@ -233,9 +234,10 @@ class RoleController extends Controller
         $modules = $this->getAvailableModules();
         $actions = $this->getAvailableActions();
         $readOnlyModules = $this->getReadOnlyModules();
+        $settingsOnlyModules = $this->getSettingsOnlyModules();
         $workflowModules = $this->getWorkflowModules();
 
-        return view('pentadbiran.kumpulan.show', compact('role', 'modules', 'actions', 'readOnlyModules', 'workflowModules'));
+        return view('pentadbiran.kumpulan.show', compact('role', 'modules', 'actions', 'readOnlyModules', 'settingsOnlyModules', 'workflowModules'));
     }
 
     /**
@@ -256,6 +258,7 @@ class RoleController extends Controller
         $modules = $this->getAvailableModules();
         $actions = $this->getAvailableActions();
         $readOnlyModules = $this->getReadOnlyModules();
+        $settingsOnlyModules = $this->getSettingsOnlyModules();
         $workflowModules = $this->getWorkflowModules();
 
         // Get masjids for Super Admin to choose from
@@ -266,7 +269,7 @@ class RoleController extends Controller
                                         ->get(['id', 'nama']);
         }
 
-        return view('pentadbiran.kumpulan.edit', compact('role', 'modules', 'actions', 'readOnlyModules', 'workflowModules', 'masjids'));
+        return view('pentadbiran.kumpulan.edit', compact('role', 'modules', 'actions', 'readOnlyModules', 'settingsOnlyModules', 'workflowModules', 'masjids'));
     }
 
     /**
@@ -354,10 +357,17 @@ class RoleController extends Controller
     {
         return [
             'dashboard' => 'Paparan Pemuka',
+            'fail' => 'Fail',
+            'documents' => '- Pengurusan Dokumen',
             'masjids' => 'Senarai Masjid',
             'users' => 'Senarai Pengguna',
             'roles' => 'Senarai Kumpulan',
-            // 'settings' => 'Tetapan Umum', // Module belum dibuat - removed temporarily
+            'kariah' => 'Ahli Kariah',
+            'settings' => 'Tetapan Umum',
+            'integrations' => 'Integrasi',
+            'integrations_email' => '- Email (SMTP)',
+            'integrations_weather' => '- Cuaca',
+            'integrations_api' => '- API',
             // 'support' => 'Bantuan & Sokongan', // Global module - removed from permission matrix
         ];
     }
@@ -390,7 +400,22 @@ class RoleController extends Controller
     {
         return [
             'dashboard', // Paparan Pemuka - view only
+            // 'fail' has special handling - header only, no checkboxes
             // 'support' removed - global module
+        ];
+    }
+
+    /**
+     * Get modules that have settings-only actions (read and update only)
+     */
+    private function getSettingsOnlyModules()
+    {
+        return [
+            'settings', // Tetapan Umum - read and update only
+            'integrations', // Integrasi - read and update only
+            'integrations_email', // Email (SMTP) - read and update only
+            'integrations_weather', // Cuaca - read and update only
+            'integrations_api', // API - read and update only
         ];
     }
 
@@ -402,6 +427,7 @@ class RoleController extends Controller
         return [
             'masjids', // Senarai Masjid - has approve/reject/suspend/reactivate
             'users', // Senarai Pengguna - has suspend/reactivate (verify/unverify)
+            'kariah', // Ahli Kariah - has approve/reject/suspend/reactivate
         ];
     }
 }

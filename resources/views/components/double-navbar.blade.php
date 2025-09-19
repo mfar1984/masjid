@@ -21,6 +21,44 @@
         <div class="absolute left-1/2 transform -translate-x-1/2 md:hidden">
             <img src="{{ asset('images/logo.svg') }}" class="h-12 w-12 py-0" alt="Logo">
         </div>
+
+        <!-- Center - Waktu Solat (Desktop only) -->
+        <div class="hidden md:flex flex-1 items-center justify-center" x-data="prayerTimesWidget()" x-init="fetchPrayerTimes()">
+            <div class="flex items-center gap-6 whitespace-nowrap" x-show="loaded" x-cloak>
+                <div class="flex flex-col items-center leading-none">
+                    <span class="text-[10px] font-bold uppercase tracking-wide text-yellow-600">Imsak</span>
+                    <span class="text-xs text-gray-900" :class="timeClass('imsak')" x-text="times.imsak">--:--</span>
+                </div>
+                <div class="flex flex-col items-center leading-none">
+                    <span class="text-[10px] font-bold uppercase tracking-wide text-yellow-600">Subuh</span>
+                    <span class="text-xs text-gray-900" :class="timeClass('fajr')" x-text="times.fajr">--:--</span>
+                </div>
+                <div class="flex flex-col items-center leading-none">
+                    <span class="text-[10px] font-bold uppercase tracking-wide text-yellow-600">Syuruk</span>
+                    <span class="text-xs text-gray-900" :class="timeClass('syuruk')" x-text="times.syuruk">--:--</span>
+                </div>
+                <div class="flex flex-col items-center leading-none">
+                    <span class="text-[10px] font-bold uppercase tracking-wide text-yellow-600">Dhuha</span>
+                    <span class="text-xs text-gray-900" :class="timeClass('dhuha')" x-text="times.dhuha">--:--</span>
+                </div>
+                <div class="flex flex-col items-center leading-none">
+                    <span class="text-[10px] font-bold uppercase tracking-wide text-yellow-600">Zohor</span>
+                    <span class="text-xs text-gray-900" :class="timeClass('zuhr')" x-text="times.zuhr">--:--</span>
+                </div>
+                <div class="flex flex-col items-center leading-none">
+                    <span class="text-[10px] font-bold uppercase tracking-wide text-yellow-600">Asar</span>
+                    <span class="text-xs text-gray-900" :class="timeClass('asr')" x-text="times.asr">--:--</span>
+                </div>
+                <div class="flex flex-col items-center leading-none">
+                    <span class="text-[10px] font-bold uppercase tracking-wide text-yellow-600">Maghrib</span>
+                    <span class="text-xs text-gray-900" :class="timeClass('maghrib')" x-text="times.maghrib">--:--</span>
+                </div>
+                <div class="flex flex-col items-center leading-none">
+                    <span class="text-[10px] font-bold uppercase tracking-wide text-yellow-600">Isyak</span>
+                    <span class="text-xs text-gray-900" :class="timeClass('isha')" x-text="times.isha">--:--</span>
+                </div>
+            </div>
+        </div>
         
         <!-- Mobile Right Side - Notifications & Help -->
         <div class="md:hidden flex items-center space-x-2">
@@ -207,25 +245,114 @@
                 </a>
 
                 <!-- Pengurusan -->
-                <div class="relative" x-data="{ pengurusanOpen: false, pengurusanTimeout: null }" @click.away="pengurusanOpen = false">
+                <div class="relative" x-data="{
+                    pengurusanOpen: false,
+                    pengurusanTimeout: null
+                }" @click.away="pengurusanOpen = false">
                     <button @mouseenter="clearTimeout(pengurusanTimeout); pengurusanOpen = true" @mouseleave="pengurusanTimeout = setTimeout(() => pengurusanOpen = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-green-600">fact_check</span>
                         Pengurusan
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="pengurusanOpen ? 'expand_less' : 'expand_more'"></span>
                     </button>
-                    <div x-show="pengurusanOpen" @mouseenter="clearTimeout(pengurusanTimeout); pengurusanOpen = true" @mouseleave="pengurusanTimeout = setTimeout(() => pengurusanOpen = false, 200)" class="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-lg py-2 z-50">
+                    <div x-show="pengurusanOpen" @mouseenter="clearTimeout(pengurusanTimeout); pengurusanOpen = true" @mouseleave="pengurusanTimeout = setTimeout(() => pengurusanOpen = false, 200)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-[9999]">
+
+                        <!-- Ahli Kariah (Existing - No Submenu) -->
                         <a href="{{ route('kariah.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Ahli Kariah
                             <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                         </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            AJK
-                            <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+
+                        <!-- Pengurusan Dokumen (New - No Submenu) -->
+                        <a href="{{ route('documents.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                            Pengurusan Dokumen
+                            <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
                         </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Asnaf & Kebajikan
-                            <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
-                        </a>
+
+                        <!-- Ahli Jawatankuasa Masjid (With Submenu) -->
+                        <div class="relative" x-data="{ ajkSubOpen: false }">
+                            <button @mouseenter="ajkSubOpen = true" @mouseleave="ajkSubOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Ahli Jawatankuasa Masjid</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="ajkSubOpen" @mouseenter="ajkSubOpen = true" @mouseleave="ajkSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Senarai AJK
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Arkib AJK
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan AJK
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Asnaf (With Submenu) -->
+                        <div class="relative" x-data="{ asnafSubOpen: false }">
+                            <button @mouseenter="asnafSubOpen = true" @mouseleave="asnafSubOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Asnaf</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="asnafSubOpen" @mouseenter="asnafSubOpen = true" @mouseleave="asnafSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Senarai Asnaf
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Permohonan Zakat
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Agihan Zakat
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Zakat
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Tetapan Asnaf
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Kebajikan (With Submenu) -->
+                        <div class="relative" x-data="{ kebajikanSubOpen: false }">
+                            <button @mouseenter="kebajikanSubOpen = true" @mouseleave="kebajikanSubOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Kebajikan</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="kebajikanSubOpen" @mouseenter="kebajikanSubOpen = true" @mouseleave="kebajikanSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Program Kebajikan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-pink-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Penerima Bantuan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-yellow-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Permohonan Bantuan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Pembayaran Bantuan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Kebajikan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Tetapan Kebajikan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -243,12 +370,12 @@
                     <div x-show="kewanganOpen" @mouseenter="clearTimeout(kewanganTimeout); kewanganOpen = true" @mouseleave="kewanganTimeout = setTimeout(() => kewanganOpen = false, 200)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-50">
 
                         <!-- Operasi Harian -->
-                        <div class="relative" x-data="{ subOpen: false }">
-                            <button @mouseenter="subOpen = true" @mouseleave="subOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
                                 <span>Operasi Harian</span>
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
-                            <div x-show="subOpen" @mouseenter="subOpen = true" @mouseleave="subOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-60">
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
                                 <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Transaksi Harian
                                     <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
@@ -265,12 +392,12 @@
                         </div>
 
                         <!-- Perakaunan -->
-                        <div class="relative" x-data="{ subOpen: false }">
-                            <button @mouseenter="subOpen = true" @mouseleave="subOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
                                 <span>Perakaunan</span>
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
-                            <div x-show="subOpen" @mouseenter="subOpen = true" @mouseleave="subOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-60">
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
                                 <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Lejar Am
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
@@ -298,13 +425,55 @@
                             </div>
                         </div>
 
+                        <!-- Jualan -->
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Jualan</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Sebut Harga
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Pesanan Jualan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Invois Proforma
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Pesanan Penghantaran
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Invois Jualan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Pulangan Jualan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Nota Kredit
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-yellow-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Resit Rasmi
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-pink-500"></div>
+                                </a>
+                            </div>
+                        </div>
+
                         <!-- Pembelian -->
-                        <div class="relative" x-data="{ subOpen: false }">
-                            <button @mouseenter="subOpen = true" @mouseleave="subOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
                                 <span>Pembelian</span>
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
-                            <div x-show="subOpen" @mouseenter="subOpen = true" @mouseleave="subOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-60">
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
                                 <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Pesanan Pembelian
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
@@ -337,12 +506,12 @@
                         </div>
 
                         <!-- Analisis & Dashboard -->
-                        <div class="relative" x-data="{ subOpen: false }">
-                            <button @mouseenter="subOpen = true" @mouseleave="subOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
                                 <span>Analisis & Dashboard</span>
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
-                            <div x-show="subOpen" @mouseenter="subOpen = true" @mouseleave="subOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-60">
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
                                 <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Papan Pemuka Kewangan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
@@ -380,37 +549,134 @@
                 </div>
 
                 <!-- Aset -->
-                <div class="relative" x-data="{ open: false, timeout: null }">
-                    <button @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
+                <div class="relative" x-data="{
+                    asetOpen: false,
+                    asetTimeout: null
+                }" @click.away="asetOpen = false">
+                    <button @mouseenter="clearTimeout(asetTimeout); asetOpen = true" @mouseleave="asetTimeout = setTimeout(() => asetOpen = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-gray-700">inventory_2</span>
                         Aset
-                        <span class="material-icons text-[6px] font-extralight ml-1" x-text="open ? 'expand_less' : 'expand_more'"></span>
+                        <span class="material-icons text-[6px] font-extralight ml-1" x-text="asetOpen ? 'expand_less' : 'expand_more'"></span>
                     </button>
-                    <div x-show="open" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 200)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Daftar Aset
-                            <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Penyelenggaraan
-                            <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Pergerakan Aset
-                            <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Penilaian & Susut Nilai
-                            <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Laporan Aset
-                            <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Pelupusan Aset
-                            <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
-                        </a>
+                    <div x-show="asetOpen" @mouseenter="clearTimeout(asetTimeout); asetOpen = true" @mouseleave="asetTimeout = setTimeout(() => asetOpen = false, 200)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-50">
+
+                        <!-- Pengurusan Aset -->
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Pengurusan Aset</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Senarai Aset
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Kategori Aset
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Pemindahan Aset
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Pergerakan Aset
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Penyelenggaraan -->
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Penyelenggaraan</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Jadual Penyelenggaraan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Kerja Penyelenggaraan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Penyelenggaraan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Penyusutan & Nilai -->
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Penyusutan & Nilai</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Jadual Penyusutan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Nilai Semasa
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Trend Penyusutan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Pelupusan Aset -->
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Pelupusan Aset</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Permohonan Pelupusan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Kelulusan Pelupusan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Rekod Pelupusan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Laporan Aset -->
+                        <div class="relative" x-data="{ sub1Open: false }">
+                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Laporan Aset</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                            </button>
+                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Inventori
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Penyelenggaraan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Lokasi
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                                </a>
+                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Dashboard Aset
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -445,9 +711,9 @@
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="open ? 'expand_less' : 'expand_more'"></span>
                     </button>
                     <div x-show="open" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 200)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                        <a href="{{ route('documents.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Pengurusan Dokumen
-                            <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                            <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
                         </a>
                         <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Perpustakaan Digital
@@ -464,14 +730,16 @@
                 <div class="relative" x-data="{ pentadbiranOpen: false, pentadbiranTimeout: null }" @click.away="pentadbiranOpen = false">
                     <button @mouseenter="clearTimeout(pentadbiranTimeout); pentadbiranOpen = true" @mouseleave="pentadbiranTimeout = setTimeout(() => pentadbiranOpen = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-red-600">admin_panel_settings</span>
-                        Sistem
+                        Pentadbiran Sistem
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="pentadbiranOpen ? 'expand_less' : 'expand_more'"></span>
                     </button>
                     <div x-show="pentadbiranOpen" @mouseenter="clearTimeout(pentadbiranTimeout); pentadbiranOpen = true" @mouseleave="pentadbiranTimeout = setTimeout(() => pentadbiranOpen = false, 200)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
-                        <a href="{{ route('senarai-masjid.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                        @if(auth()->user()->hasPermission('settings', 'read'))
+                        <a href="{{ route('tetapan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Tetapan Umum
                             <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                         </a>
+                        @endif
                         @if(auth()->user()->hasPermission('masjids', 'read'))
                         <a href="{{ route('senarai-masjid.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Senarai Masjid
@@ -492,10 +760,13 @@
                             <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
                         </a>
                         @endif
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+
+                        @if($user->hasPermission('integrations', 'read'))
+                        <a href="{{ route('integrations.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Integrasi
-                            <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                            <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
                         </a>
+                        @endif
                         <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Log Audit
                             <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
@@ -531,7 +802,7 @@
                     <div class="px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h3 class="text-sm font-semibold text-gray-900">Cuaca Sibu, Malaysia</h3>
+                                <h3 class="text-sm font-semibold text-gray-900" x-text="'Cuaca ' + location + ', Malaysia'">Cuaca Loading, Malaysia</h3>
                                 <p class="text-xs text-gray-600" x-text="new Date().toLocaleDateString('ms-MY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })">Loading...</p>
                             </div>
                             <div class="text-right">
@@ -644,11 +915,25 @@
     <div x-show="mobileMenuOpen" class="md:hidden bg-white border-t border-gray-200">
         <div class="px-4 py-2 space-y-1">
             <a href="{{ route('overview') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Papan Pemuka</a>
-            <a href="{{ route('kariah.index') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">Ahli Kariah</a>
+            <a href="{{ route('kariah.index') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
+                <span class="material-icons text-sm mr-2 text-blue-600">people</span>
+                Ahli Kariah
+            </a>
+            <a href="{{ route('documents.index') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
+                <span class="material-icons text-sm mr-2 text-teal-600">folder</span>
+                Pengurusan Dokumen
+            </a>
 
             <!-- Pentadbiran Sistem Section -->
             <div class="border-t border-gray-100 pt-2 mt-2">
                 <p class="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wider">Pentadbiran Sistem</p>
+                @if(auth()->user()->hasPermission('settings', 'read'))
+                <a href="{{ route('tetapan.index') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
+                    <span class="material-icons text-sm mr-2 text-blue-600">settings</span>
+                    Tetapan Umum
+                </a>
+                @endif
+
                 @if(auth()->user()->hasPermission('masjids', 'read'))
                 <a href="{{ route('senarai-masjid.index') }}" class="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md">
                     <span class="material-icons text-sm mr-2 text-purple-600">mosque</span>
@@ -669,10 +954,20 @@
                     Senarai Kumpulan
                 </a>
                 @endif
+
+                @if($user->hasPermission('integrations', 'read'))
+                <a href="{{ route('integrations.index') }}" @click="mobileMenuOpen=false" class="block px-3 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-md">
+                    <span class="material-icons text-sm mr-2 text-purple-500">integration_instructions</span>
+                    Integrasi
+                </a>
+                @endif
             </div>
         </div>
     </div>
 </nav>
+
+<!-- Initialize Azan Widget -->
+<div x-data="azanWidget()" x-init="init()" class="hidden"></div>
 
 <script>
 function navbarData() {
@@ -700,6 +995,7 @@ function weatherWidget() {
         showTooltip: false,
         temperature: '--',
         condition: 'Loading...',
+        location: 'Loading',
         weatherIcon: 'wb_sunny',
         weatherIconColor: 'text-blue-500',
         current: {
@@ -726,6 +1022,7 @@ function weatherWidget() {
                 if (data.success) {
                     this.temperature = data.data.current.temperature;
                     this.condition = data.data.current.condition;
+                    this.location = data.data.location.city || 'Bintulu';
                     this.weatherIcon = this.getWeatherIcon(data.data.current.weatherCode);
                     this.weatherIconColor = this.getWeatherIconColor(data.data.current.weatherCode);
                     
@@ -751,6 +1048,7 @@ function weatherWidget() {
                     // Set default values if API fails
                     this.temperature = '24';
                     this.condition = 'Cerah';
+                    this.location = 'Bintulu';
                     this.weatherIcon = 'wb_sunny';
                     this.weatherIconColor = 'text-yellow-500';
                     this.current = {
@@ -773,6 +1071,7 @@ function weatherWidget() {
                 // Set fallback values
                 this.temperature = '24';
                 this.condition = 'Cerah';
+                this.location = 'Bintulu';
                 this.weatherIcon = 'wb_sunny';
                 this.weatherIconColor = 'text-yellow-500';
                 this.current = {
@@ -832,56 +1131,186 @@ function weatherWidget() {
         }
     }
 }
+
+function prayerTimesWidget(){
+    return {
+        loaded: false,
+        times: { imsak: '--:--', fajr: '--:--', syuruk: '--:--', dhuha: '--:--', zuhr: '--:--', asr: '--:--', maghrib: '--:--', isha: '--:--' },
+        async fetchPrayerTimes(){
+            try {
+                // Build API URL with masjid_id for Super Admin
+                let apiUrl = '/api/esolat/today';
+                
+                // Check if Super Admin and masjid_id is in current URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const masjidId = urlParams.get('masjid_id');
+                if (masjidId) {
+                    apiUrl += `?masjid_id=${masjidId}`;
+                }
+
+                const res = await fetch(apiUrl);
+                const data = await res.json();
+                if (data && data.success && data.times) {
+                    this.times = data.times;
+                    this.loaded = true;
+                } else {
+                    this.loaded = true; // show with defaults
+                }
+            } catch(e){ 
+                console.error('Prayer times fetch error:', e);
+                this.loaded = true; 
+            }
+        },
+        // Return Date for today at given time string like "05:20 AM"
+        toToday(timeStr){
+            if (!timeStr || timeStr.includes('--')) return null;
+            const m = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+            if (!m) return null;
+            let h = parseInt(m[1],10); const min = parseInt(m[2],10); const ap = m[3].toUpperCase();
+            if (ap === 'PM' && h !== 12) h += 12; if (ap === 'AM' && h === 12) h = 0;
+            const d = new Date(); d.setSeconds(0,0); d.setHours(h, min, 0, 0); return d;
+        },
+        // Is time within next 15 minutes
+        isImminent(key){
+            const t = this.toToday(this.times[key]); if (!t) return false;
+            const now = new Date(); const diffMs = t - now; const diffMin = diffMs / 60000;
+            return diffMin >= 0 && diffMin <= 15;
+        },
+        timeClass(key){
+            return this.isImminent(key) ? 'font-extrabold animate-blink text-yellow-700' : 'font-normal';
+        },
+        // Check if exact prayer time has arrived and play azan
+        checkAzanTime(){
+            const now = new Date();
+            const currentHour = now.getHours().toString().padStart(2, '0');
+            const currentMin = now.getMinutes().toString().padStart(2, '0');
+            const currentTime = `${currentHour}:${currentMin}`;
+            
+            // Prayer times that should trigger azan
+            const azanTimes = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
+            
+            for (const prayer of azanTimes) {
+                const prayerTime = this.times[prayer];
+                if (prayerTime && prayerTime !== '--:--') {
+                    const pTime = this.toToday(prayerTime);
+                    if (pTime) {
+                        const pHour = pTime.getHours().toString().padStart(2, '0');
+                        const pMin = pTime.getMinutes().toString().padStart(2, '0');
+                        const pTimeStr = `${pHour}:${pMin}`;
+                        
+                        if (currentTime === pTimeStr) {
+                            this.playAzan(prayer);
+                            break; // Only play one azan at a time
+                        }
+                    }
+                }
+            }
+        },
+        async playAzan(prayerName) {
+            try {
+                // Get azan settings
+                const response = await fetch('/api/azan-settings');
+                const settings = await response.json();
+                
+                if (!settings.enabled) {
+                    return;
+                }
+                
+                // Determine which azan to play based on prayer time
+                let azanType;
+                if (prayerName === 'fajr') {
+                    azanType = settings.fajr_type || 'madinah-fajr';
+                } else {
+                    // For zuhr, asr, maghrib, isha
+                    azanType = settings.regular_type || 'makkah';
+                }
+                
+                // Show notification
+                this.showAzanNotification(prayerName, azanType);
+                
+                // Play azan audio
+                const audio = new Audio(`/audio/azan/${azanType}.mp3`);
+                audio.volume = parseFloat(settings.volume || 0.7);
+                
+                await audio.play();
+
+            } catch (error) {
+                console.error('Error playing azan:', error);
+            }
+        },
+        showAzanNotification(prayerName, azanType) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg z-50 flex items-center space-x-3';
+            
+            // Prayer name display mapping
+            const prayerNames = {
+                'fajr': 'Subuh/Fajr',
+                'zuhr': 'Zuhr', 
+                'asr': 'Asr',
+                'maghrib': 'Maghrib',
+                'isha': 'Isha'
+            };
+            
+            // Azan type display mapping
+            const azanNames = {
+                'madinah-fajr': 'Madinah Fajr',
+                'makkah': 'Makkah',
+                'madinah': 'Madinah', 
+                'malaysia': 'Malaysia'
+            };
+            
+            notification.innerHTML = `
+                <span class="material-icons text-sm">volume_up</span>
+                <div>
+                    <p class="font-medium text-sm">Masuk Waktu ${prayerNames[prayerName] || prayerName}</p>
+                    <p class="text-xs opacity-90">Azan ${azanNames[azanType] || azanType} sedang dimainkan...</p>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 8 seconds (longer for fajr)
+            const timeout = prayerName === 'fajr' ? 10000 : 8000;
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, timeout);
+        }
+    }
+}
+
+// Global azan widget functionality
+function azanWidget() {
+    return {
+        lastCheckedMinute: null,
+        
+        init() {
+            // Check every minute for prayer time
+            setInterval(() => {
+                const now = new Date();
+                const currentMinute = now.getHours() * 60 + now.getMinutes();
+                
+                // Only check once per minute
+                if (this.lastCheckedMinute !== currentMinute) {
+                    this.lastCheckedMinute = currentMinute;
+                    // Get prayer times widget instance and check azan
+                    const prayerWidget = document.querySelector('[x-data*="prayerTimesWidget"]');
+                    if (prayerWidget && prayerWidget._x_dataStack && prayerWidget._x_dataStack[0]) {
+                        prayerWidget._x_dataStack[0].checkAzanTime();
+                    }
+                }
+            }, 1000); // Check every second but only trigger once per minute
+        }
+    }
+}
 </script>
 
-<!-- Suppress Vite Development Logs -->
-<script>
-// Override console methods to suppress Vite/HMR messages globally
-(function() {
-    const originalLog = console.log;
-    const originalInfo = console.info;
-    const originalWarn = console.warn;
 
-    console.log = function(...args) {
-        const message = args.join(' ');
-        if (message.includes('[vite]') ||
-            message.includes('[HMR]') ||
-            message.includes('connecting') ||
-            message.includes('connected') ||
-            message.includes('client:') ||
-            message.includes('[DOM]') ||
-            message.includes('autocomplete')) {
-            return; // Suppress Vite development and DOM messages
-        }
-        return originalLog.apply(console, args);
-    };
 
-    console.info = function(...args) {
-        const message = args.join(' ');
-        if (message.includes('[vite]') ||
-            message.includes('[HMR]') ||
-            message.includes('connecting') ||
-            message.includes('connected') ||
-            message.includes('client:') ||
-            message.includes('[DOM]') ||
-            message.includes('autocomplete')) {
-            return; // Suppress Vite development and DOM messages
-        }
-        return originalInfo.apply(console, args);
-    };
 
-    console.warn = function(...args) {
-        const message = args.join(' ');
-        if (message.includes('[vite]') ||
-            message.includes('[HMR]') ||
-            message.includes('connecting') ||
-            message.includes('connected') ||
-            message.includes('client:') ||
-            message.includes('[DOM]') ||
-            message.includes('autocomplete')) {
-            return; // Suppress Vite development and DOM messages
-        }
-        return originalWarn.apply(console, args);
-    };
-})();
-</script>
+<style>
+@keyframes blink15 { 0%,49% { opacity:1 } 50%,100% { opacity:.25 } }
+.animate-blink { animation: blink15 1s step-start infinite; }
+</style>

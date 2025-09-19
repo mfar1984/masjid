@@ -12,8 +12,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // MySQL doesn't support direct enum modification, so we need to use raw SQL
-        DB::statement("ALTER TABLE masjids MODIFY COLUMN status ENUM('active', 'inactive', 'pending', 'suspended', 'rejected') DEFAULT 'pending'");
+        // Check database driver and handle accordingly
+        $driver = DB::getDriverName();
+
+        if ($driver === 'mysql') {
+            // MySQL doesn't support direct enum modification, so we need to use raw SQL
+            DB::statement("ALTER TABLE masjids MODIFY COLUMN status ENUM('active', 'inactive', 'pending', 'suspended', 'rejected') DEFAULT 'pending'");
+        } elseif ($driver === 'sqlite') {
+            // SQLite doesn't have ENUM, so we just need to ensure the column exists
+            // The values are handled by application logic
+            if (!Schema::hasColumn('masjids', 'status')) {
+                Schema::table('masjids', function (Blueprint $table) {
+                    $table->string('status')->default('pending');
+                });
+            }
+        }
     }
 
     /**
@@ -24,7 +37,13 @@ return new class extends Migration
         // Revert any rejected status back to inactive before removing enum value
         DB::table('masjids')->where('status', 'rejected')->update(['status' => 'inactive']);
 
-        // Revert enum to original values
-        DB::statement("ALTER TABLE masjids MODIFY COLUMN status ENUM('active', 'inactive', 'pending', 'suspended') DEFAULT 'pending'");
+        // Check database driver and handle accordingly
+        $driver = DB::getDriverName();
+
+        if ($driver === 'mysql') {
+            // Revert enum to original values
+            DB::statement("ALTER TABLE masjids MODIFY COLUMN status ENUM('active', 'inactive', 'pending', 'suspended') DEFAULT 'pending'");
+        }
+        // SQLite doesn't need specific handling for down migration
     }
 };

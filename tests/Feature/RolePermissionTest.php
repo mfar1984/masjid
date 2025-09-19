@@ -39,6 +39,18 @@ class RolePermissionTest extends TestCase
             'permissions' => ['roles' => ['read' => '1']],
             'masjid_id' => 2
         ]);
+
+        $this->settingsReadOnlyRole = Role::create([
+            'name' => 'Settings Read Only',
+            'permissions' => ['settings' => ['read' => '1']],
+            'masjid_id' => 1
+        ]);
+
+        $this->settingsUpdateRole = Role::create([
+            'name' => 'Settings Update',
+            'permissions' => ['settings' => ['read' => '1', 'update' => '1']],
+            'masjid_id' => 1
+        ]);
         
         $this->noPermissionRole = Role::create([
             'name' => 'No Permission Role',
@@ -178,6 +190,76 @@ class RolePermissionTest extends TestCase
 
         // Should NOT be able to view other masjid
         $response = $this->get(route('senarai-masjid.show', $this->masjid2));
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function user_with_settings_read_only_cannot_see_save_button()
+    {
+        $userReadOnly = User::factory()->create([
+            'role_id' => $this->settingsReadOnlyRole->id,
+            'masjid_id' => 1
+        ]);
+
+        $this->actingAs($userReadOnly);
+
+        // Should be able to access settings page
+        $response = $this->get(route('tetapan.index'));
+        $response->assertStatus(200);
+
+        // Should NOT see the save button
+        $response->assertDontSee('Simpan Tetapan');
+        $response->assertSee('Tiada Kebenaran Kemaskini');
+    }
+
+    /** @test */
+    public function user_with_settings_update_can_see_save_button()
+    {
+        $userUpdate = User::factory()->create([
+            'role_id' => $this->settingsUpdateRole->id,
+            'masjid_id' => 1
+        ]);
+
+        $this->actingAs($userUpdate);
+
+        // Should be able to access settings page
+        $response = $this->get(route('tetapan.index'));
+        $response->assertStatus(200);
+
+        // Should see the save button
+        $response->assertSee('Simpan Tetapan');
+        $response->assertDontSee('Tiada Kebenaran Kemaskini');
+    }
+
+    /** @test */
+    public function user_without_settings_permission_cannot_access_settings()
+    {
+        $userNoPermission = User::factory()->create([
+            'role_id' => $this->noPermissionRole->id,
+            'masjid_id' => 1
+        ]);
+
+        $this->actingAs($userNoPermission);
+
+        // Should be blocked by middleware
+        $response = $this->get(route('tetapan.index'));
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function user_with_settings_read_only_cannot_update_settings()
+    {
+        $userReadOnly = User::factory()->create([
+            'role_id' => $this->settingsReadOnlyRole->id,
+            'masjid_id' => 1
+        ]);
+
+        $this->actingAs($userReadOnly);
+
+        // Should be blocked by middleware when trying to update
+        $response = $this->post(route('tetapan.bulk-update'), [
+            'tetapan' => ['nama_sistem' => 'Test System']
+        ]);
         $response->assertStatus(403);
     }
 }

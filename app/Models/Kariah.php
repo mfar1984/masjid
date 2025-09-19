@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\HasMasjidScope;
 
 class Kariah extends Model
 {
-    use HasFactory;
+    use HasFactory, HasMasjidScope;
 
     protected $table = 'kariah';
 
@@ -17,18 +18,37 @@ class Kariah extends Model
         'no_ic',
         'telefon',
         'bangsa',
+        'jantina',
         'tarikh_keahlian',
         'status',
-        'zon',
         'alamat',
         'email',
+        'ic_depan_path',
+        'ic_belakang_path',
+        'masjid_id', // WAJIB untuk data isolation
         'created_by',
         'updated_by',
+        // Workflow fields
+        'diluluskan_oleh',
+        'tarikh_diluluskan',
+        'catatan_kelulusan',
+        'suspended_at',
+        'suspended_by',
     ];
 
     protected $casts = [
         'tarikh_keahlian' => 'date',
+        'tarikh_diluluskan' => 'datetime',
+        'suspended_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
+
+    // WAJIB: Relationship dengan Masjid
+    public function masjid(): BelongsTo
+    {
+        return $this->belongsTo(Masjid::class);
+    }
 
     /**
      * Get the user who created this kariah record.
@@ -63,11 +83,29 @@ class Kariah extends Model
     }
 
     /**
-     * Scope a query to filter by zone.
+     * Get jantina options
      */
-    public function scopeByZone($query, $zone)
+    public static function getJantinaOptions()
     {
-        return $query->where('zon', $zone);
+        return [
+            'Lelaki' => 'Lelaki',
+            'Perempuan' => 'Perempuan',
+            'Tidak Dinyatakan' => 'Tidak Dinyatakan'
+        ];
+    }
+
+    /**
+     * Get status options
+     */
+    public static function getStatusOptions()
+    {
+        return [
+            'Aktif' => 'Aktif',
+            'Tidak Aktif' => 'Tidak Aktif',
+            'Menunggu' => 'Menunggu',
+            'Ditolak' => 'Ditolak',
+            'Digantung' => 'Digantung'
+        ];
     }
 
     /**
