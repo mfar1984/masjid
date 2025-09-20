@@ -615,7 +615,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/documents', [DocumentController::class, 'index'])->middleware('permission:documents,read')->name('documents.index');
     Route::get('/documents/create', [DocumentController::class, 'create'])->middleware('permission:documents,create')->name('documents.create');
     Route::post('/documents', [DocumentController::class, 'store'])->middleware('permission:documents,create')->name('documents.store');
-    Route::get('/documents/{document}', [DocumentController::class, 'show'])->middleware('permission:documents,read')->name('documents.show');
+
+    // Google Drive style routes with hash tokens
+    Route::get('/documents/d/{token}', [DocumentController::class, 'showByToken'])->middleware('permission:documents,read')->name('documents.show');
+    Route::get('/documents/folders/{token}', [DocumentController::class, 'folderByToken'])->middleware('permission:documents,read')->name('documents.folder');
+
+    // Legacy routes (keep for backward compatibility)
     Route::get('/documents/{document}/edit', [DocumentController::class, 'edit'])->middleware('permission:documents,update')->name('documents.edit');
     Route::put('/documents/{document}', [DocumentController::class, 'update'])->middleware('permission:documents,update')->name('documents.update');
     Route::delete('/documents/{document}', [DocumentController::class, 'destroy'])->middleware('permission:documents,delete')->name('documents.destroy');
@@ -623,8 +628,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Document actions
     Route::get('/documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
     Route::get('/documents/{document}/preview', [DocumentController::class, 'preview'])->name('documents.preview');
-    Route::post('/documents/{document}/toggle-star', [DocumentController::class, 'toggleStar'])->name('documents.toggle-star');
+    Route::post('/documents/{documentIdentifier}/toggle-star', [DocumentController::class, 'toggleStar'])->name('documents.toggle-star');
     Route::post('/documents/{document}/share', [DocumentController::class, 'share'])->middleware('permission:documents,share')->name('documents.share');
+
+    // New document actions
+    Route::post('/documents/{documentIdentifier}/move', [DocumentController::class, 'move'])->middleware('permission:documents,update')->name('documents.move');
+    Route::post('/documents/{documentIdentifier}/favorites', [DocumentController::class, 'addToFavorites'])->name('documents.favorites');
 
     // Trash and spam actions
     Route::post('/documents/{document}/trash', [DocumentController::class, 'moveToTrash'])->middleware('permission:documents,delete')->name('documents.trash');
@@ -636,8 +645,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/document-folders', [DocumentFolderController::class, 'store'])->middleware('permission:documents,create')->name('document-folders.store');
     Route::put('/document-folders/{folder}', [DocumentFolderController::class, 'update'])->middleware('permission:documents,update')->name('document-folders.update');
     Route::delete('/document-folders/{folder}', [DocumentFolderController::class, 'destroy'])->middleware('permission:documents,delete')->name('document-folders.destroy');
-    Route::post('/document-folders/{folder}/toggle-star', [DocumentFolderController::class, 'toggleStar'])->name('document-folders.toggle-star');
-    Route::post('/document-folders/{folder}/color', [DocumentFolderController::class, 'updateColor'])->middleware('permission:documents,update')->name('document-folders.color');
+    Route::post('/document-folders/{folderIdentifier}/toggle-star', [DocumentFolderController::class, 'toggleStar'])->name('document-folders.toggle-star');
+    Route::post('/document-folders/{folderIdentifier}/color', [DocumentFolderController::class, 'updateColor'])->middleware('permission:documents,update')->name('document-folders.color');
+
+    // New folder actions
+    Route::post('/document-folders/{folderIdentifier}/move', [DocumentFolderController::class, 'move'])->middleware('permission:documents,update')->name('document-folders.move');
+    Route::post('/document-folders/{folderIdentifier}/favorites', [DocumentFolderController::class, 'addToFavorites'])->name('document-folders.favorites');
+    Route::get('/folders/list', [DocumentFolderController::class, 'listForMove'])->name('folders.list');
 
 });
 

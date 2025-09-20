@@ -17,6 +17,7 @@ class DocumentFolder extends Model
         'name',
         'description',
         'color',
+        'hash_token',
         'parent_folder_id',
         'path',
         'sort_order',
@@ -184,5 +185,48 @@ class DocumentFolder extends Model
         }
 
         return $count;
+    }
+
+    /**
+     * Generate unique hash token for Google Drive style URLs
+     */
+    public function generateHashToken(): string
+    {
+        do {
+            $token = \Illuminate\Support\Str::random(32);
+        } while (self::where('hash_token', $token)->exists());
+
+        $this->hash_token = $token;
+        $this->save();
+
+        return $token;
+    }
+
+    /**
+     * Get hash token, generate if not exists
+     */
+    public function getHashToken(): string
+    {
+        if (!$this->hash_token) {
+            return $this->generateHashToken();
+        }
+
+        return $this->hash_token;
+    }
+
+    /**
+     * Get Google Drive style URL
+     */
+    public function getPublicUrl(): string
+    {
+        return route('documents.folder', $this->getHashToken());
+    }
+
+    /**
+     * Find folder by hash token
+     */
+    public static function findByHashToken(string $token): ?self
+    {
+        return self::where('hash_token', $token)->first();
     }
 }

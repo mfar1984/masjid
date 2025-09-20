@@ -34,9 +34,9 @@
 
                 <!-- Current Version Banner -->
                 <x-release-notes.banner
-                    version="v1.7"
+                    version="v1.8"
                     title="Versi Semasa"
-                    description="Kemaskini Major - Sistem Pengurusan Aset & Jualan Lengkap"
+                    description="Kemaskini Major - Sistem Pengurusan Dokumen Lengkap dengan Google Drive Style"
                 />
 
                 <!-- Version Filter -->
@@ -44,6 +44,220 @@
 
                 <!-- Release Notes -->
                 <div class="space-y-6">
+                    <!-- Version 1.8 - Major Update -->
+                    <x-release-notes.version
+                        version="v1.8"
+                        title="Kemaskini Major"
+                        description="Sistem Pengurusan Dokumen Lengkap dengan Google Drive Style"
+                        date="20 September 2025"
+                        type="major"
+                        bg-color="bg-emerald-50"
+                        badge-color="bg-emerald-100 text-emerald-800"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- New Features -->
+                                <x-release-notes.feature-section
+                                    title="Sistem Pengurusan Dokumen Lengkap"
+                                    icon="folder"
+                                    color="text-emerald-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="📁 Complete Document Management System"
+                                        description="Sistem pengurusan dokumen lengkap dari awal dengan folder hierarchy, file upload, dan organization"
+                                        icon="folder_open"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🎨 Google Drive Style Interface"
+                                        description="UI/UX yang mirip Google Drive dengan grid/list view, context menus, dan drag-drop functionality"
+                                        icon="view_module"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🔐 Google Drive Style URLs"
+                                        description="Sistem URL dengan 32-karakter hash tokens untuk keselamatan maksimum"
+                                        icon="link"
+                                    />
+                                    <x-release-notes.feature
+                                        title="📊 Permission Matrix System"
+                                        description="Matrix kebenaran lengkap untuk tambah, lihat, kemaskini, padam, tolak, terima, gantung, aktifkan"
+                                        icon="admin_panel_settings"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Core Features -->
+                                <x-release-notes.feature-section
+                                    title="Ciri Utama Sistem"
+                                    icon="star"
+                                    color="text-blue-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="📂 Folder Management System"
+                                        description="Sistem folder dengan hierarchy, warna custom, rename, delete, dan nested structure"
+                                        icon="folder_special"
+                                    />
+                                    <x-release-notes.feature
+                                        title="📄 File Upload & Management"
+                                        description="Upload multiple files, preview, download, rename, delete dengan comprehensive file type support"
+                                        icon="cloud_upload"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🎯 Context Menu System"
+                                        description="Right-click context menus lengkap dalam Bahasa Melayu untuk semua actions"
+                                        icon="more_vert"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🔍 Advanced File Type Icons"
+                                        description="30+ file type icons dengan color coding untuk PDF, Word, Excel, images, videos, archives"
+                                        icon="insert_drive_file"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- User Experience -->
+                                <x-release-notes.feature-section
+                                    title="Pengalaman Pengguna"
+                                    icon="sentiment_satisfied"
+                                    color="text-indigo-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🎨 Real-time Color Updates"
+                                        description="Perubahan warna folder berlaku serta-merta tanpa refresh halaman"
+                                        icon="palette"
+                                    />
+                                    <x-release-notes.feature
+                                        title="✅ Dynamic Color Picker"
+                                        description="Tick mark menunjukkan warna folder yang betul dalam color picker"
+                                        icon="colorize"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🌐 Bahasa Melayu Interface"
+                                        description="Semua menu konteks dan interface dalam Bahasa Melayu sepenuhnya"
+                                        icon="translate"
+                                    />
+                                    <x-release-notes.feature
+                                        title="📱 Responsive Design"
+                                        description="Interface yang responsive untuk desktop, tablet, dan mobile devices"
+                                        icon="devices"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Security & Performance -->
+                                <x-release-notes.feature-section
+                                    title="Keselamatan & Prestasi"
+                                    icon="security"
+                                    color="text-red-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🔐 Hash Token Security"
+                                        description="32-karakter unique tokens menggantikan database IDs untuk keselamatan maksimum"
+                                        icon="shield"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🚫 Enumeration Prevention"
+                                        description="Hash tokens menghalang serangan sequential ID guessing"
+                                        icon="gpp_good"
+                                    />
+                                    <x-release-notes.feature
+                                        title="⚡ Real-time Updates"
+                                        description="AJAX-based updates tanpa page refresh untuk better performance"
+                                        icon="flash_on"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🔄 Backward Compatibility"
+                                        description="Sokongan legacy ID untuk bookmarks dan links sedia ada"
+                                        icon="history"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Database & Architecture -->
+                            <div class="mt-6">
+                                <x-release-notes.feature-section
+                                    title="Seni Bina & Database"
+                                    icon="storage"
+                                    color="text-orange-600"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <x-release-notes.feature
+                                            title="🗄️ Complete Database Schema"
+                                            description="Database design lengkap untuk documents, folders, shares, permissions dengan proper relationships"
+                                            icon="database"
+                                        />
+                                        <x-release-notes.feature
+                                            title="🔗 Multi-tenant Architecture"
+                                            description="Data isolation per masjid dengan global scope dan permission-based access"
+                                            icon="account_tree"
+                                        />
+                                        <x-release-notes.feature
+                                            title="⚙️ Migration Commands"
+                                            description="Artisan commands untuk generate hash tokens dan maintain data integrity"
+                                            icon="terminal"
+                                        />
+                                    </div>
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Upcoming Features -->
+                            <div class="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                                <h4 class="text-sm font-semibold text-amber-800 mb-3 flex items-center">
+                                    <span class="material-icons text-sm mr-2">schedule</span>
+                                    Ciri Yang Akan Datang (Coming Soon)
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-amber-600">share</span>
+                                        <span class="text-amber-800">Sharing & Collaboration</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-amber-600">link</span>
+                                        <span class="text-amber-800">Copy Link Functionality</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-amber-600">info</span>
+                                        <span class="text-amber-800">Folder Information & Details</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-amber-600">history</span>
+                                        <span class="text-amber-800">Activity Tracking</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-amber-600">star</span>
+                                        <span class="text-amber-800">Enhanced Starred System</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-amber-600">shortcut</span>
+                                        <span class="text-amber-800">Quick Shortcuts</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- URL Examples -->
+                            <div class="mt-6 bg-gray-50 rounded-lg p-4">
+                                <h4 class="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+                                    <span class="material-icons text-sm mr-2 text-blue-600">link</span>
+                                    Contoh URL Google Drive Style
+                                </h4>
+                                <div class="space-y-2 text-xs">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-red-600 font-mono">❌ Lama:</span>
+                                        <code class="bg-red-100 text-red-800 px-2 py-1 rounded">http://localhost:8000/documents?folder=10</code>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-green-600 font-mono">✅ Folder:</span>
+                                        <code class="bg-green-100 text-green-800 px-2 py-1 rounded">http://localhost:8000/documents?folder=mFtHDtFFLTa1FDmmWhLORdb4X9w00mWp</code>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-green-600 font-mono">✅ Dokumen:</span>
+                                        <code class="bg-green-100 text-green-800 px-2 py-1 rounded">http://localhost:8000/documents/d/pSZr1yj5MvIRj2Xwn093OxKRq0bTC9fh</code>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-green-600 font-mono">✅ Direct:</span>
+                                        <code class="bg-green-100 text-green-800 px-2 py-1 rounded">http://localhost:8000/documents/folders/mFtHDtFFLTa1FDmmWhLORdb4X9w00mWp</code>
+                                    </div>
+                                </div>
+                            </div>
+                    </x-release-notes.version>
+
                     <!-- Version 1.7 - Major Update -->
                     <x-release-notes.version
                         version="v1.7"

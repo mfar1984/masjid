@@ -30,11 +30,23 @@ class DocumentController extends Controller
 
 
 
-        // Get current folder - Use consistent approach
+        // Get current folder - Support both ID and hash token
         $currentFolder = null;
         if ($request->filled('folder')) {
-            // Use withoutGlobalScope for consistency and manual access control
-            $currentFolder = DocumentFolder::withoutGlobalScope('masjid')->findOrFail($request->folder);
+            $folderParam = $request->folder;
+
+            // Check if it's a hash token (32 characters) or ID (numeric)
+            if (strlen($folderParam) === 32 && ctype_alnum($folderParam)) {
+                // Hash token - Google Drive style
+                $currentFolder = DocumentFolder::withoutGlobalScope('masjid')->where('hash_token', $folderParam)->first();
+            } else {
+                // Legacy ID support
+                $currentFolder = DocumentFolder::withoutGlobalScope('masjid')->find($folderParam);
+            }
+
+            if (!$currentFolder) {
+                abort(404, 'Folder tidak dijumpai.');
+            }
 
             // WAJIB: Check access permission for non-Super Admin
             if (!$user->isSuperAdmin()) {
@@ -351,13 +363,72 @@ class DocumentController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified resource by hash token (Google Drive style)
+     */
+    public function showByToken(string $token)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'read')) {
+            abort(403, 'Anda tidak mempunyai kebenaran untuk melihat dokumen.');
+        }
+
+        // Find document by hash token
+        $document = Document::findByHashToken($token);
+
+        if (!$document) {
+            abort(404, 'Dokumen tidak dijumpai.');
+        }
+
+        // Load relationships
+        $document->load(['folder', 'creator', 'updater', 'versions', 'shares.sharedWithMasjid']);
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            abort(403, 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.');
+        }
+
+        // Update last accessed time
+        $document->update(['last_accessed_at' => now()]);
+
+        return view('documents.show', compact('document'));
+    }
+
+    /**
+     * Display folder by hash token (Google Drive style)
+     */
+    public function folderByToken(string $token)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'read')) {
+            abort(403, 'Anda tidak mempunyai kebenaran untuk melihat dokumen.');
+        }
+
+        // Find folder by hash token
+        $folder = DocumentFolder::findByHashToken($token);
+
+        if (!$folder) {
+            abort(404, 'Folder tidak dijumpai.');
+        }
+
+        // Check if user can access this folder
+        if (!$this->canAccessFolder($folder, $user)) {
+            abort(403, 'Anda tidak mempunyai kebenaran untuk mengakses folder ini.');
+        }
+
+        // Redirect to documents index with folder parameter
+        return redirect()->route('documents.index', ['folder' => $token]);
+    }
+
+    /**
+     * Display the specified resource (legacy method for backward compatibility)
      */
     public function show(Document $document)
     {
         $user = Auth::user();
-
-
 
         // Check permission
         if (!$user->hasPermission('documents', 'read')) {
@@ -608,13 +679,19 @@ class DocumentController extends Controller
     /**
      * Toggle star status
      */
-    public function toggleStar(Document $document)
+    public function toggleStar($documentIdentifier)
     {
         $user = Auth::user();
 
+        // Find document by ID or hash token
+        $document = $this->findDocumentByIdentifier($documentIdentifier);
+        if (!$document) {
+            return response()->json(['success' => false, 'message' => 'Dokumen tidak dijumpai.'], 404);
+        }
+
         // Check if user can access this document
         if (!$this->canAccessDocument($document, $user)) {
-            abort(403, 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.');
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.'], 403);
         }
 
         $document->update(['is_starred' => !$document->is_starred]);
@@ -622,7 +699,7 @@ class DocumentController extends Controller
         return response()->json([
             'success' => true,
             'is_starred' => $document->is_starred,
-            'message' => $document->is_starred ? 'Dokumen ditambah ke kegemaran.' : 'Dokumen dikeluarkan dari kegemaran.'
+            'message' => $document->is_starred ? 'Dokumen ditambah ke bintang.' : 'Dokumen dikeluarkan dari bintang.'
         ]);
     }
 
@@ -915,5 +992,117 @@ class DocumentController extends Controller
             'starred_documents' => (clone $statsQuery)->starred()->count(),
             'shared_documents' => (clone $statsQuery)->shared()->count(),
         ];
+    }
+
+    /**
+     * Move document to another folder
+     */
+    public function move(Request $request, $documentIdentifier)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'update')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk memindahkan dokumen.'], 403);
+        }
+
+        // Find document by ID or hash token
+        $document = $this->findDocumentByIdentifier($documentIdentifier);
+        if (!$document) {
+            return response()->json(['success' => false, 'message' => 'Dokumen tidak dijumpai.'], 404);
+        }
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.'], 403);
+        }
+
+        $request->validate([
+            'destination_folder_id' => 'nullable|exists:document_folders,id'
+        ]);
+
+        $destinationFolderId = $request->destination_folder_id;
+
+        // If destination folder is specified, check if user can access it
+        if ($destinationFolderId) {
+            $destinationFolder = DocumentFolder::find($destinationFolderId);
+            if (!$destinationFolder || !$this->canAccessFolder($destinationFolder, $user)) {
+                return response()->json(['success' => false, 'message' => 'Folder destinasi tidak sah.'], 400);
+            }
+        }
+
+        try {
+            $document->update([
+                'folder_id' => $destinationFolderId
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Dokumen berjaya dipindahkan.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Ralat memindahkan dokumen.'], 500);
+        }
+    }
+
+    /**
+     * Add document to favorites
+     */
+    public function addToFavorites(Request $request, $documentIdentifier)
+    {
+        $user = Auth::user();
+
+        // Find document by ID or hash token
+        $document = $this->findDocumentByIdentifier($documentIdentifier);
+        if (!$document) {
+            return response()->json(['success' => false, 'message' => 'Dokumen tidak dijumpai.'], 404);
+        }
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.'], 403);
+        }
+
+        try {
+            // For now, we'll use the starred functionality as favorites
+            // In future, you might want to create a separate favorites table
+            $document->update(['is_starred' => true]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Dokumen berjaya ditambah ke kegemaran.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Ralat menambah dokumen ke kegemaran.'], 500);
+        }
+    }
+
+    /**
+     * Helper method to find document by ID or hash token
+     */
+    private function findDocumentByIdentifier($identifier)
+    {
+        // Check if it's a hash token (32 characters) or ID (numeric)
+        if (strlen($identifier) === 32 && ctype_alnum($identifier)) {
+            // Hash token
+            return Document::withoutGlobalScope('masjid')->where('hash_token', $identifier)->first();
+        } else {
+            // Legacy ID support
+            return Document::withoutGlobalScope('masjid')->find($identifier);
+        }
+    }
+
+    /**
+     * Helper method to check if user can access folder
+     */
+    private function canAccessFolder($folder, $user)
+    {
+        // Super Admin can access all folders
+        if ($user->hasRole('Super Admin')) {
+            return true;
+        }
+
+        // Check if folder belongs to user's masjid
+        return $folder->masjid_id === $user->masjid_id;
     }
 }

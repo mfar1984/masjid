@@ -192,13 +192,19 @@ class DocumentFolderController extends Controller
     /**
      * Toggle star status for folder
      */
-    public function toggleStar(DocumentFolder $folder)
+    public function toggleStar($folderIdentifier)
     {
         $user = Auth::user();
 
+        // Find folder by ID or hash token
+        $folder = $this->findFolderByIdentifier($folderIdentifier);
+        if (!$folder) {
+            return response()->json(['success' => false, 'message' => 'Folder tidak dijumpai.'], 404);
+        }
+
         // Check if user can access this folder
         if (!$this->canAccessFolder($folder, $user)) {
-            abort(403, 'Anda tidak mempunyai kebenaran untuk mengakses folder ini.');
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses folder ini.'], 403);
         }
 
         $folder->update(['is_starred' => !$folder->is_starred]);
@@ -206,7 +212,7 @@ class DocumentFolderController extends Controller
         return response()->json([
             'success' => true,
             'is_starred' => $folder->is_starred,
-            'message' => $folder->is_starred ? 'Folder ditambah ke kegemaran.' : 'Folder dikeluarkan dari kegemaran.'
+            'message' => $folder->is_starred ? 'Folder ditambah ke bintang.' : 'Folder dikeluarkan dari bintang.'
         ]);
     }
 
@@ -236,9 +242,9 @@ class DocumentFolderController extends Controller
     }
 
     /**
-     * Update folder color
+     * Update folder color (supports both ID and hash token)
      */
-    public function updateColor(Request $request, DocumentFolder $folder)
+    public function updateColor(Request $request, $folderIdentifier)
     {
         $user = Auth::user();
 
@@ -247,8 +253,21 @@ class DocumentFolderController extends Controller
             return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengemas kini folder.'], 403);
         }
 
+        // Find folder by ID or hash token
+        if (strlen($folderIdentifier) === 32 && ctype_alnum($folderIdentifier)) {
+            // Hash token
+            $folder = DocumentFolder::withoutGlobalScope('masjid')->where('hash_token', $folderIdentifier)->first();
+        } else {
+            // Legacy ID
+            $folder = DocumentFolder::withoutGlobalScope('masjid')->find($folderIdentifier);
+        }
+
+        if (!$folder) {
+            return response()->json(['success' => false, 'message' => 'Folder tidak dijumpai.'], 404);
+        }
+
         // Check if user can access this folder
-        if ($folder->masjid_id !== $user->masjid_id) {
+        if (!$this->canAccessFolder($folder, $user)) {
             return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses folder ini.'], 403);
         }
 
@@ -263,5 +282,159 @@ class DocumentFolderController extends Controller
         ]);
 
         return response()->json(['success' => true, 'message' => 'Warna folder telah dikemas kini.']);
+    }
+
+    /**
+     * Move folder to another parent folder
+     */
+    public function move(Request $request, $folderIdentifier)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'update')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk memindahkan folder.'], 403);
+        }
+
+        // Find folder by ID or hash token
+        $folder = $this->findFolderByIdentifier($folderIdentifier);
+        if (!$folder) {
+            return response()->json(['success' => false, 'message' => 'Folder tidak dijumpai.'], 404);
+        }
+
+        // Check if user can access this folder
+        if (!$this->canAccessFolder($folder, $user)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses folder ini.'], 403);
+        }
+
+        $request->validate([
+            'destination_folder_id' => 'nullable|exists:document_folders,id'
+        ]);
+
+        $destinationFolderId = $request->destination_folder_id;
+
+        // Prevent moving folder into itself or its children
+        if ($destinationFolderId && $this->isDescendantFolder($folder->id, $destinationFolderId)) {
+            return response()->json(['success' => false, 'message' => 'Tidak boleh memindahkan folder ke dalam dirinya sendiri atau subfolder.'], 400);
+        }
+
+        // If destination folder is specified, check if user can access it
+        if ($destinationFolderId) {
+            $destinationFolder = DocumentFolder::find($destinationFolderId);
+            if (!$destinationFolder || !$this->canAccessFolder($destinationFolder, $user)) {
+                return response()->json(['success' => false, 'message' => 'Folder destinasi tidak sah.'], 400);
+            }
+        }
+
+        try {
+            $folder->update([
+                'parent_folder_id' => $destinationFolderId,
+                'updated_by' => $user->id
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Folder berjaya dipindahkan.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Ralat memindahkan folder.'], 500);
+        }
+    }
+
+    /**
+     * Add folder to favorites
+     */
+    public function addToFavorites(Request $request, $folderIdentifier)
+    {
+        $user = Auth::user();
+
+        // Find folder by ID or hash token
+        $folder = $this->findFolderByIdentifier($folderIdentifier);
+        if (!$folder) {
+            return response()->json(['success' => false, 'message' => 'Folder tidak dijumpai.'], 404);
+        }
+
+        // Check if user can access this folder
+        if (!$this->canAccessFolder($folder, $user)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses folder ini.'], 403);
+        }
+
+        try {
+            // For now, we'll use the starred functionality as favorites
+            // In future, you might want to create a separate favorites table
+            $folder->update([
+                'is_starred' => true,
+                'updated_by' => $user->id
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Folder berjaya ditambah ke kegemaran.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Ralat menambah folder ke kegemaran.'], 500);
+        }
+    }
+
+    /**
+     * List folders for move dialog
+     */
+    public function listForMove(Request $request)
+    {
+        $user = Auth::user();
+
+        // Get folders based on user permissions
+        $foldersQuery = DocumentFolder::withoutGlobalScope('masjid');
+
+        // Apply access control
+        if (!$user->isSuperAdmin()) {
+            $foldersQuery->where('masjid_id', $user->masjid_id);
+        }
+
+        $folders = $foldersQuery->select('id', 'name', 'hash_token', 'parent_folder_id')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'folders' => $folders
+        ]);
+    }
+
+    /**
+     * Helper method to find folder by ID or hash token
+     */
+    private function findFolderByIdentifier($identifier)
+    {
+        // Check if it's a hash token (32 characters) or ID (numeric)
+        if (strlen($identifier) === 32 && ctype_alnum($identifier)) {
+            // Hash token
+            return DocumentFolder::withoutGlobalScope('masjid')->where('hash_token', $identifier)->first();
+        } else {
+            // Legacy ID support
+            return DocumentFolder::withoutGlobalScope('masjid')->find($identifier);
+        }
+    }
+
+
+
+    /**
+     * Helper method to check if a folder is descendant of another
+     */
+    private function isDescendantFolder($parentId, $childId)
+    {
+        if ($parentId === $childId) {
+            return true;
+        }
+
+        $folder = DocumentFolder::find($childId);
+        while ($folder && $folder->parent_folder_id) {
+            if ($folder->parent_folder_id === $parentId) {
+                return true;
+            }
+            $folder = DocumentFolder::find($folder->parent_folder_id);
+        }
+
+        return false;
     }
 }

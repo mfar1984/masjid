@@ -134,6 +134,39 @@
             opacity: 1 !important;
         }
 
+        /* Fix border radius for consistent rounded corners with separated borders */
+        .folder-item,
+        .file-item {
+            border: none !important; /* Remove default border */
+            position: relative !important;
+        }
+
+        /* Create separate borders for each side with proper radius */
+        .folder-item::before,
+        .file-item::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            border: 1px solid #e5e7eb !important; /* border-gray-200 */
+            border-radius: 0.75rem !important; /* rounded-xl */
+            pointer-events: none !important;
+            z-index: 1 !important;
+        }
+
+        /* Hover effect for borders */
+        .folder-item:hover::before,
+        .file-item:hover::before {
+            border-color: #93c5fd !important; /* border-blue-300 */
+        }
+
+        /* Ensure star is above the border */
+        .star-container {
+            z-index: 60 !important; /* Higher than border z-index */
+        }
+
         /* Prevent text selection on context menu */
         #contextMenu {
             user-select: none;
@@ -415,18 +448,24 @@
                                         <h3 class="text-sm font-semibold text-gray-600 mb-4 px-1">Folder</h3>
                                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
                                             @foreach($folders as $folder)
-                                                <div class="folder-item group relative bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden" onclick="openFolder({{ $folder->id }})" oncontextmenu="showContextMenu(event, 'folder', {{ $folder->id }}, '{{ $folder->name }}', {{ $folder->is_starred ? 'true' : 'false' }}, '{{ $folder->color ?? '#3B82F6' }}')"
+                                                <div class="folder-item group relative bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer" onclick="openFolder('{{ $folder->getHashToken() }}')" oncontextmenu="showContextMenu(event, 'folder', '{{ $folder->getHashToken() }}', '{{ $folder->name }}', {{ $folder->is_starred ? 'true' : 'false' }}, '{{ $folder->color ?? '#3B82F6' }}')"
+
+                                                    <!-- Beautiful Half-Floating Star Badge -->
+                                                    @if($folder->is_starred)
+                                                        <div class="absolute w-6 h-6 rounded-full shadow-lg flex items-center justify-center star-container transform hover:scale-110 transition-all duration-200" style="background-color: #facc15 !important; z-index: 50 !important; top: -6px !important; left: -6px !important; border: 2px solid white !important;">
+                                                            <span class="material-icons text-sm star-icon drop-shadow-sm" style="color: white !important;">star</span>
+                                                        </div>
+                                                    @else
+                                                        <div class="absolute w-6 h-6 rounded-full shadow-lg flex items-center justify-center star-container opacity-0 group-hover:opacity-70 transform hover:scale-110 transition-all duration-200" style="background-color: #9ca3af !important; z-index: 50 !important; top: -6px !important; left: -6px !important; border: 2px solid white !important;">
+                                                            <span class="material-icons text-sm star-icon drop-shadow-sm" style="color: white !important;">star_border</span>
+                                                        </div>
+                                                    @endif
                                                     <!-- Folder Icon Container -->
                                                     <div style="padding: 16px !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; text-align: center !important; width: 100% !important; height: 100% !important;">
                                                         <!-- Icon Container -->
                                                         <div style="display: flex !important; justify-content: center !important; align-items: center !important; margin-bottom: 8px !important; width: 100% !important;">
                                                             <div class="relative" style="display: inline-block !important; position: relative !important;">
                                                                 <span class="material-icons transition-all duration-300 group-hover:scale-110" style="color: {{ $folder->color ?? '#3B82F6' }}; font-size: 40px !important; line-height: 1 !important; display: block !important; text-align: center !important; margin: 0 auto !important;">folder</span>
-                                                                @if($folder->is_starred)
-                                                                    <div class="absolute" style="top: -4px !important; right: -4px !important;">
-                                                                        <span class="material-icons bg-white rounded-full" style="font-size: 12px !important; line-height: 1 !important; color: #fbbf24 !important; padding: 2px !important;">star</span>
-                                                                    </div>
-                                                                @endif
                                                             </div>
                                                         </div>
                                                         <!-- Folder Name -->
@@ -530,9 +569,9 @@
                                                                             <span class="material-icons text-sm mr-3">drive_file_move</span>
                                                                             Pindah
                                                                         </button>
-                                                                        <button onclick="addFolderShortcut({{ $folder->id }})" class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                                                            <span class="material-icons text-sm mr-3">add_link</span>
-                                                                            Tambah pintasan
+                                                                        <button onclick="addToFavorites('folder', {{ $folder->id }})" class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                                                            <span class="material-icons text-sm mr-3">favorite</span>
+                                                                            Tambah Kegemaran
                                                                         </button>
                                                                         <button onclick="toggleStar('folder', {{ $folder->id }})" class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                                                             <span class="material-icons text-sm mr-3">{{ $folder->is_starred ? 'star' : 'star_border' }}</span>
@@ -591,7 +630,18 @@
 
                                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4" style="display: grid !important; visibility: visible !important; opacity: 1 !important;">
                                             @foreach($documents as $document)
-                                                <div class="file-item group relative bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden" onclick="window.location.href='{{ route('documents.show', $document) }}'" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important;">
+                                                <div class="file-item group relative bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 cursor-pointer" onclick="window.location.href='{{ route('documents.show', $document->getHashToken()) }}'" style="display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important;">
+
+                                                    <!-- Beautiful Half-Floating Star Badge -->
+                                                    @if($document->is_starred)
+                                                        <div class="absolute w-6 h-6 rounded-full shadow-lg flex items-center justify-center star-container transform hover:scale-110 transition-all duration-200" style="background-color: #facc15 !important; z-index: 50 !important; top: -6px !important; left: -6px !important; border: 2px solid white !important;">
+                                                            <span class="material-icons text-sm star-icon drop-shadow-sm" style="color: white !important;">star</span>
+                                                        </div>
+                                                    @else
+                                                        <div class="absolute w-6 h-6 shadow-lg flex items-center justify-center star-container opacity-0 group-hover:opacity-70 transform hover:scale-110 transition-all duration-200" style="background-color: #9ca3af !important; z-index: 50 !important; top: -6px !important; left: -6px !important; border: 2px solid white !important; border-radius: 2px !important;">
+                                                            <span class="material-icons text-sm star-icon drop-shadow-sm" style="color: white !important;">star_border</span>
+                                                        </div>
+                                                    @endif
                                                     <!-- Document Preview/Icon Container -->
                                                     <div class="p-4 text-center">
                                                         <div class="flex justify-center mb-3">
@@ -675,12 +725,7 @@
                                                                     </div>
                                                                 @endif
                                                                 
-                                                                <!-- Star indicator -->
-                                                                @if($document->is_starred)
-                                                                    <div class="absolute -top-1 -right-1">
-                                                                        <span class="material-icons text-sm text-yellow-500 bg-white rounded-full p-0.5">star</span>
-                                                                    </div>
-                                                                @endif
+
                                                             </div>
                                                         </div>
                                                         <h4 class="text-sm font-medium text-gray-900 truncate px-1 group-hover:text-blue-700 transition-colors duration-200">{{ $document->name }}</h4>
@@ -842,13 +887,13 @@
     <x-footer />
 
     <!-- Context Menu -->
-    <div id="contextMenu" class="fixed bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 hidden min-w-[200px]">
+    <div id="contextMenu" class="fixed bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 hidden min-w-[240px]">
 
         <!-- Document-specific options -->
         <div id="documentOptions">
             <!-- Open with submenu -->
             <div class="context-menu-item group relative">
-                <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap">
                     <div class="flex items-center">
                         <span class="material-icons text-sm mr-3">open_with</span>
                         <span>Open with</span>
@@ -856,12 +901,12 @@
                     <span class="material-icons text-sm text-gray-400">chevron_right</span>
                 </div>
                 <!-- Submenu -->
-                <div class="context-submenu bg-white rounded-lg shadow-xl border border-gray-200 py-2 hidden group-hover:block min-w-[180px]">
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="previewItem()">
+                <div class="context-submenu bg-white rounded-lg shadow-xl border border-gray-200 py-2 hidden group-hover:block min-w-[200px]">
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="previewItem()">
                         <span class="material-icons text-sm mr-3">visibility</span>
                         <span>Pratonton</span>
                     </div>
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="openInNewTab()">
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="openInNewTab()">
                         <span class="material-icons text-sm mr-3">open_in_new</span>
                         <span>Buka dalam tab baru</span>
                     </div>
@@ -869,7 +914,7 @@
             </div>
 
             <!-- Make a copy -->
-            <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="copyItem()">
+            <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="copyItem()">
                 <span class="material-icons text-sm mr-3">content_copy</span>
                 <span>Buat salinan</span>
             </div>
@@ -880,13 +925,13 @@
         <!-- Common options for both documents and folders -->
         <div id="commonOptions">
             <!-- Download -->
-            <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="downloadItem()">
+            <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="downloadItem()">
                 <span class="material-icons text-sm mr-3">download</span>
                 <span>Muat turun</span>
             </div>
 
             <!-- Rename -->
-            <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="renameItem()">
+            <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="renameItem()">
                 <span class="material-icons text-sm mr-3">edit</span>
                 <span>Namakan semula</span>
             </div>
@@ -895,7 +940,7 @@
 
             <!-- Share submenu -->
             <div class="context-menu-item group relative">
-                <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap">
                     <div class="flex items-center">
                         <span class="material-icons text-sm mr-3">share</span>
                         <span>Kongsi</span>
@@ -903,12 +948,12 @@
                     <span class="material-icons text-sm text-gray-400">chevron_right</span>
                 </div>
                 <!-- Submenu -->
-                <div class="context-submenu bg-white rounded-lg shadow-xl border border-gray-200 py-2 hidden group-hover:block min-w-[180px]">
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="shareItem()">
+                <div class="context-submenu bg-white rounded-lg shadow-xl border border-gray-200 py-2 hidden group-hover:block min-w-[220px]">
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="shareItem()">
                         <span class="material-icons text-sm mr-3">person_add</span>
                         <span>Kongsi dengan orang lain</span>
                     </div>
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="copyLink()">
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="copyLink()">
                         <span class="material-icons text-sm mr-3">link</span>
                         <span>Salin pautan</span>
                     </div>
@@ -917,7 +962,7 @@
 
             <!-- Organize submenu -->
             <div class="context-menu-item group relative">
-                <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap">
                     <div class="flex items-center">
                         <span class="material-icons text-sm mr-3">folder_open</span>
                         <span>Atur</span>
@@ -926,15 +971,15 @@
                 </div>
                 <!-- Submenu -->
                 <div class="context-submenu bg-white rounded-lg shadow-xl border border-gray-200 py-2 hidden group-hover:block min-w-[220px] max-w-[220px]">
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="moveItem()">
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="moveItem()">
                         <span class="material-icons text-sm mr-3">drive_file_move</span>
                         <span>Pindah</span>
                     </div>
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="addShortcut()">
-                        <span class="material-icons text-sm mr-3">shortcut</span>
-                        <span>Tambah pintasan</span>
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="addToFavorites()">
+                        <span class="material-icons text-sm mr-3">favorite</span>
+                        <span>Tambah Kegemaran</span>
                     </div>
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="toggleStarFromMenu()">
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="toggleStarFromMenu()">
                         <span class="material-icons text-sm mr-3" id="starIcon">star_border</span>
                         <span id="starText">Tambah ke bintang</span>
                     </div>
@@ -953,7 +998,7 @@
 
             <!-- Information submenu - different text for folders vs documents -->
             <div class="context-menu-item group relative">
-                <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap">
                     <div class="flex items-center">
                         <span class="material-icons text-sm mr-3">info</span>
                         <span id="informationText">File information</span>
@@ -961,12 +1006,12 @@
                     <span class="material-icons text-sm text-gray-400">chevron_right</span>
                 </div>
                 <!-- Submenu -->
-                <div class="context-submenu bg-white rounded-lg shadow-xl border border-gray-200 py-2 hidden group-hover:block min-w-[180px]">
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="showDetails()">
+                <div class="context-submenu bg-white rounded-lg shadow-xl border border-gray-200 py-2 hidden group-hover:block min-w-[200px]">
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="showDetails()">
                         <span class="material-icons text-sm mr-3">info</span>
                         <span>Butiran</span>
                     </div>
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center" onclick="showActivity()">
+                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="showActivity()">
                         <span class="material-icons text-sm mr-3">history</span>
                         <span>Aktiviti</span>
                     </div>
@@ -978,25 +1023,24 @@
             <!-- Remove/Restore actions - dynamic based on current view -->
             <div id="removeActions">
                 <!-- Default view - Move to trash -->
-                <div id="moveToTrashAction" class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer flex items-center" onclick="removeItem()">
+                <div id="moveToTrashAction" class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer flex items-center whitespace-nowrap" onclick="removeItem()">
                     <span class="material-icons text-sm mr-3">delete</span>
                     <span>Pindah ke tong sampah</span>
-                    <span class="ml-auto text-xs text-red-400">Padam</span>
                 </div>
 
                 <!-- Trash/Spam view - Restore and permanent delete options -->
-                <div id="restoreAction" class="px-4 py-2 text-sm text-green-600 hover:bg-green-50 cursor-pointer flex items-center hidden" onclick="restoreItem()">
+                <div id="restoreAction" class="px-4 py-2 text-sm text-green-600 hover:bg-green-50 cursor-pointer flex items-center whitespace-nowrap hidden" onclick="restoreItem()">
                     <span class="material-icons text-sm mr-3">restore</span>
                     <span>Pulihkan</span>
                 </div>
 
-                <div id="permanentDeleteAction" class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer flex items-center hidden" onclick="permanentDeleteItem()">
+                <div id="permanentDeleteAction" class="px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer flex items-center whitespace-nowrap hidden" onclick="permanentDeleteItem()">
                     <span class="material-icons text-sm mr-3">delete_forever</span>
                     <span>Padam kekal</span>
                 </div>
 
                 <!-- Mark as spam option - only for documents -->
-                <div id="markSpamAction" class="px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 cursor-pointer flex items-center hidden" onclick="moveToSpam()">
+                <div id="markSpamAction" class="px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 cursor-pointer flex items-center whitespace-nowrap hidden" onclick="moveToSpam()">
                     <span class="material-icons text-sm mr-3">report</span>
                     <span>Tandakan sebagai spam</span>
                 </div>
@@ -1333,18 +1377,19 @@
                     const owner = folder.masjid_id ? (folder.masjid ? folder.masjid.nama : 'Masjid') : 'Super Admin';
 
                     tableRows += `
-                        <tr class="hover:bg-gray-50 cursor-pointer group" onclick="openFolder(${folder.id})" oncontextmenu="showContextMenu(event, 'folder', ${folder.id}, '${folder.name}', ${folder.is_starred || false}, '${folder.color || '#3B82F6'}')">
+                        <tr class="hover:bg-gray-50 cursor-pointer group" onclick="openFolder('${folder.hash_token}')" oncontextmenu="showContextMenu(event, 'folder', '${folder.hash_token}', '${folder.name}', ${folder.is_starred || false}, '${folder.color || '#3B82F6'}')">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <span class="material-icons text-xl mr-3" style="color: ${folder.color || '#3B82F6'}">folder</span>
                                     <div class="text-sm font-medium text-gray-900">${folder.name}</div>
+                                    <span class="material-icons text-sm ml-2 star-icon ${folder.is_starred ? 'text-yellow-500' : 'text-gray-400'}">${folder.is_starred ? 'star' : 'star_border'}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${folderSize}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${owner}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDateTime(folder.created_at)}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-all duration-200" onclick="event.stopPropagation(); showContextMenu(event, 'folder', ${folder.id}, '${folder.name}', ${folder.is_starred || false}, '${folder.color || '#3B82F6'}')">
+                                <button class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-all duration-200" onclick="event.stopPropagation(); showContextMenu(event, 'folder', '${folder.hash_token}', '${folder.name}', ${folder.is_starred || false}, '${folder.color || '#3B82F6'}')">
                                     <span class="material-icons text-sm">more_vert</span>
                                 </button>
                             </td>
@@ -1362,11 +1407,12 @@
                     const owner = document.masjid_id ? (document.masjid ? document.masjid.nama : 'Masjid') : 'Super Admin';
 
                     tableRows += `
-                        <tr class="hover:bg-gray-50 cursor-pointer group" onclick="openDocument(${document.id})" oncontextmenu="showContextMenu(event, 'document', ${document.id}, '${document.name}', ${document.is_starred || false})">
+                        <tr class="hover:bg-gray-50 cursor-pointer group" onclick="openDocument('${document.hash_token}')" oncontextmenu="showContextMenu(event, 'document', '${document.hash_token}', '${document.name}', ${document.is_starred || false})">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <span class="material-icons text-xl mr-3 text-blue-600">description</span>
                                     <div class="text-sm font-medium text-gray-900">${document.name}</div>
+                                    <span class="material-icons text-sm ml-2 star-icon ${document.is_starred ? 'text-yellow-500' : 'text-gray-400'}">${document.is_starred ? 'star' : 'star_border'}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${fileSize}</td>
@@ -1416,7 +1462,12 @@
                     const itemText = itemCount === 1 ? 'item' : 'item';
 
                     gridContent += `
-                        <div class="folder-item group relative bg-gray-50 rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden" onclick="openFolder(${folder.id})" oncontextmenu="showContextMenu(event, 'folder', ${folder.id}, '${folder.name}', ${folder.is_starred || false}, '${folder.color || '#3B82F6'}')">
+                        <div class="folder-item group relative bg-gray-50 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="openFolder('${folder.hash_token}')" oncontextmenu="showContextMenu(event, 'folder', '${folder.hash_token}', '${folder.name}', ${folder.is_starred || false}, '${folder.color || '#3B82F6'}')">
+                            <!-- Beautiful Half-Floating Star Badge -->
+                            <div class="absolute w-6 h-6 rounded-full shadow-lg flex items-center justify-center star-container transform hover:scale-110 transition-all duration-200 ${folder.is_starred ? '' : 'opacity-0 group-hover:opacity-70'}" style="background-color: ${folder.is_starred ? '#facc15' : '#9ca3af'} !important; z-index: 50 !important; top: -6px !important; left: -6px !important; border: 2px solid white !important;">
+                                <span class="material-icons text-sm star-icon drop-shadow-sm" style="color: white !important;">${folder.is_starred ? 'star' : 'star_border'}</span>
+                            </div>
+
                             <!-- Google Drive style folder header -->
                             <div class="flex items-center justify-between p-3 bg-white border-b border-gray-100">
                                 <div class="flex items-center space-x-3 flex-1 min-w-0">
@@ -1424,7 +1475,7 @@
                                     <h4 class="text-sm font-medium text-gray-900 truncate">${folder.name}</h4>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <button class="three-dot-menu opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-gray-100 transition-all duration-200" onclick="event.stopPropagation(); showContextMenu(event, 'folder', ${folder.id}, '${folder.name}', ${folder.is_starred || false}, '${folder.color || '#3B82F6'}')">
+                                    <button class="three-dot-menu opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-gray-100 transition-all duration-200" onclick="event.stopPropagation(); showContextMenu(event, 'folder', '${folder.hash_token}', '${folder.name}', ${folder.is_starred || false}, '${folder.color || '#3B82F6'}')">
                                         <span class="material-icons text-gray-600 text-lg">more_vert</span>
                                     </button>
                                 </div>
@@ -1458,7 +1509,12 @@
                     const fileIconColor = getFileIconColor(fileExtension);
 
                     gridContent += `
-                        <div class="file-item group relative bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden" onclick="openDocument(${document.id})" oncontextmenu="showContextMenu(event, 'document', ${document.id}, '${document.name}', ${document.is_starred || false})">
+                        <div class="file-item group relative bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="openDocument('${document.hash_token}')" oncontextmenu="showContextMenu(event, 'document', '${document.hash_token}', '${document.name}', ${document.is_starred || false})">
+                            <!-- Beautiful Half-Floating Star Badge -->
+                            <div class="absolute w-6 h-6 rounded-full shadow-lg flex items-center justify-center star-container transform hover:scale-110 transition-all duration-200 ${document.is_starred ? '' : 'opacity-0 group-hover:opacity-70'}" style="background-color: ${document.is_starred ? '#facc15' : '#9ca3af'} !important; z-index: 50 !important; top: -6px !important; left: -6px !important; border: 2px solid white !important;">
+                                <span class="material-icons text-sm star-icon drop-shadow-sm" style="color: white !important;">${document.is_starred ? 'star' : 'star_border'}</span>
+                            </div>
+
                             <!-- Google Drive style file header -->
                             <div class="flex items-center justify-between p-3 border-b border-gray-100">
                                 <div class="flex items-center space-x-3 flex-1 min-w-0">
@@ -1562,9 +1618,6 @@
             const contextMenu = document.getElementById('contextMenu');
             contextMenuData = { type, id, name, is_starred: isStarred, color: color };
 
-            // Update star status in menu
-            updateStarMenuStatus(type, id);
-
             // Show menu temporarily to get actual dimensions
             contextMenu.style.visibility = 'hidden';
             contextMenu.classList.remove('hidden');
@@ -1651,6 +1704,9 @@
 
             // Update context menu actions based on current view
             updateContextMenuActions();
+
+            // Update star status in menu after menu is fully positioned
+            updateStarMenuStatus(type, id);
 
             // Add click outside listener
             setTimeout(() => {
@@ -1798,8 +1854,41 @@
             const starIcon = document.getElementById('starIcon');
             const starText = document.getElementById('starText');
 
-            // Check if item is currently starred
-            const isStarred = contextMenuData.is_starred || false;
+            if (!starIcon || !starText) {
+                console.error('Star icon or text element not found');
+                return;
+            }
+
+            // Get fresh starred status from DOM instead of cached contextMenuData
+            let isStarred = false;
+
+            // Find the current starred status from DOM elements
+            const gridItems = document.querySelectorAll(`[onclick*="${id}"]`);
+            const listRows = document.querySelectorAll(`tr[onclick*="${id}"]`);
+
+            // Check grid view items for current starred status
+            gridItems.forEach(item => {
+                const starIconInItem = item.querySelector('.star-icon');
+                if (starIconInItem && starIconInItem.textContent === 'star') {
+                    isStarred = true;
+                }
+            });
+
+            // Check list view items for current starred status
+            listRows.forEach(row => {
+                const starIconInRow = row.querySelector('.star-icon');
+                if (starIconInRow && starIconInRow.textContent === 'star') {
+                    isStarred = true;
+                }
+            });
+
+            // Fallback to contextMenuData if DOM check fails
+            if (!isStarred) {
+                isStarred = contextMenuData.is_starred === true || contextMenuData.is_starred === 'true';
+            }
+
+            // Update contextMenuData with fresh status
+            contextMenuData.is_starred = isStarred;
 
             if (isStarred) {
                 starIcon.textContent = 'star';
@@ -1817,6 +1906,184 @@
                 window.open(`/documents/${contextMenuData.id}/preview`, '_blank');
             }
             hideContextMenu();
+        }
+
+        // Move Item Function
+        function moveItem() {
+            console.log('Move item:', contextMenuData);
+
+            // Show move dialog/modal
+            showMoveDialog();
+            hideContextMenu();
+        }
+
+        // Add to Favorites Function
+        function addToFavorites() {
+            console.log('Add to favorites:', contextMenuData);
+
+            const endpoint = contextMenuData.type === 'document'
+                ? `/documents/${contextMenuData.id}/favorites`
+                : `/document-folders/${contextMenuData.id}/favorites`;
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`${contextMenuData.name} telah ditambah ke kegemaran`, 'success');
+                    // Refresh current view if needed
+                    if (window.location.search.includes('type=favorites')) {
+                        loadDocuments();
+                    }
+                } else {
+                    showNotification('Gagal menambah ke kegemaran', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding to favorites:', error);
+                showNotification('Ralat menambah ke kegemaran', 'error');
+            });
+
+            hideContextMenu();
+        }
+
+        // Show Move Dialog Function
+        function showMoveDialog() {
+            // Create move dialog modal
+            const moveModal = document.createElement('div');
+            moveModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            moveModal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900" style="font-family: 'Poppins', sans-serif;">
+                            Pindah ${contextMenuData.type === 'document' ? 'Dokumen' : 'Folder'}
+                        </h3>
+                    </div>
+                    <div class="px-6 py-4">
+                        <p class="text-sm text-gray-600 mb-4" style="font-family: 'Poppins', sans-serif;">
+                            Pilih destinasi untuk memindahkan "${contextMenuData.name}":
+                        </p>
+                        <div class="max-h-60 overflow-y-auto border border-gray-200 rounded">
+                            <div id="folderList" class="p-2">
+                                <div class="flex items-center p-2 hover:bg-gray-50 cursor-pointer rounded" onclick="selectMoveDestination(null)">
+                                    <span class="material-icons text-sm mr-2 text-blue-600">home</span>
+                                    <span class="text-sm" style="font-family: 'Poppins', sans-serif;">Root Folder</span>
+                                </div>
+                                <!-- Folder list will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+                        <button onclick="closeMoveDialog()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded transition-colors" style="font-family: 'Poppins', sans-serif;">
+                            Batal
+                        </button>
+                        <button id="confirmMoveBtn" onclick="confirmMove()" disabled class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded transition-colors" style="font-family: 'Poppins', sans-serif;">
+                            Pindah
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(moveModal);
+
+            // Load available folders
+            loadFoldersForMove();
+
+            // Store reference for cleanup
+            window.currentMoveModal = moveModal;
+        }
+
+        function loadFoldersForMove() {
+            fetch('/folders/list', {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const folderList = document.getElementById('folderList');
+                if (data.folders && data.folders.length > 0) {
+                    data.folders.forEach(folder => {
+                        if (folder.id !== contextMenuData.id) { // Don't show current folder
+                            const folderItem = document.createElement('div');
+                            folderItem.className = 'flex items-center p-2 hover:bg-gray-50 cursor-pointer rounded';
+                            folderItem.onclick = () => selectMoveDestination(folder.id, folder.name);
+                            folderItem.innerHTML = `
+                                <span class="material-icons text-sm mr-2 text-yellow-600">folder</span>
+                                <span class="text-sm" style="font-family: 'Poppins', sans-serif;">${folder.name}</span>
+                            `;
+                            folderList.appendChild(folderItem);
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading folders:', error);
+            });
+        }
+
+        let selectedMoveDestination = null;
+
+        function selectMoveDestination(folderId, folderName = 'Root Folder') {
+            selectedMoveDestination = folderId;
+
+            // Update UI to show selection
+            document.querySelectorAll('#folderList > div').forEach(item => {
+                item.classList.remove('bg-blue-50', 'border-blue-200');
+            });
+
+            event.target.closest('div').classList.add('bg-blue-50', 'border-blue-200');
+
+            // Enable move button
+            document.getElementById('confirmMoveBtn').disabled = false;
+        }
+
+        function confirmMove() {
+            if (selectedMoveDestination === null && selectedMoveDestination !== 0) {
+                selectedMoveDestination = null; // Root folder
+            }
+
+            const endpoint = contextMenuData.type === 'document'
+                ? `/documents/${contextMenuData.id}/move`
+                : `/folders/${contextMenuData.id}/move`;
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    destination_folder_id: selectedMoveDestination
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`${contextMenuData.name} telah dipindahkan`, 'success');
+                    loadDocuments(); // Refresh current view
+                    closeMoveDialog();
+                } else {
+                    showNotification('Gagal memindahkan item', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error moving item:', error);
+                showNotification('Ralat memindahkan item', 'error');
+            });
+        }
+
+        function closeMoveDialog() {
+            if (window.currentMoveModal) {
+                document.body.removeChild(window.currentMoveModal);
+                window.currentMoveModal = null;
+            }
+            selectedMoveDestination = null;
         }
 
         function openInNewTab() {
@@ -2096,8 +2363,8 @@
         function toggleStarFromMenu() {
             console.log('Toggle star:', contextMenuData);
             const endpoint = contextMenuData.type === 'document'
-                ? `/documents/${contextMenuData.id}/star`
-                : `/folders/${contextMenuData.id}/star`;
+                ? `/documents/${contextMenuData.id}/toggle-star`
+                : `/document-folders/${contextMenuData.id}/toggle-star`;
 
             fetch(endpoint, {
                 method: 'POST',
@@ -2109,12 +2376,76 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload();
+                    // Update UI immediately without page reload
+                    updateStarredStatusInUI(contextMenuData.type, contextMenuData.id, data.is_starred);
+                    showNotification(data.message || 'Status bintang telah dikemaskini', 'success');
+
+                    // Hide context menu after successful update
+                    hideContextMenu();
                 } else {
-                    alert('Error updating star status');
+                    showNotification('Ralat mengemas kini status bintang', 'error');
+                    hideContextMenu();
+                }
+            })
+            .catch(error => {
+                console.error('Error toggling star:', error);
+                showNotification('Ralat mengemas kini status bintang', 'error');
+                hideContextMenu();
+            });
+        }
+
+        // Update starred status in UI without page reload
+        function updateStarredStatusInUI(type, id, isStarred) {
+            // Update grid view items
+            const gridItems = document.querySelectorAll(`[onclick*="${id}"]`);
+            gridItems.forEach(item => {
+                const starContainer = item.querySelector('.star-container');
+                const starIcon = item.querySelector('.star-icon');
+                if (starContainer && starIcon) {
+                    // Update star icon
+                    starIcon.textContent = isStarred ? 'star' : 'star_border';
+                    starIcon.className = `material-icons text-sm star-icon drop-shadow-sm`;
+                    starIcon.style.color = 'white';
+
+                    // Update container with beautiful half-floating design and !important styles
+                    starContainer.className = `absolute w-6 h-6 rounded-full shadow-lg flex items-center justify-center star-container transform hover:scale-110 transition-all duration-200 ${isStarred ? '' : 'opacity-0 group-hover:opacity-70'}`;
+                    starContainer.style.setProperty('background-color', isStarred ? '#facc15' : '#9ca3af', 'important');
+                    starContainer.style.setProperty('z-index', '50', 'important');
+                    starContainer.style.setProperty('top', '-4px', 'important');
+                    starContainer.style.setProperty('left', '-4px', 'important');
+                    starContainer.style.setProperty('border', '2px solid white', 'important');
                 }
             });
-            hideContextMenu();
+
+            // Update list view items
+            const listRows = document.querySelectorAll(`tr[onclick*="${id}"]`);
+            listRows.forEach(row => {
+                const starIcon = row.querySelector('.star-icon');
+                if (starIcon) {
+                    starIcon.textContent = isStarred ? 'star' : 'star_border';
+                    starIcon.className = `material-icons text-lg star-icon ${isStarred ? 'text-yellow-500' : 'text-gray-400'}`;
+                }
+            });
+
+            // Update context menu for next time
+            contextMenuData.is_starred = isStarred;
+
+            // Update context menu text immediately if menu is open
+            const contextMenu = document.getElementById('contextMenu');
+            if (contextMenu && !contextMenu.classList.contains('hidden')) {
+                const starIcon = document.getElementById('starIcon');
+                const starText = document.getElementById('starText');
+
+                if (starIcon && starText) {
+                    if (isStarred) {
+                        starIcon.textContent = 'star';
+                        starText.textContent = 'Buang dari bintang';
+                    } else {
+                        starIcon.textContent = 'star_border';
+                        starText.textContent = 'Tambah ke bintang';
+                    }
+                }
+            }
         }
 
         function showDetails() {
@@ -2297,7 +2628,7 @@
                 const checkIcon = isSelected ? '<span class="material-icons text-white" style="font-size: 12px;">check</span>' : '';
 
                 colorHTML += `
-                    <div class="w-6 h-6 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
+                    <div class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
                          style="background-color: ${colorObj.color} !important;"
                          onclick="changeFolderColor('${colorObj.color}')"
                          title="${colorObj.title}">
@@ -2393,9 +2724,9 @@
         }
 
         // Function to update folder color in UI without refresh
-        function updateFolderColorInUI(folderId, color) {
+        function updateFolderColorInUI(folderToken, color) {
             // Update in grid view
-            const gridFolderElements = document.querySelectorAll(`[onclick*="openFolder(${folderId})"] .material-icons`);
+            const gridFolderElements = document.querySelectorAll(`[onclick*="openFolder('${folderToken}')"] .material-icons`);
             gridFolderElements.forEach(icon => {
                 if (icon.textContent === 'folder') {
                     icon.style.color = color;
@@ -2403,7 +2734,7 @@
             });
 
             // Update in list view (table)
-            const listFolderElements = document.querySelectorAll(`tr[onclick*="openFolder(${folderId})"] .material-icons`);
+            const listFolderElements = document.querySelectorAll(`tr[onclick*="openFolder('${folderToken}')"] .material-icons`);
             listFolderElements.forEach(icon => {
                 if (icon.textContent === 'folder') {
                     icon.style.color = color;
@@ -2414,22 +2745,22 @@
             const breadcrumbIcon = document.querySelector('h2 .material-icons[style*="color"]');
             if (breadcrumbIcon && breadcrumbIcon.textContent === 'folder') {
                 // Check if this is the current folder by comparing with URL or other means
-                const currentFolderId = new URLSearchParams(window.location.search).get('folder');
-                if (currentFolderId == folderId) {
+                const currentFolderToken = new URLSearchParams(window.location.search).get('folder');
+                if (currentFolderToken === folderToken) {
                     breadcrumbIcon.style.color = color;
                 }
             }
 
-            console.log(`Updated folder ${folderId} color to ${color} in UI`);
+            console.log(`Updated folder ${folderToken} color to ${color} in UI`);
         }
 
         // Helper functions for both grid and list layouts
-        function openFolder(folderId) {
-            window.location.href = `/documents?folder=${folderId}`;
+        function openFolder(folderToken) {
+            window.location.href = `/documents?folder=${folderToken}`;
         }
 
-        function openDocument(documentId) {
-            window.location.href = `/documents/${documentId}`;
+        function openDocument(documentToken) {
+            window.location.href = `/documents/d/${documentToken}`;
         }
 
         // Utility function to create consistent three-dot button HTML
@@ -2489,15 +2820,15 @@
                                    class="w-12 h-8 border border-gray-300 rounded-md cursor-pointer">
                             <div class="flex space-x-2">
                                 <button type="button" onclick="document.getElementById('folderColor').value='#3B82F6'"
-                                        class="w-6 h-6 bg-blue-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
+                                        class="w-8 h-8 bg-blue-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
                                 <button type="button" onclick="document.getElementById('folderColor').value='#10B981'"
-                                        class="w-6 h-6 bg-green-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
+                                        class="w-8 h-8 bg-green-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
                                 <button type="button" onclick="document.getElementById('folderColor').value='#F59E0B'"
-                                        class="w-6 h-6 bg-yellow-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
+                                        class="w-8 h-8 bg-yellow-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
                                 <button type="button" onclick="document.getElementById('folderColor').value='#EF4444'"
-                                        class="w-6 h-6 bg-red-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
+                                        class="w-8 h-8 bg-red-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
                                 <button type="button" onclick="document.getElementById('folderColor').value='#8B5CF6'"
-                                        class="w-6 h-6 bg-purple-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
+                                        class="w-8 h-8 bg-purple-500 rounded-full border-2 border-gray-300 hover:border-gray-400"></button>
                             </div>
                         </div>
                     </div>
