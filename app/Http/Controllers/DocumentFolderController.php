@@ -234,4 +234,34 @@ class DocumentFolderController extends Controller
 
         return $share !== null;
     }
+
+    /**
+     * Update folder color
+     */
+    public function updateColor(Request $request, DocumentFolder $folder)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'update')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengemas kini folder.'], 403);
+        }
+
+        // Check if user can access this folder
+        if ($folder->masjid_id !== $user->masjid_id) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses folder ini.'], 403);
+        }
+
+        // Validate color
+        $request->validate([
+            'color' => 'required|string|regex:/^#[0-9A-Fa-f]{6}$/'
+        ]);
+
+        $folder->update([
+            'color' => $request->color,
+            'updated_by' => $user->id,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Warna folder telah dikemas kini.']);
+    }
 }

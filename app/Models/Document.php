@@ -34,6 +34,9 @@ class Document extends Model
         'masjid_id', // WAJIB untuk data isolation
         'created_by',
         'updated_by',
+        'status',
+        'deleted_at',
+        'deleted_by',
     ];
 
     protected $casts = [
@@ -44,6 +47,7 @@ class Document extends Model
         'version' => 'integer',
         'file_size' => 'integer',
         'last_accessed_at' => 'datetime',
+        'deleted_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -88,6 +92,11 @@ class Document extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function deleter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
     // Scopes
     public function scopeStarred($query)
     {
@@ -112,6 +121,22 @@ class Document extends Model
     public function scopeRecent($query, $days = 7)
     {
         return $query->where('created_at', '>=', now()->subDays($days));
+    }
+
+    // Status scopes
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeTrash($query)
+    {
+        return $query->where('status', 'trash');
+    }
+
+    public function scopeSpam($query)
+    {
+        return $query->where('status', 'spam');
     }
 
     // Helper methods

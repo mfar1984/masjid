@@ -113,17 +113,36 @@ class DocumentController extends Controller
         if ($request->filled('type')) {
             switch ($request->type) {
                 case 'starred':
-                    $documentsQuery->starred();
-                    $foldersQuery->starred();
+                    $documentsQuery->starred()->active(); // Only active starred items
+                    $foldersQuery->starred()->active();
                     break;
                 case 'shared':
-                    $documentsQuery->shared();
-                    $foldersQuery->shared();
+                    $documentsQuery->shared()->active(); // Only active shared items
+                    $foldersQuery->shared()->active();
                     break;
                 case 'recent':
-                    $documentsQuery->recent();
+                    $documentsQuery->recent()->active(); // Only active recent items
+                    break;
+                case 'trash':
+                    $documentsQuery->trash(); // Only documents in trash
+                    // IMPORTANT: No folders in trash view as per requirement
+                    $foldersQuery->whereRaw('1 = 0'); // Exclude all folders
+                    break;
+                case 'spam':
+                    $documentsQuery->spam(); // Only documents marked as spam
+                    // IMPORTANT: No folders in spam view as per requirement
+                    $foldersQuery->whereRaw('1 = 0'); // Exclude all folders
+                    break;
+                default:
+                    // Default view - only show active items
+                    $documentsQuery->active();
+                    $foldersQuery->active();
                     break;
             }
+        } else {
+            // Default view - only show active items
+            $documentsQuery->active();
+            $foldersQuery->active();
         }
 
         // Filter by file extension
@@ -695,6 +714,112 @@ class DocumentController extends Controller
         })->first();
 
         return $share !== null;
+    }
+
+    /**
+     * Move document to trash
+     */
+    public function moveToTrash(Document $document)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'delete')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk membuang dokumen.'], 403);
+        }
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.'], 403);
+        }
+
+        $document->update([
+            'status' => 'trash',
+            'deleted_at' => now(),
+            'deleted_by' => $user->id,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Dokumen telah dipindahkan ke tong sampah.']);
+    }
+
+    /**
+     * Move document to spam
+     */
+    public function moveToSpam(Document $document)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'delete')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk menandakan dokumen sebagai spam.'], 403);
+        }
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.'], 403);
+        }
+
+        $document->update([
+            'status' => 'spam',
+            'deleted_at' => now(),
+            'deleted_by' => $user->id,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Dokumen telah ditandakan sebagai spam.']);
+    }
+
+    /**
+     * Restore document from trash/spam
+     */
+    public function restore(Document $document)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'update')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk memulihkan dokumen.'], 403);
+        }
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.'], 403);
+        }
+
+        $document->update([
+            'status' => 'active',
+            'deleted_at' => null,
+            'deleted_by' => null,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Dokumen telah dipulihkan.']);
+    }
+
+    /**
+     * Permanently delete document
+     */
+    public function forceDelete(Document $document)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'delete')) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk memadamkan dokumen secara kekal.'], 403);
+        }
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.'], 403);
+        }
+
+        // Delete physical file
+        if (Storage::exists($document->file_path)) {
+            Storage::delete($document->file_path);
+        }
+
+        // Delete database record
+        $document->delete();
+
+        return response()->json(['success' => true, 'message' => 'Dokumen telah dipadamkan secara kekal.']);
     }
 
     /**

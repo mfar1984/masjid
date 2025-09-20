@@ -25,12 +25,16 @@ class DocumentFolder extends Model
         'masjid_id', // WAJIB untuk data isolation
         'created_by',
         'updated_by',
+        'status',
+        'deleted_at',
+        'deleted_by',
     ];
 
     protected $casts = [
         'is_shared' => 'boolean',
         'is_starred' => 'boolean',
         'sort_order' => 'integer',
+        'deleted_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -76,6 +80,11 @@ class DocumentFolder extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function deleter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
     // Scopes
     public function scopeRootFolders($query)
     {
@@ -90,6 +99,22 @@ class DocumentFolder extends Model
     public function scopeShared($query)
     {
         return $query->where('is_shared', true);
+    }
+
+    // Status scopes
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeTrash($query)
+    {
+        return $query->where('status', 'trash');
+    }
+
+    public function scopeSpam($query)
+    {
+        return $query->where('status', 'spam');
     }
 
     // Helper methods

@@ -626,11 +626,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/documents/{document}/toggle-star', [DocumentController::class, 'toggleStar'])->name('documents.toggle-star');
     Route::post('/documents/{document}/share', [DocumentController::class, 'share'])->middleware('permission:documents,share')->name('documents.share');
 
+    // Trash and spam actions
+    Route::post('/documents/{document}/trash', [DocumentController::class, 'moveToTrash'])->middleware('permission:documents,delete')->name('documents.trash');
+    Route::post('/documents/{document}/spam', [DocumentController::class, 'moveToSpam'])->middleware('permission:documents,delete')->name('documents.spam');
+    Route::post('/documents/{document}/restore', [DocumentController::class, 'restore'])->middleware('permission:documents,update')->name('documents.restore');
+    Route::delete('/documents/{document}/force-delete', [DocumentController::class, 'forceDelete'])->middleware('permission:documents,delete')->name('documents.force-delete');
+
     // Folder management routes
     Route::post('/document-folders', [DocumentFolderController::class, 'store'])->middleware('permission:documents,create')->name('document-folders.store');
     Route::put('/document-folders/{folder}', [DocumentFolderController::class, 'update'])->middleware('permission:documents,update')->name('document-folders.update');
     Route::delete('/document-folders/{folder}', [DocumentFolderController::class, 'destroy'])->middleware('permission:documents,delete')->name('document-folders.destroy');
     Route::post('/document-folders/{folder}/toggle-star', [DocumentFolderController::class, 'toggleStar'])->name('document-folders.toggle-star');
+    Route::post('/document-folders/{folder}/color', [DocumentFolderController::class, 'updateColor'])->middleware('permission:documents,update')->name('document-folders.color');
 
 });
 
