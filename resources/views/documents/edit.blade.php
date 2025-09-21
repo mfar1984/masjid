@@ -3,72 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Edit {{ $document->name }} - E-Masjid</title>
     <x-favicon />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col" style="font-family: 'Poppins', sans-serif;">
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col" data-theme="corporate">
     <x-double-navbar :user="auth()->user()" />
-    
-    <div class="flex-1 flex flex-col">
-        <!-- Header Section -->
-        <div class="bg-white border-b border-gray-200">
-            <div class="px-6 py-4">
-                <!-- Breadcrumbs -->
-                <nav class="flex mb-4" aria-label="Breadcrumb">
-                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                        <li class="inline-flex items-center">
-                            <a href="{{ route('documents.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-800">
-                                Dokumen Saya
-                            </a>
-                        </li>
-                        @if($document->folder)
-                            <span class="material-icons text-gray-400 text-sm mx-1">chevron_right</span>
-                            <li class="inline-flex items-center">
-                                <a href="{{ route('documents.index', ['folder' => $document->folder->id]) }}" class="text-sm font-medium text-blue-600 hover:text-blue-800">
-                                    {{ $document->folder->name }}
-                                </a>
-                            </li>
-                        @endif
-                        <span class="material-icons text-gray-400 text-sm mx-1">chevron_right</span>
-                        <li class="inline-flex items-center">
-                            <a href="{{ route('documents.show', $document) }}" class="text-sm font-medium text-blue-600 hover:text-blue-800">
-                                {{ $document->name }}
-                            </a>
-                        </li>
-                        <span class="material-icons text-gray-400 text-sm mx-1">chevron_right</span>
-                        <li class="inline-flex items-center">
-                            <span class="text-sm font-medium text-gray-500">Edit</span>
-                        </li>
-                    </ol>
-                </nav>
 
-                <!-- Page Title -->
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-2xl font-semibold text-gray-900">Edit Dokumen</h1>
-                        <p class="mt-1 text-sm text-gray-600">Kemaskini maklumat dokumen: {{ $document->name }}</p>
-                    </div>
-                    
-                    <div class="flex space-x-3">
-                        <a href="{{ route('documents.show', $document) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                            <span class="material-icons text-sm mr-2">arrow_back</span>
-                            Kembali
-                        </a>
+    <div class="flex-1">
+        <div class="container mx-auto px-0 py-0">
+            <!-- Main Dashboard Container -->
+            <div class="bg-white shadow-lg border-x border-gray-200">
+                <!-- Header Section - Google Drive Style -->
+                <div class="px-6 py-4 border-b border-gray-200 bg-white">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="material-icons text-2xl text-blue-600">edit</span>
+                                <h1 class="text-xl font-semibold text-gray-900">Edit Dokumen</h1>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Button -->
+                        <div class="flex items-center space-x-3">
+                            <a href="{{ route('documents.show', ['token' => $document->hash_token]) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm">
+                                <span class="material-icons text-lg mr-2">arrow_back</span>
+                                Kembali
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 p-6">
-            <div class="max-w-4xl mx-auto">
+                <!-- Google Drive Style Layout -->
+                <div class="flex min-h-[calc(100vh-200px)]">
+                    <!-- Sidebar - Google Drive Style -->
+                    <div class="w-64 bg-white border-r border-gray-200 flex-shrink-0">
+                        <div class="p-4">
+                            <!-- Quick Access Navigation -->
+                            <div class="mb-8">
+                                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 px-3">Navigasi</h3>
+                                <nav class="space-y-1">
+                                    <a href="{{ route('documents.index') }}" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 hover:bg-gray-50">
+                                        <span class="material-icons text-lg mr-3 text-gray-400 group-hover:text-gray-600">folder</span>
+                                        <span class="font-medium">Dokumen Saya</span>
+                                    </a>
+                                    <a href="{{ route('documents.index', ['type' => 'recent']) }}" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 hover:bg-gray-50">
+                                        <span class="material-icons text-lg mr-3 text-gray-400 group-hover:text-gray-600">schedule</span>
+                                        <span class="font-medium">Terkini</span>
+                                    </a>
+                                    <a href="{{ route('documents.index', ['type' => 'starred']) }}" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 hover:bg-gray-50">
+                                        <span class="material-icons text-lg mr-3 text-gray-400 group-hover:text-yellow-500">star</span>
+                                        <span class="font-medium">Kegemaran</span>
+                                    </a>
+                                    <a href="{{ route('documents.index', ['type' => 'shared']) }}" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 text-gray-700 hover:bg-gray-50">
+                                        <span class="material-icons text-lg mr-3 text-gray-400 group-hover:text-gray-600">people</span>
+                                        <span class="font-medium">Dikongsi</span>
+                                    </a>
+                                </nav>
+                            </div>
+
+                            <!-- File Type Filters -->
+                            <div class="mb-8">
+                                <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 px-3">Jenis Fail</h3>
+                                <div class="space-y-1">
+                                    <a href="{{ route('documents.index', ['extension' => 'pdf']) }}" class="group flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200">
+                                        <span class="material-icons text-lg mr-3 text-red-500 group-hover:text-red-600">picture_as_pdf</span>
+                                        <span>PDF</span>
+                                    </a>
+                                    <a href="{{ route('documents.index', ['extension' => 'docx']) }}" class="group flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200">
+                                        <span class="material-icons text-lg mr-3 text-blue-500 group-hover:text-blue-600">description</span>
+                                        <span>Word</span>
+                                    </a>
+                                    <a href="{{ route('documents.index', ['extension' => 'xlsx']) }}" class="group flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200">
+                                        <span class="material-icons text-lg mr-3 text-green-500 group-hover:text-green-600">table_chart</span>
+                                        <span>Excel</span>
+                                    </a>
+                                    <a href="{{ route('documents.index', ['extension' => 'jpg']) }}" class="group flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-200">
+                                        <span class="material-icons text-lg mr-3 text-purple-500 group-hover:text-purple-600">image</span>
+                                        <span>Gambar</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Edit Info -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="text-xs font-semibold text-gray-700 mb-3">Maklumat Edit</h4>
+                                <div class="space-y-2 text-xs text-gray-600">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-blue-500">edit</span>
+                                        <span>Kemaskini metadata</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-green-500">swap_horiz</span>
+                                        <span>Ganti fail (pilihan)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="material-icons text-xs text-purple-500">history</span>
+                                        <span>Sejarah versi disimpan</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content Area -->
+                    <div class="flex-1 bg-gray-50">
+                        <!-- Breadcrumbs & Toolbar -->
+                        <div class="bg-white border-b border-gray-200">
+                            <div class="px-6 py-4">
+                                <!-- Breadcrumbs -->
+                                <nav class="flex mb-4" aria-label="Breadcrumb">
+                                    <ol class="inline-flex items-center space-x-1">
+                                        <li class="inline-flex items-center">
+                                            <a href="{{ route('documents.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded-md transition-all duration-200">
+                                                Dokumen Saya
+                                            </a>
+                                        </li>
+                                        @if($document->folder)
+                                            <span class="material-icons text-gray-300 text-sm mx-2">chevron_right</span>
+                                            <li class="inline-flex items-center">
+                                                <a href="{{ route('documents.index', ['folder' => $document->folder->id]) }}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded-md transition-all duration-200">
+                                                    {{ $document->folder->name }}
+                                                </a>
+                                            </li>
+                                        @endif
+                                        <span class="material-icons text-gray-300 text-sm mx-2">chevron_right</span>
+                                        <li class="inline-flex items-center">
+                                            <a href="{{ route('documents.show', $document) }}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded-md transition-all duration-200">
+                                                {{ $document->name }}
+                                            </a>
+                                        </li>
+                                        <span class="material-icons text-gray-300 text-sm mx-2">chevron_right</span>
+                                        <li class="inline-flex items-center">
+                                            <span class="text-sm font-medium text-gray-900 px-2 py-1 bg-gray-100 rounded-md">Edit</span>
+                                        </li>
+                                    </ol>
+                                </nav>
+
+                                <!-- Page Info -->
+                                <div>
+                                    <p class="text-sm text-gray-500">
+                                        Kemaskini maklumat dokumen: <span class="font-medium text-gray-700">{{ $document->name }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Content -->
+                        <div class="p-6">
+                            <div class="max-w-4xl mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Edit Form -->
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                             <form action="{{ route('documents.update', $document) }}" method="POST" enctype="multipart/form-data" id="editForm">
                                 @csrf
                                 @method('PUT')
@@ -159,30 +250,38 @@
                                         </div>
                                         
                                         <!-- File Upload Area -->
-                                        <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer">
+                                        <div id="dropZone" class="relative border-2 border-dashed border-gray-300 rounded-xl text-center hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 cursor-pointer group" style="padding: 64px 48px !important;">
                                             <div id="dropZoneContent">
-                                                <span class="material-icons text-3xl text-gray-400 mb-2">cloud_upload</span>
-                                                <p class="text-sm font-medium text-gray-900 mb-1">Seret dan lepas fail baru di sini</p>
-                                                <p class="text-xs text-gray-500 mb-3">atau klik untuk memilih fail pengganti</p>
-                                                <button type="button" class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-xs font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                                    <span class="material-icons text-sm mr-1">attach_file</span>
+                                                <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 transition-colors" style="margin-bottom: 12px !important;">
+                                                    <span class="material-icons text-2xl text-blue-600">cloud_upload</span>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-gray-900" style="margin-bottom: 12px !important;">Seret fail pengganti ke sini</h3>
+                                                <p class="text-sm text-gray-500" style="margin-bottom: 32px !important;">atau klik untuk memilih dari komputer anda</p>
+                                                <button type="button" class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                                                    <span class="material-icons text-lg mr-2">attach_file</span>
                                                     Pilih Fail
                                                 </button>
                                             </div>
                                             
                                             <!-- New File Preview (hidden initially) -->
                                             <div id="filePreview" class="hidden">
-                                                <div class="flex items-center justify-center space-x-4">
-                                                    <div class="flex items-center space-x-3">
-                                                        <span id="fileIcon" class="material-icons text-2xl text-blue-500">insert_drive_file</span>
-                                                        <div class="text-left">
-                                                            <p id="fileName" class="text-sm font-medium text-gray-900"></p>
-                                                            <p id="fileSize" class="text-xs text-gray-500"></p>
+                                                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                                                    <!-- File Info - Centered Layout -->
+                                                    <div class="text-center" style="margin-bottom: 16px !important;">
+                                                        <div class="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center" style="margin-bottom: 12px !important;">
+                                                            <span id="fileIcon" class="material-icons text-2xl text-blue-600">insert_drive_file</span>
                                                         </div>
+                                                        <h4 id="fileName" class="text-sm font-semibold text-gray-900" style="margin-bottom: 4px !important;"></h4>
+                                                        <p id="fileSize" class="text-xs text-gray-500"></p>
                                                     </div>
-                                                    <button type="button" onclick="clearFile()" class="p-1 rounded-full hover:bg-gray-100">
-                                                        <span class="material-icons text-sm text-gray-500">close</span>
-                                                    </button>
+                                                    
+                                                    <!-- Action Button -->
+                                                    <div class="text-center">
+                                                        <button type="button" onclick="clearFile()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
+                                                            <span class="material-icons text-sm mr-2">close</span>
+                                                            Buang Fail
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -224,7 +323,7 @@
 
                     <!-- Document Info Sidebar -->
                     <div class="lg:col-span-1">
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Maklumat Dokumen</h3>
                             
                             <!-- Document Preview -->
@@ -302,6 +401,13 @@
                                         Muat Turun
                                     </a>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                             </div>
                         </div>
                     </div>

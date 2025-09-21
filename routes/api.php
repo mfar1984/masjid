@@ -4,6 +4,7 @@ use App\Http\Controllers\SanctumTokenController;
 use App\Http\Controllers\ApiConfigurationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\DocumentSharingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Document Sharing API Routes moved to web.php for session authentication
 
 // Sanctum Token management (protected by auth web; can adjust later to roles)
 Route::middleware(['auth', 'verified'])->group(function () {

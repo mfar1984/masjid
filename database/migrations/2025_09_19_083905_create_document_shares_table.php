@@ -21,8 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('shared_by_masjid_id');
             $table->unsignedBigInteger('shared_by_user_id');
 
-            // Who is receiving the share (target masjid)
-            $table->unsignedBigInteger('shared_with_masjid_id');
+            // Who is receiving the share (target masjid) - nullable for public links
+            $table->unsignedBigInteger('shared_with_masjid_id')->nullable();
             $table->unsignedBigInteger('shared_with_user_id')->nullable(); // Specific user or all users in masjid
 
             // Permission levels
@@ -52,7 +52,7 @@ return new class extends Migration
             // Foreign key constraints
             $table->foreign('shared_by_masjid_id')->references('id')->on('masjids')->onDelete('cascade');
             $table->foreign('shared_by_user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('shared_with_masjid_id')->references('id')->on('masjids')->onDelete('cascade');
+            $table->foreign('shared_with_masjid_id')->references('id')->on('masjids')->onDelete('cascade')->nullable();
             $table->foreign('shared_with_user_id')->references('id')->on('users')->onDelete('cascade');
 
             // Indexes for performance (with custom names to avoid length issues)
@@ -61,8 +61,8 @@ return new class extends Migration
             $table->index(['share_token'], 'idx_shares_token');
             $table->index(['expires_at', 'status'], 'idx_shares_expires_status');
 
-            // Unique constraint to prevent duplicate shares
-            $table->unique(['shareable_type', 'shareable_id', 'shared_by_masjid_id', 'shared_with_masjid_id', 'shared_with_user_id'], 'unique_share');
+            // Unique constraint to prevent duplicate shares (excluding nullable fields for public links)
+            $table->unique(['shareable_type', 'shareable_id', 'shared_by_masjid_id', 'is_public_link'], 'unique_share_basic');
         });
     }
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\ApiConfigurationController;
 use App\Http\Controllers\SanctumTokenController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentFolderController;
+use App\Http\Controllers\Api\DocumentSharingController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 
@@ -620,6 +621,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/documents/d/{token}', [DocumentController::class, 'showByToken'])->middleware('permission:documents,read')->name('documents.show');
     Route::get('/documents/folders/{token}', [DocumentController::class, 'folderByToken'])->middleware('permission:documents,read')->name('documents.folder');
 
+    // Token-based file serving for shared documents
+    Route::get('/documents/d/{token}/preview', [DocumentController::class, 'previewByToken'])->middleware('permission:documents,read')->name('documents.preview-by-token');
+    Route::get('/documents/d/{token}/download', [DocumentController::class, 'downloadByToken'])->middleware('permission:documents,read')->name('documents.download-by-token');
+
     // Legacy routes (keep for backward compatibility)
     Route::get('/documents/{document}/edit', [DocumentController::class, 'edit'])->middleware('permission:documents,update')->name('documents.edit');
     Route::put('/documents/{document}', [DocumentController::class, 'update'])->middleware('permission:documents,update')->name('documents.update');
@@ -653,6 +658,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/document-folders/{folderIdentifier}/favorites', [DocumentFolderController::class, 'addToFavorites'])->name('document-folders.favorites');
     Route::get('/folders/list', [DocumentFolderController::class, 'listForMove'])->name('folders.list');
 
+    // Document Sharing Routes (moved from api.php for session authentication)
+    Route::prefix('api/documents/sharing')->group(function () {
+        // Get sharing data for document or folder
+        Route::get('{type}/{id}', [DocumentSharingController::class, 'getSharingData']);
+
+        // Share with masjid
+        Route::post('share', [DocumentSharingController::class, 'shareWithMasjid']);
+
+        // Unshare with masjid
+        Route::post('unshare', [DocumentSharingController::class, 'unshareWithMasjid']);
+
+        // Update permission level for specific masjid
+        Route::post('update-permission', [DocumentSharingController::class, 'updatePermission']);
+
+        // Update access level (restricted/anyone with link)
+        Route::post('access-level', [DocumentSharingController::class, 'updateAccessLevel']);
+
+        // Update access level
+        Route::post('access-level', [DocumentSharingController::class, 'updateAccessLevel']);
+
+        // Get share link
+        Route::get('link/{type}/{id}', [DocumentSharingController::class, 'getShareLink']);
+    });
+
 });
 
 // Bantuan & Sokongan Routes
@@ -673,6 +702,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
+
+// Public share routes (no authentication required)
+Route::get('/share/{token}', [DocumentSharingController::class, 'viewPublicShare'])->name('public.share');
+Route::get('/share/{token}/download/{itemToken}', [DocumentSharingController::class, 'downloadPublicShare'])->name('public.share.download');
 
 // Profile routes commented out - ProfileController not implemented yet
 // Route::middleware('auth')->group(function () {

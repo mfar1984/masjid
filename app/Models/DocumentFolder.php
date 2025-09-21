@@ -40,6 +40,23 @@ class DocumentFolder extends Model
         'updated_at' => 'datetime',
     ];
 
+    /**
+     * Attributes that should not be saved to database (computed attributes)
+     */
+    protected $appends = [];
+
+    /**
+     * Override save method to prevent computed attributes from being saved
+     */
+    public function save(array $options = [])
+    {
+        // Remove computed attributes before saving
+        $this->offsetUnset('total_documents');
+        $this->offsetUnset('total_size');
+
+        return parent::save($options);
+    }
+
     // WAJIB: Relationship dengan Masjid
     public function masjid(): BelongsTo
     {
@@ -99,7 +116,24 @@ class DocumentFolder extends Model
 
     public function scopeShared($query)
     {
-        return $query->where('is_shared', true);
+        $user = auth()->user();
+
+        if (!$user || $user->isSuperAdmin()) {
+            // Super Admin sees no shared items (they own everything)
+            return $query->whereRaw('1 = 0');
+        }
+
+        // Show folders shared WITH current user's masjid
+        // Remove masjid global scope since we want to see items from OTHER masjids
+        return $query->withoutGlobalScope('masjid')
+                    ->whereHas('shares', function ($shareQuery) use ($user) {
+                        $shareQuery->where('shared_with_masjid_id', $user->masjid_id)
+                                  ->where('status', 'active')
+                                  ->where(function ($q) {
+                                      $q->whereNull('expires_at')
+                                        ->orWhere('expires_at', '>', now());
+                                  });
+                    });
     }
 
     // Status scopes

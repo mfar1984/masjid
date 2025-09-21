@@ -106,12 +106,50 @@ class Document extends Model
 
     public function scopeShared($query)
     {
-        return $query->where('is_shared', true);
+        $user = auth()->user();
+
+        if (!$user || $user->isSuperAdmin()) {
+            // Super Admin sees no shared items (they own everything)
+            return $query->whereRaw('1 = 0');
+        }
+
+        // Show documents shared WITH current user's masjid
+        // Remove masjid global scope since we want to see items from OTHER masjids
+        return $query->withoutGlobalScope('masjid')
+                    ->whereHas('shares', function ($shareQuery) use ($user) {
+                        $shareQuery->where('shared_with_masjid_id', $user->masjid_id)
+                                  ->where('status', 'active')
+                                  ->where(function ($q) {
+                                      $q->whereNull('expires_at')
+                                        ->orWhere('expires_at', '>', now());
+                                  });
+                    });
     }
 
     public function scopeByExtension($query, $extension)
     {
         return $query->where('file_extension', $extension);
+    }
+
+    public function scopeByFileType($query, $fileType)
+    {
+        // Define comprehensive file type mappings
+        $fileTypeExtensions = [
+            'pdf' => ['pdf'],
+            'docx' => ['doc', 'docx', 'docm', 'dotx', 'dotm', 'odt', 'rtf'],
+            'xlsx' => ['xls', 'xlsx', 'xlsm', 'xltx', 'xltm', 'xlsb', 'ods', 'csv'],
+            'jpg' => ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'tiff', 'tif'],
+            'pptx' => ['ppt', 'pptx', 'pptm', 'potx', 'potm', 'ppsx', 'ppsm', 'odp'],
+            'txt' => ['txt', 'text', 'log', 'md', 'markdown'],
+            'zip' => ['zip', 'rar', '7z', 'tar', 'gz', 'bz2'],
+            'video' => ['mp4', 'avi', 'mkv', 'mov', 'wmv', 'flv', 'webm', 'm4v'],
+            'audio' => ['mp3', 'wav', 'flac', 'aac', 'm4a', 'ogg', 'wma']
+        ];
+
+        // Get extensions for the requested file type
+        $extensions = $fileTypeExtensions[$fileType] ?? [$fileType];
+
+        return $query->whereIn('file_extension', $extensions);
     }
 
     public function scopeByMimeType($query, $mimeType)
@@ -173,6 +211,25 @@ class Document extends Model
                 // Check if file actually exists before returning preview URL
                 if (Storage::exists('public/' . $this->file_path)) {
                     return route('documents.preview', $this->id);
+                }
+                // For test data without actual files, return placeholder
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    public function getTokenPreviewUrlAttribute(): ?string
+    {
+        // Only certain file types can be previewed
+        $previewableTypes = ['image/', 'application/pdf', 'text/'];
+
+        foreach ($previewableTypes as $type) {
+            if (str_starts_with($this->mime_type, $type)) {
+                // Check if file actually exists before returning preview URL
+                if (Storage::exists('public/' . $this->file_path)) {
+                    return route('documents.preview-by-token', $this->getHashToken());
                 }
                 // For test data without actual files, return placeholder
                 return null;
@@ -260,9 +317,10 @@ class Document extends Model
 
     /**
      * Find document by hash token
+     * Remove masjid scope to allow access to Super Admin documents
      */
     public static function findByHashToken(string $token): ?self
     {
-        return self::where('hash_token', $token)->first();
+        return self::withoutGlobalScope('masjid')->where('hash_token', $token)->first();
     }
 }

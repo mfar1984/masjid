@@ -60,7 +60,10 @@ class DocumentController extends Controller
         $documentsQuery = Document::with(['folder', 'creator', 'shares', 'masjid']);
 
         // Multi-Masjid Data Isolation - STRICT MODE (EXACT COPY FROM UserController)
-        if ($user->isSuperAdmin()) {
+        // SKIP masjid isolation for shared view since we want to see items from OTHER masjids
+        if ($request->filled('type') && $request->type === 'shared') {
+            // For shared view, don't apply masjid isolation - handled by shared scope
+        } elseif ($user->isSuperAdmin()) {
             // Super Admin can see all documents
             // No additional filtering needed
         } else {
@@ -85,7 +88,10 @@ class DocumentController extends Controller
         $foldersQuery = DocumentFolder::with(['creator', 'shares', 'masjid']);
 
         // Multi-Masjid Data Isolation - STRICT MODE (EXACT COPY FROM UserController)
-        if ($user->isSuperAdmin()) {
+        // SKIP masjid isolation for shared view since we want to see items from OTHER masjids
+        if ($request->filled('type') && $request->type === 'shared') {
+            // For shared view, don't apply masjid isolation - handled by shared scope
+        } elseif ($user->isSuperAdmin()) {
             // Super Admin can see all folders
             // No additional filtering needed
         } else {
@@ -157,9 +163,9 @@ class DocumentController extends Controller
             $foldersQuery->active();
         }
 
-        // Filter by file extension
+        // Filter by file type (supports multiple extensions per type)
         if ($request->filled('extension')) {
-            $documentsQuery->byExtension($request->extension);
+            $documentsQuery->byFileType($request->extension);
         }
 
         // Apply sorting
@@ -369,8 +375,16 @@ class DocumentController extends Controller
     {
         $user = Auth::user();
 
+        \Log::info('DocumentController showByToken called', [
+            'token' => $token,
+            'user' => $user ? $user->email : 'not authenticated',
+            'user_id' => $user ? $user->id : null,
+            'user_masjid_id' => $user ? $user->masjid_id : null
+        ]);
+
         // Check permission
         if (!$user->hasPermission('documents', 'read')) {
+            \Log::warning('User lacks documents read permission', ['user' => $user->email]);
             abort(403, 'Anda tidak mempunyai kebenaran untuk melihat dokumen.');
         }
 
@@ -378,19 +392,41 @@ class DocumentController extends Controller
         $document = Document::findByHashToken($token);
 
         if (!$document) {
+            \Log::warning('Document not found by token', ['token' => $token]);
             abort(404, 'Dokumen tidak dijumpai.');
         }
+
+        \Log::info('Document found', [
+            'document_id' => $document->id,
+            'document_name' => $document->name,
+            'document_masjid_id' => $document->masjid_id
+        ]);
 
         // Load relationships
         $document->load(['folder', 'creator', 'updater', 'versions', 'shares.sharedWithMasjid']);
 
         // Check if user can access this document
-        if (!$this->canAccessDocument($document, $user)) {
+        $canAccess = $this->canAccessDocument($document, $user);
+        \Log::info('Access check result', [
+            'can_access' => $canAccess,
+            'user_email' => $user->email,
+            'document_name' => $document->name
+        ]);
+
+        if (!$canAccess) {
+            \Log::warning('User cannot access document', [
+                'user' => $user->email,
+                'document' => $document->name,
+                'document_masjid_id' => $document->masjid_id,
+                'user_masjid_id' => $user->masjid_id
+            ]);
             abort(403, 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.');
         }
 
         // Update last accessed time
         $document->update(['last_accessed_at' => now()]);
+
+        \Log::info('Document access successful', ['document' => $document->name, 'user' => $user->email]);
 
         return view('documents.show', compact('document'));
     }
@@ -674,6 +710,82 @@ class DocumentController extends Controller
 
         // Return file response
         return Storage::response('public/' . $document->file_path);
+    }
+
+    /**
+     * Preview document by token (for shared documents)
+     */
+    public function previewByToken(string $token)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'read')) {
+            abort(403, 'Anda tidak mempunyai kebenaran untuk melihat dokumen.');
+        }
+
+        // Find document by hash token
+        $document = Document::findByHashToken($token);
+
+        if (!$document) {
+            abort(404, 'Dokumen tidak dijumpai.');
+        }
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            abort(403, 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.');
+        }
+
+        // Check if file is previewable
+        if (!$document->isPreviewable()) {
+            abort(400, 'Dokumen ini tidak boleh dipratonton.');
+        }
+
+        // Check if file exists
+        if (!Storage::exists('public/' . $document->file_path)) {
+            abort(404, 'Fail tidak dijumpai.');
+        }
+
+        // Update last accessed time
+        $document->update(['last_accessed_at' => now()]);
+
+        // Return file response
+        return Storage::response('public/' . $document->file_path);
+    }
+
+    /**
+     * Download document by token (for shared documents)
+     */
+    public function downloadByToken(string $token)
+    {
+        $user = Auth::user();
+
+        // Check permission
+        if (!$user->hasPermission('documents', 'read')) {
+            abort(403, 'Anda tidak mempunyai kebenaran untuk melihat dokumen.');
+        }
+
+        // Find document by hash token
+        $document = Document::findByHashToken($token);
+
+        if (!$document) {
+            abort(404, 'Dokumen tidak dijumpai.');
+        }
+
+        // Check if user can access this document
+        if (!$this->canAccessDocument($document, $user)) {
+            abort(403, 'Anda tidak mempunyai kebenaran untuk mengakses dokumen ini.');
+        }
+
+        // Check if file exists
+        if (!Storage::exists('public/' . $document->file_path)) {
+            abort(404, 'Fail tidak dijumpai.');
+        }
+
+        // Increment download count
+        $document->incrementDownloadCount();
+
+        return Storage::download('public/' . $document->file_path, $document->name);
     }
 
     /**

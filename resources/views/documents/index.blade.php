@@ -271,6 +271,18 @@
                                         <span class="material-icons text-lg mr-3 text-purple-500 group-hover:text-purple-600">image</span>
                                         <span class="font-medium">Gambar</span>
                                     </a>
+                                    <a href="{{ route('documents.index', ['extension' => 'pptx']) }}" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200">
+                                        <span class="material-icons text-lg mr-3 text-orange-500 group-hover:text-orange-600">slideshow</span>
+                                        <span class="font-medium">PowerPoint</span>
+                                    </a>
+                                    <a href="{{ route('documents.index', ['extension' => 'txt']) }}" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200">
+                                        <span class="material-icons text-lg mr-3 text-gray-500 group-hover:text-gray-600">article</span>
+                                        <span class="font-medium">Teks</span>
+                                    </a>
+                                    <a href="{{ route('documents.index', ['extension' => 'zip']) }}" class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg text-gray-700 hover:bg-gray-50 transition-all duration-200">
+                                        <span class="material-icons text-lg mr-3 text-yellow-500 group-hover:text-yellow-600">archive</span>
+                                        <span class="font-medium">Arkib</span>
+                                    </a>
                                 </nav>
                             </div>
 
@@ -886,6 +898,9 @@
 
     <x-footer />
 
+    <!-- Include Sharing Modal -->
+    @include('components.sharing-modal')
+
     <!-- Context Menu -->
     <div id="contextMenu" class="fixed bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50 hidden min-w-[240px]">
 
@@ -931,7 +946,7 @@
             </div>
 
             <!-- Rename -->
-            <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="renameItem()">
+            <div id="renameItemAction" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="renameItem()">
                 <span class="material-icons text-sm mr-3">edit</span>
                 <span>Namakan semula</span>
             </div>
@@ -939,7 +954,7 @@
             <div class="border-t border-gray-100 my-1"></div>
 
             <!-- Share submenu -->
-            <div class="context-menu-item group relative">
+            <div id="shareSubmenu" class="context-menu-item group relative">
                 <div class="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer whitespace-nowrap">
                     <div class="flex items-center">
                         <span class="material-icons text-sm mr-3">share</span>
@@ -971,7 +986,7 @@
                 </div>
                 <!-- Submenu -->
                 <div class="context-submenu bg-white rounded-lg shadow-xl border border-gray-200 py-2 hidden group-hover:block min-w-[220px] max-w-[220px]">
-                    <div class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="moveItem()">
+                    <div id="moveItemAction" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer flex items-center whitespace-nowrap" onclick="moveItem()">
                         <span class="material-icons text-sm mr-3">drive_file_move</span>
                         <span>Pindah</span>
                     </div>
@@ -1728,6 +1743,11 @@
             const permanentDeleteAction = document.getElementById('permanentDeleteAction');
             const markSpamAction = document.getElementById('markSpamAction');
 
+            // Get organize/edit action elements
+            const moveItemAction = document.getElementById('moveItemAction');
+            const renameItemAction = document.getElementById('renameItemAction');
+            const shareSubmenu = document.getElementById('shareSubmenu');
+
             // Update menu based on item type
             if (contextMenuData.type === 'folder') {
                 // FOLDER MENU - Hide document-specific options
@@ -1770,6 +1790,19 @@
                 // In spam view - show restore and permanent delete
                 restoreAction.classList.remove('hidden');
                 permanentDeleteAction.classList.remove('hidden');
+            } else if (currentType === 'shared') {
+                // SHARED VIEW - Items from other masjids
+                // Users can only mark as spam, NOT move to trash (they don't own the items)
+                if (contextMenuData.type === 'document') {
+                    markSpamAction.classList.remove('hidden');
+                }
+                // No move to trash for shared items - users don't own them
+
+                // Hide actions that require ownership
+                if (moveItemAction) moveItemAction.classList.add('hidden');
+                if (renameItemAction) renameItemAction.classList.add('hidden');
+                if (shareSubmenu) shareSubmenu.classList.add('hidden');
+                if (folderColorSection) folderColorSection.classList.add('hidden');
             } else {
                 // Normal view - show move to trash
                 moveToTrashAction.classList.remove('hidden');
@@ -1778,6 +1811,11 @@
                 if (contextMenuData.type === 'document') {
                     markSpamAction.classList.remove('hidden');
                 }
+
+                // Show all ownership actions for normal view
+                if (moveItemAction) moveItemAction.classList.remove('hidden');
+                if (renameItemAction) renameItemAction.classList.remove('hidden');
+                if (shareSubmenu) shareSubmenu.classList.remove('hidden');
             }
         }
 
@@ -2329,21 +2367,18 @@
 
         function shareItem() {
             console.log('Share:', contextMenuData);
-            // Implement share functionality
-            alert(`Share ${contextMenuData.type}: ${contextMenuData.name}`);
             hideContextMenu();
+
+            // Open Google Drive style sharing modal
+            openSharingModal(contextMenuData.type, contextMenuData.id, contextMenuData.name);
         }
 
         function copyLink() {
             console.log('Copy link:', contextMenuData);
-            const link = contextMenuData.type === 'document'
-                ? `${window.location.origin}/documents/${contextMenuData.id}`
-                : `${window.location.origin}/documents?folder=${contextMenuData.id}`;
-
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Link copied to clipboard');
-            });
             hideContextMenu();
+
+            // Use sharing modal to copy share link
+            copyShareLink();
         }
 
         function moveItem() {
@@ -2856,5 +2891,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/sharing-modal.js') }}"></script>
 </body>
 </html>
