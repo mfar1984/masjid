@@ -1,7 +1,7 @@
 @props([
-    'version' => 'v1.1',
+    'version' => 'v3.0',
     'title' => 'Versi Semasa',
-    'description' => 'Kemaskini Minor',
+    'description' => 'Kemaskini Major - Complete Kewangan, Asnaf & Kebajikan Modules',
     'date' => null,
     'gradient' => 'from-blue-500 to-purple-600'
 ])

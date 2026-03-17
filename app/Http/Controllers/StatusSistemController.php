@@ -16,13 +16,13 @@ class StatusSistemController extends Controller
 
     public function index()
     {
-        // Use fallback data directly to avoid health check errors
-        $data = $this->statusService->getFallbackDetailedResults();
+        // Get real health check data
+        $data = $this->statusService->getDetailedResults();
 
-        $overallStatus = $data['summary']['overall_status'] === 'ok' ? 'healthy' : 'unhealthy';
-        $categories = $data['checks_by_category'];
+        $overallStatus = ($data['summary']['overall_status'] ?? 'failed') === 'ok' ? 'healthy' : 'unhealthy';
+        $categories = $data['checks_by_category'] ?? [];
 
-        // Map categories to view format
+        // Map categories to view format - ensure all arrays exist
         $groupedResults = [
             'application' => $categories['system']['checks'] ?? [],
             'database' => $categories['database']['checks'] ?? [],
@@ -30,14 +30,9 @@ class StatusSistemController extends Controller
             'cache_queue' => $categories['cache']['checks'] ?? []
         ];
 
-        $checkResults = collect();
-        $historicalResults = collect();
-
         return view('bantuan.status-sistem', compact(
-            'checkResults',
             'overallStatus',
-            'groupedResults',
-            'historicalResults'
+            'groupedResults'
         ));
     }
 

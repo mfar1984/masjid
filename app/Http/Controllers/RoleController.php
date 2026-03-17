@@ -148,8 +148,10 @@ class RoleController extends Controller
         $modules = $this->getAvailableModules();
         $actions = $this->getAvailableActions();
         $readOnlyModules = $this->getReadOnlyModules();
+        $headerModules = $this->getHeaderModules();
         $settingsOnlyModules = $this->getSettingsOnlyModules();
         $workflowModules = $this->getWorkflowModules();
+        $partialWorkflowModules = $this->getPartialWorkflowModules();
 
         // Get masjids for Super Admin to choose from
         $masjids = collect();
@@ -159,7 +161,7 @@ class RoleController extends Controller
                                         ->get(['id', 'nama']);
         }
 
-        return view('pentadbiran.kumpulan.create', compact('modules', 'actions', 'readOnlyModules', 'settingsOnlyModules', 'workflowModules', 'masjids'));
+        return view('pentadbiran.kumpulan.create', compact('modules', 'actions', 'readOnlyModules', 'headerModules', 'settingsOnlyModules', 'workflowModules', 'partialWorkflowModules', 'masjids'));
     }
 
     /**
@@ -234,10 +236,12 @@ class RoleController extends Controller
         $modules = $this->getAvailableModules();
         $actions = $this->getAvailableActions();
         $readOnlyModules = $this->getReadOnlyModules();
+        $headerModules = $this->getHeaderModules();
         $settingsOnlyModules = $this->getSettingsOnlyModules();
         $workflowModules = $this->getWorkflowModules();
+        $partialWorkflowModules = $this->getPartialWorkflowModules();
 
-        return view('pentadbiran.kumpulan.show', compact('role', 'modules', 'actions', 'readOnlyModules', 'settingsOnlyModules', 'workflowModules'));
+        return view('pentadbiran.kumpulan.show', compact('role', 'modules', 'actions', 'readOnlyModules', 'headerModules', 'settingsOnlyModules', 'workflowModules', 'partialWorkflowModules'));
     }
 
     /**
@@ -258,8 +262,10 @@ class RoleController extends Controller
         $modules = $this->getAvailableModules();
         $actions = $this->getAvailableActions();
         $readOnlyModules = $this->getReadOnlyModules();
+        $headerModules = $this->getHeaderModules();
         $settingsOnlyModules = $this->getSettingsOnlyModules();
         $workflowModules = $this->getWorkflowModules();
+        $partialWorkflowModules = $this->getPartialWorkflowModules();
 
         // Get masjids for Super Admin to choose from
         $masjids = collect();
@@ -269,7 +275,7 @@ class RoleController extends Controller
                                         ->get(['id', 'nama']);
         }
 
-        return view('pentadbiran.kumpulan.edit', compact('role', 'modules', 'actions', 'readOnlyModules', 'settingsOnlyModules', 'workflowModules', 'masjids'));
+        return view('pentadbiran.kumpulan.edit', compact('role', 'modules', 'actions', 'readOnlyModules', 'headerModules', 'settingsOnlyModules', 'workflowModules', 'partialWorkflowModules', 'masjids'));
     }
 
     /**
@@ -356,19 +362,167 @@ class RoleController extends Controller
     private function getAvailableModules()
     {
         return [
-            'dashboard' => 'Paparan Pemuka',
-            'fail' => 'Fail',
-            'documents' => '- Pengurusan Dokumen',
+            // ═══════════════════════════════════════════════════════════════
+            // 📊 PAPARAN PEMUKA
+            // ═══════════════════════════════════════════════════════════════
+            'dashboard' => 'Papan Pemuka',
+            
+            // ═══════════════════════════════════════════════════════════════
+            // 👥 PENGURUSAN
+            // ═══════════════════════════════════════════════════════════════
+            'kariah' => 'Ahli Kariah',
+            
+            // Ahli Jawatankuasa Masjid (Header with submenus)
+            'ajk_header' => 'Ahli Jawatankuasa Masjid',
+            'ajk' => '├─ Senarai AJK',
+            'ajk_arkib' => '├─ Arkib AJK',
+            'ajk_laporan' => '└─ Laporan AJK',
+            
+            // Asnaf (Header with submenus)
+            'asnaf_header' => 'Asnaf',
+            'asnaf' => '├─ Senarai Asnaf',
+            'permohonan_zakat' => '├─ Permohonan Zakat',
+            'agihan_zakat' => '├─ Agihan Zakat',
+            'laporan_zakat' => '├─ Laporan Zakat',
+            'tetapan_asnaf' => '├─ Tetapan Asnaf',
+            'tetapan_asnaf_had_kifayah' => '│  ├─ Had Kifayah',
+            'tetapan_asnaf_had_bantuan' => '│  ├─ Had Bantuan',
+            'tetapan_asnaf_workflow' => '│  ├─ Workflow',
+            'tetapan_asnaf_permohonan' => '│  ├─ Permohonan',
+            'tetapan_asnaf_kategori' => '│  ├─ Kategori',
+            'tetapan_asnaf_payment' => '│  ├─ Payment Gateway',
+            'tetapan_asnaf_display' => '│  └─ Display',
+            
+            // Kebajikan (Header with submenus)
+            'kebajikan_header' => 'Kebajikan',
+            'program_kebajikan' => '├─ Program Kebajikan',
+            'penerima_bantuan' => '├─ Penerima Bantuan',
+            'permohonan_bantuan' => '├─ Permohonan Bantuan',
+            'pembayaran_bantuan' => '├─ Pembayaran Bantuan',
+            'laporan_kebajikan' => '├─ Laporan Kebajikan',
+            'tetapan_kebajikan' => '└─ Tetapan Kebajikan',
+            'tetapan_kebajikan_had_bantuan' => '   ├─ Had Bantuan',
+            'tetapan_kebajikan_workflow' => '   ├─ Workflow',
+            'tetapan_kebajikan_permohonan' => '   ├─ Permohonan',
+            'tetapan_kebajikan_kategori_penerima' => '   ├─ Kategori Penerima',
+            'tetapan_kebajikan_pembayaran' => '   ├─ Pembayaran',
+            'tetapan_kebajikan_paparan' => '   ├─ Paparan',
+            'tetapan_kebajikan_kategori' => '   └─ Kategori',
+            
+            // ═══════════════════════════════════════════════════════════════
+            // 💰 KEWANGAN
+            // ═══════════════════════════════════════════════════════════════
+            // Kewangan (Header with submenus)
+            'kewangan_header' => 'Kewangan',
+            'akaun_bank' => '├─ Akaun Bank',
+            'transaksi_kewangan' => '├─ Transaksi Kewangan',
+            'laporan_kewangan' => '├─ Laporan Kewangan',
+            'laporan_kewangan_penyata' => '│  ├─ Penyata Kewangan',
+            'laporan_kewangan_pendapatan' => '│  ├─ Laporan Pendapatan',
+            'laporan_kewangan_perbelanjaan' => '│  ├─ Laporan Perbelanjaan',
+            'laporan_kewangan_aliran_tunai' => '│  ├─ Aliran Tunai',
+            'laporan_kewangan_imbangan_duga' => '│  ├─ Imbangan Duga',
+            'laporan_kewangan_perbandingan' => '│  ├─ Perbandingan Bulanan',
+            'laporan_kewangan_kategori' => '│  ├─ Laporan Mengikut Kategori',
+            'laporan_kewangan_baki_bank' => '│  └─ Baki Bank',
+            'tetapan_kewangan' => '└─ Tetapan Kewangan',
+            'tetapan_kewangan_umum' => '   ├─ Tetapan Umum',
+            'tetapan_kewangan_kategori' => '   └─ Kategori',
+            
+            // ═══════════════════════════════════════════════════════════════
+            // 📅 OPERASI
+            // ═══════════════════════════════════════════════════════════════
+            'operasi_header' => 'Operasi',
+            
+            // Program & Pendidikan (Submenu)
+            'program_pendidikan_header' => '├─ Program & Pendidikan',
+            'senarai_program' => '│  ├─ Senarai Program',
+            'jadual_program' => '│  ├─ Jadual Program',
+            'pendaftaran_peserta' => '│  ├─ Pendaftaran Peserta',
+            'laporan_program' => '│  └─ Laporan Program',
+            
+            // Fasiliti & Tempahan (Submenu - existing)
+            'fasiliti_tempahan' => '├─ Fasiliti & Tempahan',
+            
+            // Jadual Tugas (Submenu)
+            'jadual_tugas_header' => '├─ Jadual Tugas',
+            'senarai_penceramah' => '│  ├─ Senarai Penceramah',
+            'jadual_ceramah' => '│  ├─ Jadual Ceramah',
+            'jadual_imam_bilal' => '│  ├─ Jadual Imam & Bilal',
+            'laporan_tugas' => '│  └─ Laporan Tugas',
+            
+            // Khidmat Komuniti (Submenu)
+            'khidmat_komuniti_header' => '└─ Khidmat Komuniti',
+            'urusan_jenazah' => '   ├─ Urusan Jenazah',
+            'laporan_khidmat' => '   └─ Laporan Khidmat',
+            
+            // ═══════════════════════════════════════════════════════════════
+            // 📦 ASET
+            // ═══════════════════════════════════════════════════════════════
+            'aset_header' => 'Aset',
+            'pengurusan_aset' => '├─ Pengurusan Aset',
+            'senarai_aset' => '│  ├─ Senarai Aset',
+            'kategori_aset' => '│  ├─ Kategori Aset',
+            'pemindahan_aset' => '│  ├─ Pemindahan Aset',
+            'pergerakan_aset' => '│  └─ Pergerakan Aset',
+            'penyelenggaraan_aset' => '├─ Penyelenggaraan',
+            'jadual_penyelenggaraan' => '│  ├─ Jadual Penyelenggaraan',
+            'kerja_penyelenggaraan' => '│  ├─ Kerja Penyelenggaraan',
+            'laporan_penyelenggaraan' => '│  └─ Laporan Penyelenggaraan',
+            'penyusutan_nilai' => '├─ Penyusutan & Nilai',
+            'jadual_penyusutan' => '│  ├─ Jadual Penyusutan',
+            'nilai_semasa' => '│  ├─ Nilai Semasa',
+            'trend_penyusutan' => '│  └─ Trend Penyusutan',
+            'pelupusan_aset' => '├─ Pelupusan Aset',
+            'permohonan_pelupusan' => '│  ├─ Permohonan Pelupusan',
+            'kelulusan_pelupusan' => '│  ├─ Kelulusan Pelupusan',
+            'rekod_pelupusan' => '│  └─ Rekod Pelupusan',
+            'laporan_aset' => '└─ Laporan Aset',
+            'laporan_aset_dashboard' => '   ├─ Dashboard Aset',
+            'laporan_aset_inventori' => '   ├─ Laporan Inventori',
+            'laporan_aset_lokasi' => '   ├─ Laporan Lokasi',
+            'laporan_aset_penyelenggaraan' => '   ├─ Laporan Penyelenggaraan',
+            'laporan_aset_pergerakan' => '   ├─ Laporan Pergerakan',
+            'laporan_aset_pemindahan' => '   └─ Laporan Pemindahan',
+            
+            // ═══════════════════════════════════════════════════════════════
+            // 🔧 OPERASI > FASILITI & TEMPAHAN
+            // ═══════════════════════════════════════════════════════════════
+            'fasiliti_header' => 'Fasiliti & Tempahan',
+            'senarai_fasiliti' => '├─ Senarai Fasiliti',
+            'tempahan_fasiliti' => '├─ Tempahan Fasiliti',
+            'pembayaran_sewa' => '├─ Pembayaran Sewa',
+            'laporan_tempahan' => '└─ Laporan Tempahan',
+            
+            // ═══════════════════════════════════════════════════════════════
+            // 📢 KOMUNIKASI
+            // ═══════════════════════════════════════════════════════════════
+            'komunikasi_header' => 'Komunikasi',
+            'siaran_mesej' => '├─ Siaran Mesej',
+            'kandungan_website' => '├─ Kandungan Website',
+            'pengumuman_berita' => '└─ Pengumuman & Berita',
+            
+            // ═══════════════════════════════════════════════════════════════
+            // 📁 FAIL
+            // ═══════════════════════════════════════════════════════════════
+            'fail_header' => 'Fail',
+            'documents' => '├─ Pengurusan Dokumen',
+            'perpustakaan_digital' => '├─ Perpustakaan Digital',
+            'arkib_rekod' => '└─ Arkib & Rekod',
+            
+            // ═══════════════════════════════════════════════════════════════
+            // ⚙️ PENTADBIRAN SISTEM
+            // ═══════════════════════════════════════════════════════════════
+            'settings' => 'Tetapan Umum',
             'masjids' => 'Senarai Masjid',
             'users' => 'Senarai Pengguna',
             'roles' => 'Senarai Kumpulan',
-            'kariah' => 'Ahli Kariah',
-            'settings' => 'Tetapan Umum',
-            'integrations' => 'Integrasi',
-            'integrations_email' => '- Email (SMTP)',
-            'integrations_weather' => '- Cuaca',
-            'integrations_api' => '- API',
-            // 'support' => 'Bantuan & Sokongan', // Global module - removed from permission matrix
+            
+            // Integrasi (Header with submenus)
+            'integrations_header' => 'Integrasi',
+            'integrations_email' => '├─ Email (SMTP)',
+            'integrations_weather' => '├─ Cuaca',
+            'integrations_api' => '└─ API',
         ];
     }
 
@@ -399,9 +553,79 @@ class RoleController extends Controller
     private function getReadOnlyModules()
     {
         return [
-            'dashboard', // Paparan Pemuka - view only
-            // 'fail' has special handling - header only, no checkboxes
-            // 'support' removed - global module
+            'dashboard', // Papan Pemuka - view only
+            'ajk_arkib', // Arkib AJK - view only
+            'ajk_laporan', // Laporan AJK - view only
+            'laporan_zakat', // Laporan Zakat - view only
+            'laporan_kebajikan', // Laporan Kebajikan - view only
+            
+            // Laporan Kewangan TABs - all read only
+            'laporan_kewangan_penyata',
+            'laporan_kewangan_pendapatan',
+            'laporan_kewangan_perbelanjaan',
+            'laporan_kewangan_aliran_tunai',
+            'laporan_kewangan_imbangan_duga',
+            'laporan_kewangan_perbandingan',
+            'laporan_kewangan_kategori',
+            'laporan_kewangan_baki_bank',
+            
+            // Laporan Aset TABs - all read only
+            'laporan_aset_dashboard',
+            'laporan_aset_inventori',
+            'laporan_aset_lokasi',
+            'laporan_aset_penyelenggaraan',
+            'laporan_aset_pergerakan',
+            'laporan_aset_pemindahan',
+            
+            // Laporan Penyelenggaraan - read only
+            'laporan_penyelenggaraan',
+            
+            // Penyusutan & Nilai - read only pages
+            'nilai_semasa', // Nilai Semasa - auto-calculated, read only
+            'trend_penyusutan', // Trend Penyusutan - report, read only
+            
+            // Pelupusan Aset - read only pages
+            'kelulusan_pelupusan', // Kelulusan Pelupusan - workflow page
+            'rekod_pelupusan', // Rekod Pelupusan - history, read only
+            
+            // Laporan Tempahan - read only
+            'laporan_tempahan',
+            
+            // Laporan Operasi - read only
+            'laporan_program', // Laporan Program - read only
+            'laporan_tugas', // Laporan Tugas - read only
+            'laporan_khidmat', // Laporan Khidmat - read only
+        ];
+    }
+    
+    /**
+     * Get modules that are headers only (no checkboxes at all)
+     */
+    private function getHeaderModules()
+    {
+        return [
+            'ajk_header', // Ahli Jawatankuasa Masjid - header only
+            'asnaf_header', // Asnaf - header only
+            'kebajikan_header', // Kebajikan - header only
+            'kewangan_header', // Kewangan - header only
+            'operasi_header', // Operasi - header only
+            'aset_header', // Aset - header only
+            'pengurusan_aset', // Pengurusan Aset - submenu header
+            'penyelenggaraan_aset', // Penyelenggaraan - submenu header
+            'penyusutan_nilai', // Penyusutan & Nilai - submenu header
+            'pelupusan_aset', // Pelupusan Aset - submenu header
+            'laporan_aset', // Laporan Aset - submenu header
+            'komunikasi_header', // Komunikasi - header only
+            'fail_header', // Fail - header only
+            'integrations_header', // Integrasi - header only
+            'fasiliti_header', // Fasiliti & Tempahan - header only
+            'program_pendidikan_header', // Program & Pendidikan - submenu header
+            'jadual_tugas_header', // Jadual Tugas - submenu header
+            'khidmat_komuniti_header', // Khidmat Komuniti - submenu header
+            'tetapan_asnaf', // Tetapan Asnaf - header for TABs
+            'tetapan_kebajikan', // Tetapan Kebajikan - header for TABs
+            'tetapan_kewangan', // Tetapan Kewangan - header for TABs
+            'laporan_kewangan', // Laporan Kewangan - header for TABs
         ];
     }
 
@@ -412,10 +636,33 @@ class RoleController extends Controller
     {
         return [
             'settings', // Tetapan Umum - read and update only
-            'integrations', // Integrasi - read and update only
-            'integrations_email', // Email (SMTP) - read and update only
-            'integrations_weather', // Cuaca - read and update only
-            'integrations_api', // API - read and update only
+            
+            // Tetapan Asnaf TABs
+            'tetapan_asnaf_had_kifayah',
+            'tetapan_asnaf_had_bantuan',
+            'tetapan_asnaf_workflow',
+            'tetapan_asnaf_permohonan',
+            'tetapan_asnaf_kategori',
+            'tetapan_asnaf_payment',
+            'tetapan_asnaf_display',
+            
+            // Tetapan Kebajikan TABs
+            'tetapan_kebajikan_had_bantuan',
+            'tetapan_kebajikan_workflow',
+            'tetapan_kebajikan_permohonan',
+            'tetapan_kebajikan_kategori_penerima',
+            'tetapan_kebajikan_pembayaran',
+            'tetapan_kebajikan_paparan',
+            'tetapan_kebajikan_kategori',
+            
+            // Tetapan Kewangan TABs
+            'tetapan_kewangan_umum',
+            'tetapan_kewangan_kategori',
+            
+            // Integrasi TABs
+            'integrations_email',
+            'integrations_weather',
+            'integrations_api',
         ];
     }
 
@@ -425,9 +672,23 @@ class RoleController extends Controller
     private function getWorkflowModules()
     {
         return [
-            'masjids', // Senarai Masjid - has approve/reject/suspend/reactivate
-            'users', // Senarai Pengguna - has suspend/reactivate (verify/unverify)
             'kariah', // Ahli Kariah - has approve/reject/suspend/reactivate
+            'ajk', // Ahli Jawatankuasa Masjid - has approve/reject/suspend/reactivate
+            'asnaf', // Asnaf - has approve/reject/suspend/reactivate
+            'permohonan_zakat', // Permohonan Zakat - has approve/reject only
+            'masjids', // Senarai Masjid - has approve/reject/suspend/reactivate (Super Admin only)
+            'users', // Senarai Pengguna - has suspend/reactivate (verify/unverify)
+        ];
+    }
+    
+    /**
+     * Get modules that have partial workflow (approve/reject only, no suspend/reactivate)
+     */
+    private function getPartialWorkflowModules()
+    {
+        return [
+            'permohonan_zakat', // Permohonan Zakat - approve/reject only
+            'kelulusan_pelupusan', // Kelulusan Pelupusan - approve/reject only
         ];
     }
 }

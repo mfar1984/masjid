@@ -13,7 +13,7 @@
 </head>
 <body class="bg-gray-50 font-sans min-h-screen flex flex-col" data-theme="corporate">
     <x-double-navbar :user="auth()->user()" />
-
+    
     <div class="flex-1">
         <div class="container mx-auto px-0 py-0">
             <!-- Main Dashboard Container -->
@@ -113,49 +113,49 @@
                     <!-- Main Content Area -->
                     <div class="flex-1 bg-gray-50">
                         <!-- Breadcrumbs & Toolbar -->
-                        <div class="bg-white border-b border-gray-200">
-                            <div class="px-6 py-4">
-                                <!-- Breadcrumbs -->
-                                <nav class="flex mb-4" aria-label="Breadcrumb">
+        <div class="bg-white border-b border-gray-200">
+            <div class="px-6 py-4">
+                <!-- Breadcrumbs -->
+                <nav class="flex mb-4" aria-label="Breadcrumb">
                                     <ol class="inline-flex items-center space-x-1">
-                                        <li class="inline-flex items-center">
+                        <li class="inline-flex items-center">
                                             <a href="{{ route('documents.index') }}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded-md transition-all duration-200">
-                                                Dokumen Saya
-                                            </a>
-                                        </li>
-                                        @if($document->folder)
+                                Dokumen Saya
+                            </a>
+                        </li>
+                        @if($document->folder)
                                             <span class="material-icons text-gray-300 text-sm mx-2">chevron_right</span>
-                                            <li class="inline-flex items-center">
+                            <li class="inline-flex items-center">
                                                 <a href="{{ route('documents.index', ['folder' => $document->folder->id]) }}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded-md transition-all duration-200">
-                                                    {{ $document->folder->name }}
-                                                </a>
-                                            </li>
-                                        @endif
+                                    {{ $document->folder->name }}
+                                </a>
+                            </li>
+                        @endif
                                         <span class="material-icons text-gray-300 text-sm mx-2">chevron_right</span>
-                                        <li class="inline-flex items-center">
+                        <li class="inline-flex items-center">
                                             <a href="{{ route('documents.show', $document) }}" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-2 py-1 rounded-md transition-all duration-200">
-                                                {{ $document->name }}
-                                            </a>
-                                        </li>
+                                {{ $document->name }}
+                            </a>
+                        </li>
                                         <span class="material-icons text-gray-300 text-sm mx-2">chevron_right</span>
-                                        <li class="inline-flex items-center">
+                        <li class="inline-flex items-center">
                                             <span class="text-sm font-medium text-gray-900 px-2 py-1 bg-gray-100 rounded-md">Edit</span>
-                                        </li>
-                                    </ol>
-                                </nav>
+                        </li>
+                    </ol>
+                </nav>
 
                                 <!-- Page Info -->
-                                <div>
+                    <div>
                                     <p class="text-sm text-gray-500">
                                         Kemaskini maklumat dokumen: <span class="font-medium text-gray-700">{{ $document->name }}</span>
                                     </p>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+            </div>
+        </div>
 
                         <!-- Edit Content -->
                         <div class="p-6">
-                            <div class="max-w-4xl mx-auto">
+            <div class="max-w-4xl mx-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Edit Form -->
                     <div class="lg:col-span-2">
@@ -280,7 +280,7 @@
                                                         <button type="button" onclick="clearFile()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                                                             <span class="material-icons text-sm mr-2">close</span>
                                                             Buang Fail
-                                                        </button>
+                                                    </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -407,7 +407,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                                </div>
                             </div>
                         </div>
                     </div>

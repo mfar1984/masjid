@@ -23,6 +23,9 @@ class DocumentController extends Controller
     {
         $user = Auth::user();
 
+        // Load masjid relationship for user
+        $user->load('masjid');
+
         // Check permission
         if (!$user->hasPermission('documents', 'read')) {
             abort(403, 'Anda tidak mempunyai kebenaran untuk melihat dokumen.');
@@ -166,6 +169,35 @@ class DocumentController extends Controller
         // Filter by file type (supports multiple extensions per type)
         if ($request->filled('extension')) {
             $documentsQuery->byFileType($request->extension);
+
+            // IMPORTANT: Also filter folders to only show those containing documents with this extension
+            // Get the file type extensions mapping from Document model
+            $fileTypeExtensions = [
+                'pdf' => ['pdf'],
+                'docx' => ['doc', 'docx', 'docm', 'dotx', 'dotm', 'odt', 'rtf'],
+                'xlsx' => ['xls', 'xlsx', 'xlsm', 'xltx', 'xltm', 'xlsb', 'ods', 'csv'],
+                'jpg' => ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg', 'tiff', 'tif'],
+                'pptx' => ['ppt', 'pptx', 'pptm', 'potx', 'potm', 'ppsx', 'ppsm', 'odp'],
+                'txt' => ['txt', 'text', 'log', 'md', 'markdown'],
+                'zip' => ['zip', 'rar', '7z', 'tar', 'gz', 'bz2'],
+                'video' => ['mp4', 'avi', 'mkv', 'mov', 'wmv', 'flv', 'webm', 'm4v'],
+                'audio' => ['mp3', 'wav', 'flac', 'aac', 'm4a', 'ogg', 'wma']
+            ];
+
+            $extensions = $fileTypeExtensions[$request->extension] ?? [$request->extension];
+
+            // Only show folders that contain documents with the specified extensions
+            $foldersQuery->whereHas('documents', function ($query) use ($extensions, $user) {
+                $query->whereIn('file_extension', $extensions);
+
+                // Apply same masjid isolation to the documents check
+                if (!$user->isSuperAdmin()) {
+                    $userMasjidId = $user->masjid_id;
+                    if ($userMasjidId) {
+                        $query->where('masjid_id', $userMasjidId);
+                    }
+                }
+            });
         }
 
         // Apply sorting
@@ -224,7 +256,8 @@ class DocumentController extends Controller
             'breadcrumbs',
             'sharedItems',
             'stats',
-            'sortBy'
+            'sortBy',
+            'user'
         ));
     }
 
@@ -908,13 +941,19 @@ class DocumentController extends Controller
     /**
      * Move document to trash
      */
-    public function moveToTrash(Document $document)
+    public function moveToTrash($documentIdentifier)
     {
         $user = Auth::user();
 
         // Check permission
         if (!$user->hasPermission('documents', 'delete')) {
             return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk membuang dokumen.'], 403);
+        }
+
+        // Find document by ID or hash token
+        $document = $this->findDocumentByIdentifier($documentIdentifier);
+        if (!$document) {
+            return response()->json(['success' => false, 'message' => 'Dokumen tidak dijumpai.'], 404);
         }
 
         // Check if user can access this document
@@ -934,13 +973,19 @@ class DocumentController extends Controller
     /**
      * Move document to spam
      */
-    public function moveToSpam(Document $document)
+    public function moveToSpam($documentIdentifier)
     {
         $user = Auth::user();
 
         // Check permission
         if (!$user->hasPermission('documents', 'delete')) {
             return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk menandakan dokumen sebagai spam.'], 403);
+        }
+
+        // Find document by ID or hash token
+        $document = $this->findDocumentByIdentifier($documentIdentifier);
+        if (!$document) {
+            return response()->json(['success' => false, 'message' => 'Dokumen tidak dijumpai.'], 404);
         }
 
         // Check if user can access this document
@@ -960,13 +1005,19 @@ class DocumentController extends Controller
     /**
      * Restore document from trash/spam
      */
-    public function restore(Document $document)
+    public function restore($documentIdentifier)
     {
         $user = Auth::user();
 
         // Check permission
         if (!$user->hasPermission('documents', 'update')) {
             return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk memulihkan dokumen.'], 403);
+        }
+
+        // Find document by ID or hash token
+        $document = $this->findDocumentByIdentifier($documentIdentifier);
+        if (!$document) {
+            return response()->json(['success' => false, 'message' => 'Dokumen tidak dijumpai.'], 404);
         }
 
         // Check if user can access this document
@@ -986,13 +1037,19 @@ class DocumentController extends Controller
     /**
      * Permanently delete document
      */
-    public function forceDelete(Document $document)
+    public function forceDelete($documentIdentifier)
     {
         $user = Auth::user();
 
         // Check permission
         if (!$user->hasPermission('documents', 'delete')) {
             return response()->json(['success' => false, 'message' => 'Anda tidak mempunyai kebenaran untuk memadamkan dokumen secara kekal.'], 403);
+        }
+
+        // Find document by ID or hash token
+        $document = $this->findDocumentByIdentifier($documentIdentifier);
+        if (!$document) {
+            return response()->json(['success' => false, 'message' => 'Dokumen tidak dijumpai.'], 404);
         }
 
         // Check if user can access this document

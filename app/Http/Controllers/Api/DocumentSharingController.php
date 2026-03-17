@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\DocumentFolder;
 use App\Models\DocumentShare;
+use App\Models\DocumentAccessRequest;
 use App\Models\Masjid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -67,18 +68,13 @@ class DocumentSharingController extends Controller
                 });
 
             // Get current access level (check if public link exists)
-            $publicShareQuery = DocumentShare::where('shareable_type', $this->getModelClass($type))
+            // Always check for ANY active public share (regardless of who created it)
+            $publicShare = DocumentShare::where('shareable_type', $this->getModelClass($type))
                 ->where('shareable_id', $item->id)
                 ->where('is_public_link', true)
-                ->where('status', 'active');
+                ->where('status', 'active')
+                ->first();
 
-            // Super Admin can see public shares created by any masjid
-            // Regular users can only see public shares they created
-            if (!$user->isSuperAdmin()) {
-                $publicShareQuery->where('shared_by_masjid_id', $user->masjid_id);
-            }
-
-            $publicShare = $publicShareQuery->first();
             $accessLevel = $publicShare ? 'anyone_with_link' : 'restricted';
 
             return response()->json([
@@ -416,14 +412,15 @@ class DocumentSharingController extends Controller
             }
 
             if ($request->access_level === 'anyone_with_link') {
-                // Create or activate public link
+                // Create or activate public link - REUSE existing active share if available
                 $publicShare = DocumentShare::where('shareable_type', $this->getModelClass($request->item_type))
                     ->where('shareable_id', $item->id)
-                    ->where('shared_by_masjid_id', $user->masjid_id)
                     ->where('is_public_link', true)
-                    ->first();
+                    ->where('status', 'active')
+                    ->first(); // Remove masjid_id filter to reuse ANY active public share
 
                 if (!$publicShare) {
+                    // Only create new share if no active public share exists
                     DocumentShare::create([
                         'shareable_type' => $this->getModelClass($request->item_type),
                         'shareable_id' => $item->id,
@@ -435,22 +432,16 @@ class DocumentSharingController extends Controller
                         'share_token' => Str::random(32),
                         'status' => 'active'
                     ]);
-                } else {
-                    $publicShare->update(['status' => 'active']);
                 }
+                // If active share already exists, no need to do anything - just reuse it
             } else {
-                // Deactivate public link
-                $query = DocumentShare::where('shareable_type', $this->getModelClass($request->item_type))
+                // Deactivate ALL public links for this item (regardless of who created them)
+                // This ensures the document becomes truly restricted
+                DocumentShare::where('shareable_type', $this->getModelClass($request->item_type))
                     ->where('shareable_id', $item->id)
-                    ->where('is_public_link', true);
-
-                // Super Admin can deactivate public shares created by any masjid
-                // Regular users can only deactivate public shares they created
-                if (!$user->isSuperAdmin()) {
-                    $query->where('shared_by_masjid_id', $user->masjid_id);
-                }
-
-                $query->update(['status' => 'revoked']);
+                    ->where('is_public_link', true)
+                    ->where('status', 'active')
+                    ->update(['status' => 'revoked']);
             }
 
             return response()->json([
@@ -491,27 +482,23 @@ class DocumentSharingController extends Controller
                 ], 403);
             }
 
-            // Get or create public share
-            $publicShare = DocumentShare::where('shareable_type', $this->getModelClass($type))
+            // Check if there's an active public share to determine access level
+            $existingPublicShare = DocumentShare::where('shareable_type', $this->getModelClass($type))
                 ->where('shareable_id', $item->id)
-                ->where('shared_by_masjid_id', $user->masjid_id)
                 ->where('is_public_link', true)
                 ->where('status', 'active')
                 ->first();
 
-            if (!$publicShare) {
-                $publicShare = DocumentShare::create([
-                    'shareable_type' => $this->getModelClass($type),
-                    'shareable_id' => $item->id,
-                    'shared_by_masjid_id' => $user->masjid_id,
-                    'shared_by_user_id' => $user->id,
-                    'shared_with_masjid_id' => null, // Public link - no specific masjid
-                    'shared_with_user_id' => null,   // Public link - no specific user
-                    'is_public_link' => true,
-                    'share_token' => Str::random(32),
-                    'status' => 'active'
-                ]);
+            // If no active public share exists, it means access level is restricted
+            if (!$existingPublicShare) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Akses terhad - tidak boleh mendapatkan pautan'
+                ], 403);
             }
+
+            // Reuse the existing active public share (we already checked it exists above)
+            $publicShare = $existingPublicShare;
 
             return response()->json([
                 'success' => true,
@@ -544,14 +531,7 @@ class DocumentSharingController extends Controller
                 abort(404, 'Share link not found or expired');
             }
 
-            // Update access tracking
-            $share->increment('access_count');
-            $share->update([
-                'last_accessed_at' => now(),
-                'first_accessed_at' => $share->first_accessed_at ?? now()
-            ]);
-
-            // Get the shared item
+            // Get the shared item first to check access level
             $item = null;
             if ($share->shareable_type === Document::class) {
                 $item = Document::find($share->shareable_id);
@@ -565,7 +545,30 @@ class DocumentSharingController extends Controller
                 abort(404, 'Shared item not found');
             }
 
-            // Return view with shared item data
+            // Check if this is a restricted document that requires authentication
+            $isRestricted = $this->isDocumentRestricted($item, $share);
+
+            if ($isRestricted && !Auth::check()) {
+                // Redirect to login with return URL
+                return redirect()->route('login')->with([
+                    'message' => 'Sila log masuk untuk mengakses dokumen terhad ini.',
+                    'return_url' => request()->url()
+                ]);
+            }
+
+            if ($isRestricted && Auth::check()) {
+                // User is logged in but needs to request access
+                return $this->showRequestAccessPage($token, $item, $type, $share);
+            }
+
+            // Update access tracking for public access
+            $share->increment('access_count');
+            $share->update([
+                'last_accessed_at' => now(),
+                'first_accessed_at' => $share->first_accessed_at ?? now()
+            ]);
+
+            // Return view with shared item data (for public access)
             return view('public.share', [
                 'item' => $item,
                 'type' => $type,
@@ -619,6 +622,96 @@ class DocumentSharingController extends Controller
 
         } catch (\Exception $e) {
             abort(404, 'Invalid download link');
+        }
+    }
+
+    /**
+     * Check if document is restricted (requires authentication/approval)
+     */
+    private function isDocumentRestricted($item, $share)
+    {
+        // Check if there's an active public share for this item
+        $publicShare = DocumentShare::where('shareable_type', get_class($item))
+            ->where('shareable_id', $item->id)
+            ->where('is_public_link', true)
+            ->where('status', 'active')
+            ->first();
+
+        // If no active public share exists, it's restricted
+        return !$publicShare;
+    }
+
+    /**
+     * Show request access page for restricted documents
+     */
+    private function showRequestAccessPage($token, $item, $type, $share)
+    {
+        return view('documents.request-access', [
+            'token' => $token,
+            'item' => $item,
+            'type' => $type,
+            'share' => $share
+        ]);
+    }
+
+    /**
+     * Handle access request for restricted documents
+     */
+    public function requestAccess(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'item_type' => 'required|in:document,folder',
+            'item_id' => 'required|string',
+            'reason' => 'required|string|max:1000',
+            'requested_permission' => 'required|in:view,comment,edit'
+        ]);
+
+        try {
+            $user = Auth::user();
+
+            if (!$user || !$user->masjid_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda perlu log masuk dengan akaun masjid yang sah'
+                ], 401);
+            }
+
+            // Check if request already exists
+            $existingRequest = DocumentAccessRequest::where('share_token', $request->token)
+                ->where('requester_masjid_id', $user->masjid_id)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($existingRequest) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda sudah menghantar permohonan untuk dokumen ini. Sila tunggu keputusan.'
+                ]);
+            }
+
+            // Create access request
+            DocumentAccessRequest::create([
+                'share_token' => $request->token,
+                'item_type' => $request->item_type,
+                'item_id' => $request->item_id,
+                'requester_masjid_id' => $user->masjid_id,
+                'requester_user_id' => $user->id,
+                'reason' => $request->reason,
+                'requested_permission' => $request->requested_permission,
+                'status' => 'pending'
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Permohonan akses telah dihantar. Anda akan menerima notifikasi sebaik sahaja permohonan diproses.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ralat sistem. Sila cuba lagi.'
+            ], 500);
         }
     }
 

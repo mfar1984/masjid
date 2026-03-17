@@ -33,7 +33,7 @@ class TetapanSeeder extends Seeder
             [
                 'kunci' => 'versi_sistem',
                 'nama' => 'Versi Sistem',
-                'nilai' => '1.0.0',
+                'nilai' => '3.0.0',
                 'jenis' => 'text',
                 'penerangan' => 'Versi semasa sistem (tidak boleh diubah)',
                 'boleh_edit' => false,

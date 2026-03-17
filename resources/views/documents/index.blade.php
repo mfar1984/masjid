@@ -48,6 +48,68 @@
             position: relative;
         }
 
+        /* Color Picker Styles */
+        #colorPickerGrid .color-box {
+            width: 24px !important;
+            height: 24px !important;
+            min-width: 24px !important;
+            min-height: 24px !important;
+            max-width: 24px !important;
+            max-height: 24px !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            position: relative !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
+            border: none !important;
+        }
+
+        #colorPickerGrid .color-box .color-fill {
+            width: 100% !important;
+            height: 100% !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+        }
+
+        #colorPickerGrid .color-box:hover {
+            transform: scale(1.1) !important;
+            border-color: #9ca3af !important;
+        }
+
+        #colorPickerGrid .color-box.selected {
+            position: relative !important;
+        }
+
+        #colorPickerGrid .color-box.selected::after {
+            content: '✓' !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            color: white !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
+            z-index: 10 !important;
+            pointer-events: none !important;
+        }
+
+        #colorPickerGrid .color-box .check-icon {
+            color: white !important;
+            font-size: 12px !important;
+            font-weight: bold !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8) !important;
+            z-index: 10 !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+        }
+
         .context-submenu {
             position: absolute;
             left: 100%;
@@ -347,6 +409,11 @@
                                             </h2>
                                             <p class="text-sm text-gray-500 mt-1">
                                                 {{ $stats['total_documents'] }} item • {{ number_format($stats['total_size'] / 1024 / 1024, 1) }} MB
+                                                @if($user->isSuperAdmin())
+                                                    | Super Admin
+                                                @elseif($user->masjid && $user->masjid->kod_masjid)
+                                                    | Masjid ID : {{ $user->masjid->kod_masjid }}
+                                                @endif
                                             </p>
                                         </div>
                                     </div>
@@ -1000,9 +1067,15 @@
                     </div>
 
                     <!-- Folder Color Picker - Only for folders -->
-                    <div id="folderColorSection" class="border-t border-gray-100 mt-2 pt-3 px-4 pb-3">
+                    <div id="folderColorSection" class="border-t border-gray-100 mt-2 pt-3 px-4 pb-3" style="width: 100% !important; overflow: hidden !important;">
                         <div class="text-sm font-medium text-gray-700 mb-3" style="font-family: 'Poppins', sans-serif;">Folder color</div>
-                        <div id="colorPickerGrid" class="grid grid-cols-8 gap-2">
+                        <div id="colorPickerGrid" class="grid gap-1" style="display: grid !important;
+                                                                           grid-template-columns: repeat(8, 24px) !important;
+                                                                           justify-content: space-between !important;
+                                                                           width: 100% !important;
+                                                                           max-width: 100% !important;
+                                                                           overflow: hidden !important;
+                                                                           box-sizing: border-box !important;">
                             <!-- Colors will be dynamically generated with proper tick marks -->
                         </div>
                     </div>
@@ -1205,45 +1278,7 @@
             });
         }
 
-        // Notification function
-        function showNotification(message, type = 'info') {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
 
-            // Set colors based on type
-            if (type === 'success') {
-                notification.className += ' bg-green-500 text-white';
-            } else if (type === 'error') {
-                notification.className += ' bg-red-500 text-white';
-            } else {
-                notification.className += ' bg-blue-500 text-white';
-            }
-
-            notification.innerHTML = `
-                <div class="flex items-center">
-                    <span class="material-icons text-sm mr-2">${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}</span>
-                    <span style="font-family: 'Poppins', sans-serif; font-size: 12px;">${message}</span>
-                </div>
-            `;
-
-            document.body.appendChild(notification);
-
-            // Animate in
-            setTimeout(() => {
-                notification.classList.remove('translate-x-full');
-            }, 100);
-
-            // Auto remove after 3 seconds
-            setTimeout(() => {
-                notification.classList.add('translate-x-full');
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 3000);
-        }
 
         function previewDocument(documentId) {
             // TODO: Implement document preview modal
@@ -1434,7 +1469,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${owner}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDateTime(document.created_at)}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-all duration-200" onclick="event.stopPropagation(); showContextMenu(event, 'document', ${document.id}, '${document.name}', ${document.is_starred || false})">
+                                <button class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-all duration-200" onclick="event.stopPropagation(); showContextMenu(event, 'document', '${document.hash_token}', '${document.name}', ${document.is_starred || false})">
                                     <span class="material-icons text-sm">more_vert</span>
                                 </button>
                             </td>
@@ -1537,7 +1572,7 @@
                                     <h4 class="text-sm font-medium text-gray-900 truncate">${document.name}</h4>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <button class="three-dot-menu opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-gray-100 transition-all duration-200" onclick="event.stopPropagation(); showContextMenu(event, 'document', ${document.id}, '${document.name}', ${document.is_starred || false})">
+                                    <button class="three-dot-menu opacity-0 group-hover:opacity-100 p-1 rounded-full hover:bg-gray-100 transition-all duration-200" onclick="event.stopPropagation(); showContextMenu(event, 'document', '${document.hash_token}', '${document.name}', ${document.is_starred || false})">
                                         <span class="material-icons text-gray-600 text-lg">more_vert</span>
                                     </button>
                                 </div>
@@ -2535,13 +2570,22 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     location.reload();
                 } else {
                     alert(data.message || 'Error moving item to trash');
                 }
+            })
+            .catch(error => {
+                console.error('Error moving to trash:', error);
+                alert('Error moving item to trash: ' + error.message);
             });
         }
 
@@ -2558,13 +2602,22 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         location.reload();
                     } else {
                         alert(data.message || 'Error marking item as spam');
                     }
+                })
+                .catch(error => {
+                    console.error('Error marking as spam:', error);
+                    alert('Error marking item as spam: ' + error.message);
                 });
             }
         }
@@ -2659,20 +2712,66 @@
             // Generate color picker HTML
             let colorHTML = '';
             colors.forEach(colorObj => {
-                const isSelected = currentColor === colorObj.color;
-                const checkIcon = isSelected ? '<span class="material-icons text-white" style="font-size: 12px;">check</span>' : '';
+                // Normalize colors for comparison (both to uppercase)
+                const normalizedCurrentColor = currentColor ? currentColor.toUpperCase() : '#3B82F6';
+                const normalizedColorObj = colorObj.color.toUpperCase();
+                const isSelected = normalizedCurrentColor === normalizedColorObj;
+                
+                const checkIcon = isSelected ? '<span class="material-icons check-icon">check</span>' : '';
 
                 colorHTML += `
-                    <div class="w-8 h-8 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center"
-                         style="background-color: ${colorObj.color} !important;"
+                    <div class="color-box ${isSelected ? 'selected' : ''}"
                          onclick="changeFolderColor('${colorObj.color}')"
                          title="${colorObj.title}">
-                        ${checkIcon}
+                        <div class="color-fill" style="background-color: ${colorObj.color} !important;">
+                            ${checkIcon}
+                        </div>
                     </div>
                 `;
             });
 
             colorPickerGrid.innerHTML = colorHTML;
+        }
+
+        // Function to update color picker selection without full regeneration (for live updates)
+        function updateColorPickerSelection(newColor) {
+            const colorPickerGrid = document.getElementById('colorPickerGrid');
+            if (!colorPickerGrid) return;
+
+            // Remove all existing selected states and check marks
+            const allColorBoxes = colorPickerGrid.querySelectorAll('.color-box');
+            allColorBoxes.forEach(box => {
+                box.classList.remove('selected');
+                const checkIcon = box.querySelector('.check-icon');
+                if (checkIcon) {
+                    checkIcon.remove();
+                }
+            });
+
+            // Find and select the new color
+            const normalizedNewColor = newColor.toUpperCase();
+            allColorBoxes.forEach(box => {
+                const colorFill = box.querySelector('.color-fill');
+                if (colorFill) {
+                    const bgColor = colorFill.style.backgroundColor;
+
+                    // Convert RGB to HEX if needed
+                    let hexColor = bgColor;
+                    const rgbMatch = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+                    if (rgbMatch) {
+                        const r = parseInt(rgbMatch[1]);
+                        const g = parseInt(rgbMatch[2]);
+                        const b = parseInt(rgbMatch[3]);
+                        hexColor = rgbToHex(r, g, b);
+                    }
+
+                    // Check if this is the selected color
+                    if (hexColor.toUpperCase() === normalizedNewColor) {
+                        box.classList.add('selected');
+                        colorFill.innerHTML = '<span class="material-icons check-icon">check</span>';
+                    }
+                }
+            });
         }
 
         // Function to get current folder color
@@ -2681,7 +2780,7 @@
             if (contextMenuData && contextMenuData.id) {
                 // First, try to get from contextMenuData if available
                 if (contextMenuData.color) {
-                    return contextMenuData.color;
+                    return contextMenuData.color.toUpperCase();
                 }
 
                 // Look for folder element in DOM to get current color
@@ -2724,6 +2823,12 @@
                 return;
             }
 
+            // Update UI immediately (live update)
+            contextMenuData.color = color;
+            updateFolderColorInUI(contextMenuData.id, color);
+            updateColorPickerSelection(color); // Update checkmark immediately without full regeneration
+
+            // Then save to server
             fetch(`/document-folders/${contextMenuData.id}/color`, {
                 method: 'POST',
                 headers: {
@@ -2737,23 +2842,30 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Update ALL folder icons with this ID in the page immediately
-                    updateFolderColorInUI(contextMenuData.id, color);
-
-                    // Update color picker to show new selection
-                    updateColorPicker();
-
                     // Hide context menu
                     hideContextMenu();
 
                     // Show success notification
                     showNotification('Warna folder berjaya dikemaskini', 'success');
                 } else {
+                    // Revert UI changes if API failed
+                    const originalColor = getCurrentFolderColor();
+                    contextMenuData.color = originalColor;
+                    updateFolderColorInUI(contextMenuData.id, originalColor);
+                    updateColorPickerSelection(originalColor);
+
                     showNotification(data.message || 'Ralat mengemaskini warna folder', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error updating folder color:', error);
+                
+                // Revert UI changes if API failed
+                const originalColor = '#3B82F6'; // Default color fallback
+                contextMenuData.color = originalColor;
+                updateFolderColorInUI(contextMenuData.id, originalColor);
+                updateColorPickerSelection(originalColor);
+                
                 showNotification('Ralat mengemaskini warna folder', 'error');
             });
         }

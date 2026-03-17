@@ -28,8 +28,8 @@ class FAQController extends Controller
                         'answer' => 'Sistem ini direka untuk pentadbir masjid, ahli jawatankuasa masjid, imam, dan kakitangan yang terlibat dalam pengurusan masjid.'
                     ],
                     [
-                        'question' => 'Apakah yang baharu dalam versi 1.6?',
-                        'answer' => 'Versi 1.6 memperkenalkan sistem integrasi lengkap dengan Email (SMTP), Cuaca, API Management, dan Tetapan Umum. Termasuk weather widget dalam navbar dengan UV Index, token management, dan system version yang auto-update.'
+                        'question' => 'Apakah yang baharu dalam versi 3.0?',
+                        'answer' => 'Versi 3.0 adalah kemaskini major yang memperkenalkan 13 modul baharu termasuk complete Kewangan Module (Akaun Bank, Transaksi, Laporan dengan 3 TAB baharu), Asnaf Module (Permohonan Zakat, Agihan, Laporan), Kebajikan Module (Program, Penerima, Permohonan, Pembayaran), AJK (Laporan & Arkib), dan Permission System yang diperluaskan dari 17 ke 23 modules dengan TAB-level permissions.'
                     ],
                     [
                         'question' => 'Adakah sistem ini selamat untuk data sensitif?',
@@ -57,6 +57,10 @@ class FAQController extends Controller
                     [
                         'question' => 'Bagaimana untuk memastikan keselamatan data masjid?',
                         'answer' => 'Sistem menggunakan middleware CheckPermission untuk memastikan setiap request diverifikasi. Data difilter berdasarkan masjid_id dan role pengguna. Semua akses dilog untuk audit trail.'
+                    ],
+                    [
+                        'question' => 'Apakah itu TAB-level permissions?',
+                        'answer' => 'TAB-level permissions adalah granular permission control yang membolehkan admin set akses untuk setiap TAB dalam modul. Contohnya dalam Laporan Kewangan ada 8 TABs (Penyata, Pendapatan, Perbelanjaan, Aliran Tunai, Penyata P&P, Perbandingan, Kategori, Baki Bank) - setiap TAB boleh dikonfigurasi permission secara berasingan dalam Senarai Kumpulan.'
                     ]
                 ]
             ],
@@ -130,6 +134,10 @@ class FAQController extends Controller
                     [
                         'question' => 'Mengapa kad statistik kumpulan menunjukkan bilangan yang berbeza?',
                         'answer' => 'Kad statistik kumpulan menunjukkan data berdasarkan pengasingan masjid. Admin Masjid hanya melihat statistik kumpulan masjid mereka (contoh: 1 Jumlah, 1 Aktif, 1 Tersuai), manakala Super Admin melihat semua kumpulan sistem.'
+                    ],
+                    [
+                        'question' => 'Berapa banyak modules dalam permission matrix sekarang?',
+                        'answer' => 'Permission matrix telah diperluaskan dari 17 modules kepada 23 modules dalam v3.0. Modules baharu termasuk: Permohonan Zakat, Laporan Zakat, Tetapan Asnaf, Program Kebajikan, Penerima Bantuan, Permohonan Bantuan, Pembayaran Bantuan, Laporan Kebajikan, Tetapan Kebajikan, Akaun Bank, Transaksi Kewangan, Laporan Kewangan, dan Tetapan Kewangan. Semua modules disusun mengikut ASCII sorting dengan visual separators.'
                     ]
                 ]
             ],
@@ -153,6 +161,95 @@ class FAQController extends Controller
                     [
                         'question' => 'Bagaimana untuk menambah pengguna baharu?',
                         'answer' => 'Pergi ke Senarai Pengguna dan klik "Tambah Pengguna". Pengguna baharu akan dikaitkan dengan masjid anda dan hanya visible kepada pengguna masjid yang sama.'
+                    ]
+                ]
+            ],
+            [
+                'category' => 'Modul Kewangan',
+                'icon' => 'account_balance',
+                'color' => 'green',
+                'questions' => [
+                    [
+                        'question' => 'Apakah modul-modul dalam Kewangan?',
+                        'answer' => 'Modul Kewangan mengandungi 4 sub-modul: Akaun Bank (pengurusan akaun bank masjid), Transaksi Kewangan (rekod pendapatan & perbelanjaan), Laporan Kewangan (8 TAB laporan termasuk Penyata P&P, Perbandingan Bulanan, Laporan Kategori), dan Tetapan Kewangan (konfigurasi kategori pendapatan/perbelanjaan).'
+                    ],
+                    [
+                        'question' => 'Bagaimana untuk merekod transaksi kewangan?',
+                        'answer' => 'Pergi ke Transaksi Kewangan dan pilih jenis transaksi (Pendapatan atau Perbelanjaan). Untuk Pendapatan ada 4 form: Kutipan Kariah, Derma & Sumbangan, Kutipan Zakat, Kutipan Lain. Untuk Perbelanjaan ada 4 form: Utiliti & Bil, Penyelenggaraan, Gaji & Elaun, Perbelanjaan Lain. Setiap form ada kategori dropdown untuk categorization yang proper.'
+                    ],
+                    [
+                        'question' => 'Apakah itu Penyata Pendapatan & Perbelanjaan?',
+                        'answer' => 'Penyata P&P adalah laporan kewangan yang menunjukkan BAHAGIAN A: PENDAPATAN (semua kutipan), BAHAGIAN B: PERBELANJAAN (semua perbelanjaan), dan LEBIHAN/KURANGAN (SURPLUS/DEFICIT). Format ini lebih sesuai untuk konteks masjid berbanding Imbangan Duga.'
+                    ],
+                    [
+                        'question' => 'Bagaimana untuk lihat laporan kewangan masjid lain (Super Admin)?',
+                        'answer' => 'Super Admin boleh gunakan dropdown "Pilih Masjid" dalam Laporan Kewangan untuk lihat laporan masjid lain. Data isolation yang proper memastikan setiap masjid hanya nampak data mereka sendiri, kecuali Super Admin.'
+                    ],
+                    [
+                        'question' => 'Apakah itu Baki Pada Masa Transaksi?',
+                        'answer' => 'Baki Pada Masa Transaksi adalah historical balance calculation yang menunjukkan baki bank pada masa transaksi tersebut dibuat. Ia dikira dengan formula: baki_awal + pendapatan_sebelum - perbelanjaan_sebelum. Ini berbeza dengan Baki Semasa (Terkini) yang menunjukkan baki terkini.'
+                    ],
+                    [
+                        'question' => 'Apakah itu kategori integration dalam form kewangan?',
+                        'answer' => 'Semua 8 forms kewangan (4 Kutipan Dana + 4 Perbelanjaan) kini ada kategori dropdown. Untuk Derma & Sumbangan ada Jenis Derma (sub-category), untuk Utiliti & Bil ada Jenis Bil. Kategori ini dynamic dan customizable dari Tetapan Kewangan untuk better reporting dan analysis.'
+                    ]
+                ]
+            ],
+            [
+                'category' => 'Modul Asnaf & Kebajikan',
+                'icon' => 'volunteer_activism',
+                'color' => 'pink',
+                'questions' => [
+                    [
+                        'question' => 'Apakah modul-modul dalam Asnaf?',
+                        'answer' => 'Modul Asnaf mengandungi: Asnaf (pengurusan data asnaf), Permohonan Zakat (permohonan bantuan zakat dengan workflow approve/reject), Agihan Zakat (rekod agihan kepada asnaf), Laporan Zakat (laporan view-only), dan Tetapan Asnaf (konfigurasi had kifayah, had bantuan, workflow, kategori).'
+                    ],
+                    [
+                        'question' => 'Apakah modul-modul dalam Kebajikan?',
+                        'answer' => 'Modul Kebajikan mengandungi: Program Kebajikan (pengurusan program bantuan), Penerima Bantuan (data penerima), Permohonan Bantuan (permohonan bantuan kebajikan), Pembayaran Bantuan (rekod pembayaran), Laporan Kebajikan (laporan view-only), dan Tetapan Kebajikan (konfigurasi had bantuan, workflow, kategori, tempoh bantuan).'
+                    ],
+                    [
+                        'question' => 'Bagaimana workflow permohonan zakat berfungsi?',
+                        'answer' => 'Permohonan Zakat mempunyai workflow approve/reject sahaja (tanpa suspend/reactivate). Selepas permohonan dibuat, ia boleh diluluskan atau ditolak oleh admin. Jika diluluskan, agihan zakat boleh direkod dalam modul Agihan Zakat.'
+                    ],
+                    [
+                        'question' => 'Apakah perbezaan antara Asnaf dan Penerima Bantuan?',
+                        'answer' => 'Asnaf adalah untuk bantuan zakat (8 kategori asnaf mengikut syarak), manakala Penerima Bantuan adalah untuk bantuan kebajikan umum (tidak terhad kepada kategori asnaf). Kedua-duanya ada sistem kategori, had bantuan, dan workflow yang berasingan.'
+                    ],
+                    [
+                        'question' => 'Bagaimana untuk set had kifayah dan had bantuan?',
+                        'answer' => 'Pergi ke Tetapan Asnaf atau Tetapan Kebajikan, pilih TAB "Had Kifayah" atau "Had Bantuan". Masukkan nilai minimum dan maksimum untuk setiap kategori. Had ini akan digunakan untuk validasi semasa permohonan dan agihan bantuan.'
+                    ],
+                    [
+                        'question' => 'Apakah itu tempoh bantuan dalam Kebajikan?',
+                        'answer' => 'Tempoh Bantuan adalah konfigurasi berapa lama bantuan akan diberikan (contoh: 1 bulan, 3 bulan, 6 bulan, 1 tahun). Ia boleh dikonfigurasi dalam Tetapan Kebajikan dan akan digunakan untuk calculate tarikh tamat bantuan.'
+                    ]
+                ]
+            ],
+            [
+                'category' => 'Modul AJK Masjid',
+                'icon' => 'badge',
+                'color' => 'cyan',
+                'questions' => [
+                    [
+                        'question' => 'Apakah itu modul AJK?',
+                        'answer' => 'Modul AJK (Ahli Jawatankuasa Masjid) adalah untuk pengurusan ahli jawatankuasa masjid termasuk maklumat peribadi, jawatan, tempoh perkhidmatan, dan status. Ia mengandungi 3 sub-modul: AJK Management, AJK Arkib, dan AJK Laporan.'
+                    ],
+                    [
+                        'question' => 'Apakah perbezaan antara AJK Management dan AJK Arkib?',
+                        'answer' => 'AJK Management menunjukkan ahli jawatankuasa yang aktif (active members), manakala AJK Arkib menunjukkan ahli jawatankuasa yang tidak aktif lagi (inactive members). Ini memudahkan pengurusan rekod historical AJK.'
+                    ],
+                    [
+                        'question' => 'Apakah itu AJK Laporan?',
+                        'answer' => 'AJK Laporan adalah laporan view-only yang menunjukkan statistik dan maklumat lengkap tentang ahli jawatankuasa masjid. Ia termasuk breakdown by jawatan, tempoh perkhidmatan, dan status keahlian.'
+                    ],
+                    [
+                        'question' => 'Bagaimana untuk archive ahli AJK?',
+                        'answer' => 'Dalam AJK Management, tukar status ahli kepada "Inactive" atau "Suspended". Ahli tersebut akan automatically muncul dalam AJK Arkib dan tidak lagi ditunjukkan dalam senarai aktif.'
+                    ],
+                    [
+                        'question' => 'Bolehkah saya restore ahli AJK dari arkib?',
+                        'answer' => 'Ya, pergi ke AJK Arkib, cari ahli yang ingin di-restore, dan tukar status kembali kepada "Active". Ahli tersebut akan kembali muncul dalam AJK Management.'
                     ]
                 ]
             ],

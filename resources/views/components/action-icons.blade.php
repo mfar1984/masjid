@@ -1,5 +1,6 @@
 @props([
     'record' => null,
+    'showRoute' => '',
     'editRoute' => '',
     'deleteAction' => '',
     'approveAction' => '',
@@ -12,12 +13,22 @@
     <!-- Desktop Action Icons -->
     <td class="px-4 py-2 table-data text-center space-x-1">
         <!-- Accept/Reject for Pending Status -->
-        @if($record->status === 'pending' || $record->status === 'Menunggu')
+        @if(isset($record->status) && ($record->status === 'pending' || $record->status === 'Menunggu'))
             @if($module && auth()->user()->hasPermission($module, 'approve'))
                 <x-icons.approve-icon :id="$record->id" :nama="$record->nama" size="desktop" />
             @endif
             @if($module && auth()->user()->hasPermission($module, 'reject'))
                 <x-icons.reject-icon :id="$record->id" :nama="$record->nama" size="desktop" />
+            @endif
+        @endif
+
+        <!-- Approve/Reject for Pembayaran Bantuan (Belum Bayar) -->
+        @if(isset($record->status_pembayaran) && $record->status_pembayaran === 'Belum Bayar')
+            @if($module && auth()->user()->hasPermission($module, 'update'))
+                <x-icons.sahkan-icon :id="$record->id" :nama="$record->no_pembayaran" size="desktop" />
+            @endif
+            @if($module && auth()->user()->hasPermission($module, 'delete'))
+                <x-icons.batal-bayaran-icon :id="$record->id" :nama="$record->no_pembayaran" size="desktop" />
             @endif
         @endif
 
@@ -28,9 +39,9 @@
         @endif
 
         <!-- Suspend/Unsuspend Actions -->
-        @if(($record->status === 'active' || $record->status === 'Aktif') && $module && auth()->user()->hasPermission($module, 'suspend'))
+        @if(isset($record->status) && ($record->status === 'active' || $record->status === 'Aktif') && $module && auth()->user()->hasPermission($module, 'suspend'))
             <x-icons.suspend-icon :id="$record->id" :nama="$record->nama" size="desktop" />
-        @elseif(($record->status === 'suspended' || $record->status === 'Digantung') && $module && auth()->user()->hasPermission($module, 'reactivate'))
+        @elseif(isset($record->status) && ($record->status === 'suspended' || $record->status === 'Digantung') && $module && auth()->user()->hasPermission($module, 'reactivate'))
             <x-icons.unsuspend-icon :id="$record->id" :nama="$record->nama" size="desktop" />
         @endif
 
@@ -42,12 +53,22 @@
     <!-- Mobile Action Icons -->
     <div class="flex items-center space-x-2">
         <!-- Accept/Reject for Pending Status -->
-        @if($record->status === 'pending' || $record->status === 'Menunggu')
+        @if(isset($record->status) && ($record->status === 'pending' || $record->status === 'Menunggu'))
             @if($module && auth()->user()->hasPermission($module, 'approve'))
                 <x-icons.approve-icon :id="$record->id" :nama="$record->nama" size="mobile" />
             @endif
             @if($module && auth()->user()->hasPermission($module, 'reject'))
                 <x-icons.reject-icon :id="$record->id" :nama="$record->nama" size="mobile" />
+            @endif
+        @endif
+
+        <!-- Approve/Reject for Pembayaran Bantuan (Belum Bayar) -->
+        @if(isset($record->status_pembayaran) && $record->status_pembayaran === 'Belum Bayar')
+            @if($module && auth()->user()->hasPermission($module, 'update'))
+                <x-icons.sahkan-icon :id="$record->id" :nama="$record->no_pembayaran" size="mobile" />
+            @endif
+            @if($module && auth()->user()->hasPermission($module, 'delete'))
+                <x-icons.batal-bayaran-icon :id="$record->id" :nama="$record->no_pembayaran" size="mobile" />
             @endif
         @endif
 
@@ -58,9 +79,9 @@
         @endif
 
         <!-- Suspend/Unsuspend Actions -->
-        @if(($record->status === 'active' || $record->status === 'Aktif') && $module && auth()->user()->hasPermission($module, 'suspend'))
+        @if(isset($record->status) && ($record->status === 'active' || $record->status === 'Aktif') && $module && auth()->user()->hasPermission($module, 'suspend'))
             <x-icons.suspend-icon :id="$record->id" :nama="$record->nama" size="mobile" />
-        @elseif(($record->status === 'suspended' || $record->status === 'Digantung') && $module && auth()->user()->hasPermission($module, 'reactivate'))
+        @elseif(isset($record->status) && ($record->status === 'suspended' || $record->status === 'Digantung') && $module && auth()->user()->hasPermission($module, 'reactivate'))
             <x-icons.unsuspend-icon :id="$record->id" :nama="$record->nama" size="mobile" />
         @endif
 

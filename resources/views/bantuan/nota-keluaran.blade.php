@@ -34,9 +34,9 @@
 
                 <!-- Current Version Banner -->
                 <x-release-notes.banner
-                    version="v1.8"
+                    version="v3.0"
                     title="Versi Semasa"
-                    description="Kemaskini Major - Sistem Pengurusan Dokumen Lengkap dengan Google Drive Style"
+                    description="Kemaskini Major - Complete Kewangan, Asnaf & Kebajikan Modules"
                 />
 
                 <!-- Version Filter -->
@@ -44,6 +44,605 @@
 
                 <!-- Release Notes -->
                 <div class="space-y-6">
+                    <!-- Version 3.0 - Major Update -->
+                    <x-release-notes.version
+                        version="v3.0"
+                        title="Kemaskini Major"
+                        description="Complete Kewangan, Asnaf & Kebajikan Modules"
+                        date="14 Disember 2025"
+                        type="major"
+                        :isLatest="true"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- Kewangan Module -->
+                                <x-release-notes.feature-section
+                                    title="Modul Kewangan - Laporan & Transaksi"
+                                    icon="account_balance"
+                                    color="text-green-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="📊 3 TAB Baharu Laporan Kewangan"
+                                        description="Penyata Pendapatan & Perbelanjaan (Income & Expenditure), Perbandingan Bulanan dengan percentage analysis, dan Laporan Mengikut Kategori (Top 5)"
+                                        icon="assessment"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🏢 Filter Masjid untuk Super Admin"
+                                        description="Dropdown 'Pilih Masjid' untuk Super Admin lihat laporan kewangan masjid lain - data isolation yang proper"
+                                        icon="business"
+                                    />
+                                    <x-release-notes.feature
+                                        title="💰 Enhanced Transaksi Kewangan"
+                                        description="Improved show/edit pages dengan gradient cards, icons, dan historical balance calculation (Baki Pada Masa Transaksi)"
+                                        icon="receipt_long"
+                                    />
+                                    <x-release-notes.feature
+                                        title="📈 52 Sample Transactions"
+                                        description="Realistic sample data untuk Jan-Feb 2025 dengan proper kategori mapping dan various payment methods"
+                                        icon="data_usage"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🏷️ Kategori Integration - 8 Forms"
+                                        description="Semua 8 forms (4 Kutipan Dana + 4 Perbelanjaan) kini ada kategori dropdown. Added Jenis Derma dan Jenis Bil untuk sub-categorization. Dynamic dan customizable dari Tetapan Kewangan"
+                                        icon="category"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Permission System -->
+                                <x-release-notes.feature-section
+                                    title="Sistem Kebenaran & Akses Kawalan"
+                                    icon="admin_panel_settings"
+                                    color="text-blue-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🔐 TAB-Level Permissions"
+                                        description="Granular permission control untuk setiap TAB dalam Laporan Kewangan, Tetapan Kewangan, Tetapan Kebajikan, dan Tetapan Asnaf"
+                                        icon="security"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🎯 Permission Matrix Expansion"
+                                        description="Added 15+ new permissions untuk future modules: Inventori, Aset, Operasi, Pengurusan Masjid, dan Pentadbiran"
+                                        icon="grid_view"
+                                    />
+                                    <x-release-notes.feature
+                                        title="✅ Senarai Kumpulan - 23 Modules"
+                                        description="Expanded dari 17 → 23 modules dengan 13 modules baru (Permohonan Zakat, Laporan Zakat, Tetapan Asnaf, Program Kebajikan, Penerima Bantuan, Permohonan Bantuan, Pembayaran Bantuan, Laporan Kebajikan, Tetapan Kebajikan, Akaun Bank, Transaksi Kewangan, Laporan Kewangan, Tetapan Kewangan). Reorganized dengan ASCII sorting dan proper module grouping"
+                                        icon="reorder"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🛡️ Access Control Fixes"
+                                        description="Fixed permission checks untuk Kebajikan views dan proper scope validation untuk all modules"
+                                        icon="verified_user"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- AJK & Pengurusan Modules -->
+                            <div class="mt-6">
+                                <x-release-notes.feature-section
+                                    title="Modul Pengurusan - AJK, Asnaf & Kebajikan"
+                                    icon="groups"
+                                    color="text-orange-600"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <x-release-notes.feature-item
+                                            title="👥 AJK - Laporan & Arkib"
+                                            description="Complete AJK module dengan Laporan (active members) dan Arkib (inactive members) features"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="🤲 Asnaf - Complete Workflow"
+                                            description="Permohonan Zakat, Agihan Zakat, Laporan Zakat, dan Tetapan Asnaf dengan kategori integration"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="❤️ Kebajikan - Full Module"
+                                            description="Program Kebajikan, Penerima Bantuan, Permohonan Bantuan, Pembayaran Bantuan, Laporan Kebajikan, dan Tetapan Kebajikan"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="⚙️ Tetapan Modules Enhancement"
+                                            description="TAB-based settings untuk Asnaf, Kebajikan, dan Kewangan dengan kategori management"
+                                        />
+                                    </div>
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Tetapan Modules with TABs -->
+                            <div class="mt-6">
+                                <x-release-notes.feature-section
+                                    title="Modul Tetapan - TAB-Based Configuration"
+                                    icon="settings"
+                                    color="text-indigo-600"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <x-release-notes.feature-item
+                                            title="⚙️ Tetapan Kewangan"
+                                            description="TAB-based settings: Kategori Pendapatan, Kategori Perbelanjaan, Jenis Derma, Jenis Bil. Dynamic management untuk categorization"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="❤️ Tetapan Kebajikan"
+                                            description="TAB-based settings: Had Bantuan, Workflow, Kategori, Permohonan, Pembayaran, Display, Tempoh Bantuan. Complete configuration system"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="🤲 Tetapan Asnaf"
+                                            description="TAB-based settings: Had Kifayah, Had Bantuan, Workflow, Kategori. Syariah-compliant configuration untuk 8 kategori asnaf"
+                                        />
+                                    </div>
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Bantuan & Sokongan -->
+                            <div class="mt-6">
+                                <x-release-notes.feature-section
+                                    title="Bantuan & Sokongan - Documentation Updates"
+                                    icon="help_center"
+                                    color="text-teal-600"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <x-release-notes.feature-item
+                                            title="❓ FAQ Updated to v3.0"
+                                            description="Added 3 new categories (Modul Kewangan, Modul Asnaf & Kebajikan, Modul AJK Masjid) dengan 19 soalan baharu covering all v3.0 features"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="📖 Panduan Pengguna Updated"
+                                            description="Comprehensive user guide updated dengan step-by-step instructions untuk semua modules baharu termasuk Kewangan, Asnaf, Kebajikan, dan AJK"
+                                        />
+                                    </div>
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- UI/UX Improvements -->
+                            <div class="mt-6">
+                                <x-release-notes.feature-section
+                                    title="Penambahbaikan UI/UX"
+                                    icon="palette"
+                                    color="text-purple-600"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <x-release-notes.feature-item
+                                            title="🎨 Table Text Color Fix"
+                                            description="Fixed white text issue dalam TAB Kategori untuk Tetapan Kewangan, Kebajikan, dan Asnaf - semua text kini visible"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="📄 Pagination Standardization"
+                                            description="Standardized pagination across all modules - consistent 10 items per page dengan proper styling"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="💳 Enhanced Show Pages"
+                                            description="Gradient cards, Material Icons, dan improved layout untuk Transaksi Kewangan show/edit pages"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="🎯 Full Width Filters"
+                                            description="Responsive filter layout dengan flex-wrap untuk Laporan Kewangan - optimal space usage"
+                                        />
+                                    </div>
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Bug Fixes -->
+                            <div class="mt-6 p-4 bg-red-50 rounded border-l-4 border-red-500">
+                                <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                    <span class="material-icons text-sm text-red-600">bug_report</span>
+                                    Critical Bug Fixes
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-700">
+                                    <div>
+                                        <strong>Variable Name Fixes:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Fixed $transaksi vs $transaksiKewangan inconsistency dalam show/edit views</li>
+                                            <li>Fixed column name 'nama_masjid' to 'nama' untuk Masjid model</li>
+                                            <li>Proper variable naming untuk single record vs collection</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Data & Display:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Fixed Laporan Kewangan data calculation untuk proper baki bersih</li>
+                                            <li>Fixed empty folder display bila filter by file type</li>
+                                            <li>Restored missing kaedah_bayaran field dalam edit form</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Technical Details -->
+                            <div class="mt-4 p-4 bg-gray-50 rounded border-l-4 border-blue-500">
+                                <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                    <span class="material-icons text-sm text-blue-600">code</span>
+                                    Technical Implementation
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-700">
+                                    <div>
+                                        <strong>Backend Enhancements:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Enhanced LaporanKewanganController dengan 3 new TAB data preparation</li>
+                                            <li>Added RoleController permissions untuk future modules</li>
+                                            <li>Improved TransaksiKewanganController dengan historical balance logic</li>
+                                            <li>Migration untuk 52 realistic sample transactions</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Frontend Improvements:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>New TAB UI dengan tables, charts, dan proper permission wrapping</li>
+                                            <li>Enhanced filter layout dengan flex-wrap dan min-width constraints</li>
+                                            <li>CSS fixes dengan text-gray-700 dan font-medium untuk table headers</li>
+                                            <li>Responsive design improvements across all modules</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Module Updates -->
+                            <div class="mt-4 p-4 bg-green-50 rounded border-l-4 border-green-500">
+                                <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                    <span class="material-icons text-sm text-green-600">update</span>
+                                    Module Updates Summary
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs text-gray-700">
+                                    <div>
+                                        <strong>👥 AJK Masjid:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>AJK Management ✅</li>
+                                            <li>AJK Arkib ✅</li>
+                                            <li>AJK Laporan ✅</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>🤲 Asnaf:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Asnaf ✅</li>
+                                            <li>Permohonan Zakat ✅</li>
+                                            <li>Agihan Zakat ✅</li>
+                                            <li>Laporan Zakat ✅</li>
+                                            <li>Tetapan Asnaf ✅</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>❤️ Kebajikan:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Program Kebajikan ✅</li>
+                                            <li>Penerima Bantuan ✅</li>
+                                            <li>Permohonan Bantuan ✅</li>
+                                            <li>Pembayaran Bantuan ✅</li>
+                                            <li>Laporan Kebajikan ✅</li>
+                                            <li>Tetapan Kebajikan ✅</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>💰 Kewangan:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Akaun Bank ✅</li>
+                                            <li>Transaksi Kewangan ✅</li>
+                                            <li>Laporan Kewangan ✅</li>
+                                            <li>Tetapan Kewangan ✅</li>
+                                            <li>8 Forms Kategori ✅</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-green-200 text-xs text-gray-700">
+                                    <div>
+                                        <strong>⚙️ Pentadbiran & Sistem:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1 ml-4">
+                                            <li>Senarai Kumpulan - 23 Modules (expanded dari 17) ✅</li>
+                                            <li>Permission Matrix - TAB-level permissions ✅</li>
+                                            <li>Access Control - Proper scope validation ✅</li>
+                                            <li>Module Grouping - ASCII sorting dengan visual separators ✅</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                    </x-release-notes.version>
+
+                    <!-- Version 2.1 - Minor Update -->
+                    <x-release-notes.version
+                        version="v2.1"
+                        title="Kemaskini Minor"
+                        description="Document Filter Enhancement & UI Improvements"
+                        date="21 September 2025"
+                        type="minor"
+                        :isLatest="false"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- New Features -->
+                                <x-release-notes.feature-section
+                                    title="Document Management Enhancements"
+                                    icon="filter_list"
+                                    color="text-green-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🎯 Smart File Type Filtering"
+                                        description="Enhanced filter logic - folders now only appear when they contain documents of the selected file type (PDF, DOCX, etc.)"
+                                        icon="filter_alt"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🏢 Masjid ID Display"
+                                        description="Added Masjid ID information in document header helper text. Shows 'Super Admin' for super admin users and 'Masjid ID: [code]' for regular users"
+                                        icon="business"
+                                    />
+                                    <x-release-notes.feature
+                                        title="⭐ Improved Star Badge System"
+                                        description="Enhanced star badge visibility with !important CSS rules for consistent display across all document and folder items"
+                                        icon="star"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Technical Improvements -->
+                                <x-release-notes.feature-section
+                                    title="Technical Improvements"
+                                    icon="code"
+                                    color="text-blue-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🔍 Enhanced Filter Logic"
+                                        description="Implemented whereHas() query to filter folders based on document content, ensuring only relevant folders are displayed"
+                                        icon="search"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🛡️ Data Isolation Consistency"
+                                        description="Maintained strict masjid data isolation in folder filtering logic for security and proper multi-tenant architecture"
+                                        icon="security"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🎨 CSS Optimization"
+                                        description="Added !important rules for star badge opacity and hover effects to prevent style conflicts"
+                                        icon="palette"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Bug Fixes -->
+                            <div class="mt-6">
+                                <x-release-notes.feature-section
+                                    title="Bug Fixes"
+                                    icon="bug_report"
+                                    color="text-red-600"
+                                >
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <x-release-notes.feature-item
+                                            title="🐛 Fixed Empty Folder Display"
+                                            description="Resolved issue where all folders were shown when filtering by file type, even if they contained no matching documents"
+                                        />
+                                        <x-release-notes.feature-item
+                                            title="🐛 Fixed Star Badge Missing"
+                                            description="Restored missing star badge for folder items that was accidentally removed during previous updates"
+                                        />
+                                    </div>
+                                </x-release-notes.feature-section>
+                            </div>
+                    </x-release-notes.version>
+
+                    <!-- Version 2.0 - Major Update -->
+                    <x-release-notes.version
+                        version="v2.0"
+                        title="Kemaskini Major"
+                        description="Sistem Pengurusan Dokumen Lengkap dengan UI/UX Enhancements"
+                        date="21 September 2025"
+                        type="major"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- New Features -->
+                                <x-release-notes.feature-section
+                                    title="UI/UX Enhancements & Bug Fixes"
+                                    icon="palette"
+                                    color="text-blue-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🎨 Enhanced Folder Color Picker"
+                                        description="Improved Google Drive style color picker dengan 24 colors, live updates, dan proper check mark indicators"
+                                        icon="color_lens"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🔧 Fixed Document Actions"
+                                        description="Resolved 404 errors untuk delete dan spam actions - semua document management functions kini berfungsi dengan sempurna"
+                                        icon="build"
+                                    />
+                                    <x-release-notes.feature
+                                        title="✨ Live Color Selection"
+                                        description="Real-time color picker updates tanpa browser refresh - check marks bertukar secara instant bila pilih warna baru"
+                                        icon="refresh"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🎯 Improved Error Handling"
+                                        description="Better error messages dengan proper HTTP status codes dan console logging untuk easier debugging"
+                                        icon="error_outline"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Technical Improvements -->
+                                <x-release-notes.feature-section
+                                    title="Technical Improvements"
+                                    icon="code"
+                                    color="text-indigo-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🔗 Route Parameter Fixes"
+                                        description="Fixed route parameter mismatch - semua document actions kini menggunakan documentIdentifier untuk proper hash token resolution"
+                                        icon="link"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🎨 CSS Optimization"
+                                        description="Enhanced CSS dengan !important declarations untuk prevent conflicts, proper box-sizing, dan responsive design"
+                                        icon="style"
+                                    />
+                                    <x-release-notes.feature
+                                        title="⚡ JavaScript Performance"
+                                        description="Optimized JavaScript functions dengan better DOM manipulation, efficient color picker updates, dan reduced reflows"
+                                        icon="speed"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🛡️ Security Enhancements"
+                                        description="Improved permission checking, proper access validation, dan secure document identifier resolution"
+                                        icon="security"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Bug Fixes -->
+                            <div class="mt-6 p-4 bg-red-50 rounded border-l-4 border-red-500">
+                                <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                    <span class="material-icons text-sm text-red-600">bug_report</span>
+                                    Critical Bug Fixes
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-700">
+                                    <div>
+                                        <strong>Document Actions:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Fixed 404 errors untuk "Pindah ke tong sampah" action</li>
+                                            <li>Fixed 404 errors untuk "Tandakan sebagai spam" action</li>
+                                            <li>Resolved route parameter mismatch issues</li>
+                                            <li>Proper hash token to Document model resolution</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Color Picker:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Colors now stay within proper boundaries</li>
+                                            <li>Check marks update instantly without refresh</li>
+                                            <li>Proper CSS sizing dengan overflow prevention</li>
+                                            <li>Enhanced hover effects dan selection states</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Technical Details -->
+                            <div class="mt-4 p-4 bg-gray-50 rounded border-l-4 border-blue-500">
+                                <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                    <span class="material-icons text-sm text-blue-600">code</span>
+                                    Technical Implementation
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-700">
+                                    <div>
+                                        <strong>Backend Fixes:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Updated DocumentController methods untuk use documentIdentifier</li>
+                                            <li>Enhanced findDocumentByIdentifier() functionality</li>
+                                            <li>Improved error responses dengan proper JSON format</li>
+                                            <li>Better permission checking dan access validation</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Frontend Enhancements:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Live color picker updates dengan updateColorPickerSelection()</li>
+                                            <li>Enhanced CSS dengan comprehensive !important declarations</li>
+                                            <li>Better error handling dengan proper HTTP status checking</li>
+                                            <li>Optimized DOM manipulation untuk better performance</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                    </x-release-notes.version>
+
+                    <!-- Version 1.9 - Major Update -->
+                    <x-release-notes.version
+                        version="v1.9"
+                        title="Kemaskini Major"
+                        description="Sistem Perkongsian Dokumen & Kod Masjid Unik"
+                        date="21 September 2025"
+                        type="major"
+                        bg-color="bg-emerald-50"
+                        badge-color="bg-emerald-100 text-emerald-800"
+                    >
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- New Features -->
+                                <x-release-notes.feature-section
+                                    title="Sistem Perkongsian Dokumen Google Drive Style"
+                                    icon="share"
+                                    color="text-emerald-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🔗 Google Drive Style Document Sharing"
+                                        description="Sistem perkongsian dokumen lengkap dengan modal sharing yang mirip Google Drive - support restricted dan public link sharing"
+                                        icon="share"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🔒 Advanced Access Level Control"
+                                        description="Dua tahap akses: 'Terhad' (hanya orang yang ditambah) dan 'Sesiapa dengan pautan' (public access)"
+                                        icon="security"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🏢 Kod Masjid Sharing System"
+                                        description="Share dokumen dengan masjid lain menggunakan Kod Masjid 6-digit dengan validation dan permission levels"
+                                        icon="business"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🔐 Secure Token Management"
+                                        description="32-karakter random tokens untuk public sharing dengan proper revoke/reuse logic"
+                                        icon="vpn_key"
+                                    />
+                                </x-release-notes.feature-section>
+
+                                <!-- Improvements -->
+                                <x-release-notes.feature-section
+                                    title="Penambahbaikan Sistem"
+                                    icon="upgrade"
+                                    color="text-green-600"
+                                >
+                                    <x-release-notes.feature
+                                        title="🆔 Kod Masjid Unik System"
+                                        description="Sistem Kod Masjid yang unik untuk setiap masjid - tidak boleh duplicate, dengan validation dan error handling"
+                                        icon="fingerprint"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🔄 Smart Token Reuse Logic"
+                                        description="Sistem pintar yang reuse existing active share tokens untuk mengelakkan duplicate links"
+                                        icon="refresh"
+                                    />
+                                    <x-release-notes.feature
+                                        title="🛡️ Enhanced Security Controls"
+                                        description="Proper access validation - 'Salin pautan' button hanya berfungsi untuk public access level"
+                                        icon="shield"
+                                    />
+                                    <x-release-notes.feature
+                                        title="📊 Real-time State Management"
+                                        description="UI yang properly sync dengan database state - access level persistent selepas close/reopen modal"
+                                        icon="sync"
+                                    />
+                                </x-release-notes.feature-section>
+                            </div>
+
+                            <!-- Technical Details -->
+                            <div class="mt-6 p-4 bg-gray-50 rounded border-l-4 border-emerald-500">
+                                <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                    <span class="material-icons text-sm text-emerald-600">code</span>
+                                    Technical Implementation
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-700">
+                                    <div>
+                                        <strong>Frontend:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>Google Drive style sharing modal dengan proper UI/UX</li>
+                                            <li>Real-time access level state management</li>
+                                            <li>Smart copy link functionality dengan validation</li>
+                                            <li>Responsive design untuk mobile dan desktop</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <strong>Backend:</strong>
+                                        <ul class="list-disc list-inside mt-1 space-y-1">
+                                            <li>DocumentShare model dengan comprehensive relationships</li>
+                                            <li>API endpoints untuk sharing management</li>
+                                            <li>Secure token generation dan validation</li>
+                                            <li>Proper access control dan permission checking</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Features -->
+                            <div class="mt-4 p-4 bg-red-50 rounded border-l-4 border-red-500">
+                                <h4 class="font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                    <span class="material-icons text-sm text-red-600">security</span>
+                                    Security Features
+                                </h4>
+                                <div class="text-xs text-gray-700 space-y-2">
+                                    <div><strong>🔒 Access Control:</strong> Proper validation sebelum create/access share links</div>
+                                    <div><strong>🚫 Token Revocation:</strong> Automatic revoke semua existing shares bila set ke 'Terhad'</div>
+                                    <div><strong>🔐 Secure URLs:</strong> 32-karakter random tokens untuk maximum security</div>
+                                    <div><strong>✅ State Validation:</strong> Backend validation untuk prevent unauthorized access</div>
+                                </div>
+                            </div>
+                    </x-release-notes.version>
+
                     <!-- Version 1.8 - Major Update -->
                     <x-release-notes.version
                         version="v1.8"
@@ -51,8 +650,6 @@
                         description="Sistem Pengurusan Dokumen Lengkap dengan Google Drive Style"
                         date="20 September 2025"
                         type="major"
-                        bg-color="bg-emerald-50"
-                        badge-color="bg-emerald-100 text-emerald-800"
                     >
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <!-- New Features -->
@@ -378,8 +975,8 @@
                         description="Sistem Integrasi Lengkap - Email, Cuaca, API & Tetapan"
                         date="18 September 2025"
                         type="major"
-                        bg-color="bg-indigo-50"
-                        badge-color="bg-indigo-100 text-indigo-800"
+                        bg-color="bg-emerald-50"
+                        badge-color="bg-emerald-100 text-emerald-800"
                     >
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <!-- New Features -->
@@ -650,8 +1247,8 @@
                         description="Advanced Login Security & Role Management"
                         date="18 September 2025"
                         type="major"
-                        bg-color="bg-purple-50"
-                        badge-color="bg-purple-100 text-purple-800"
+                        bg-color="bg-emerald-50"
+                        badge-color="bg-emerald-100 text-emerald-800"
                     >
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <!-- New Features -->
@@ -830,8 +1427,8 @@
                         description="Permission System & Data Isolation"
                         date="17 September 2025"
                         type="major"
-                        bg-color="bg-blue-50"
-                        badge-color="bg-blue-100 text-blue-800"
+                        bg-color="bg-emerald-50"
+                        badge-color="bg-emerald-100 text-emerald-800"
                     >
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <!-- New Features -->

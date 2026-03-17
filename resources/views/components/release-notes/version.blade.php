@@ -5,8 +5,22 @@
     'date' => null,
     'type' => 'minor',
     'bgColor' => 'bg-green-50',
-    'badgeColor' => 'bg-green-100 text-green-800'
+    'badgeColor' => 'bg-green-100 text-green-800',
+    'isLatest' => false
 ])
+
+@php
+    // Auto-determine colors based on isLatest flag
+    if ($isLatest) {
+        // Latest version gets blue color (special)
+        $finalBgColor = 'bg-blue-50';
+        $finalBadgeColor = 'bg-blue-100 text-blue-800';
+    } else {
+        // All older versions get green color
+        $finalBgColor = 'bg-green-50';
+        $finalBadgeColor = 'bg-green-100 text-green-800';
+    }
+@endphp
 
 <div x-show="shouldShowRelease('{{ $type }}')"
      x-transition:enter="transition ease-out duration-300"
@@ -18,10 +32,10 @@
      {{ $attributes->merge(['class' => 'bg-white border border-gray-200 rounded-sm overflow-hidden']) }}>
 
     <!-- Version Header -->
-    <div class="{{ $bgColor }} px-6 py-4 border-b border-gray-200">
+    <div class="{{ $finalBgColor }} px-6 py-4 border-b border-gray-200">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center mb-2 sm:mb-0">
-                <span class="inline-flex items-center px-2 py-1 rounded-sm text-xs font-medium {{ $badgeColor }} mr-3">
+                <span class="inline-flex items-center px-2 py-1 rounded-sm text-xs font-medium {{ $finalBadgeColor }} mr-3">
                     {{ $version }}
                 </span>
                 <h3 class="text-lg font-bold text-gray-900">{{ $title }}</h3>

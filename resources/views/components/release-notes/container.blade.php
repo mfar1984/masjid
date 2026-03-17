@@ -1,9 +1,9 @@
 @props([
     'title' => 'Nota Keluaran',
     'description' => 'Sejarah kemaskini dan pembangunan sistem',
-    'currentVersion' => 'v1.1',
+    'currentVersion' => 'v2.1',
     'currentTitle' => 'Kemaskini Minor',
-    'currentDescription' => 'Status Sistem & Penambahbaikan UI'
+    'currentDescription' => 'Document Filter Enhancement & UI Improvements'
 ])
 
 <div x-data="{

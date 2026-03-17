@@ -81,10 +81,17 @@
                             <span class="material-icons text-[16px] mr-3 text-green-500">quiz</span>
                             Soalan Lazim (FAQ)
                         </a>
-                        <a href="{{ route('bantuan.hubungi-sokongan') }}" class="flex items-center px-5 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                            <span class="material-icons text-[16px] mr-3 text-purple-500">support_agent</span>
-                            Hubungi Sokongan
-                        </a>
+                        @if(auth()->user() && auth()->user()->hasRole('Super Admin'))
+                            <a href="{{ route('support.dashboard') }}" class="flex items-center px-5 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                <span class="material-icons text-[16px] mr-3 text-purple-500">support_agent</span>
+                                Dashboard Sokongan
+                            </a>
+                        @else
+                            <a href="{{ route('bantuan.hubungi-sokongan') }}" class="flex items-center px-5 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                <span class="material-icons text-[16px] mr-3 text-purple-500">support_agent</span>
+                                Hubungi Sokongan
+                            </a>
+                        @endif
                         <a href="{{ route('bantuan.status-sistem') }}" class="flex items-center px-5 py-3 text-sm text-gray-700 hover:bg-gray-50">
                             <span class="material-icons text-[16px] mr-3 text-orange-500">monitor_heart</span>
                             Status Sistem
@@ -200,10 +207,17 @@
                             <span class="material-icons text-[16px] mr-3 text-green-500">quiz</span>
                             Soalan Lazim (FAQ)
                         </a>
-                        <a href="{{ route('bantuan.hubungi-sokongan') }}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
-                            <span class="material-icons text-[16px] mr-3 text-purple-500">support_agent</span>
-                            Hubungi Sokongan
-                        </a>
+                        @if(auth()->user() && auth()->user()->hasRole('Super Admin'))
+                            <a href="{{ route('support.dashboard') }}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                <span class="material-icons text-[16px] mr-3 text-purple-500">support_agent</span>
+                                Dashboard Sokongan
+                            </a>
+                        @else
+                            <a href="{{ route('bantuan.hubungi-sokongan') }}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                <span class="material-icons text-[16px] mr-3 text-purple-500">support_agent</span>
+                                Hubungi Sokongan
+                            </a>
+                        @endif
                         <a href="{{ route('bantuan.status-sistem') }}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
                             <span class="material-icons text-[16px] mr-3 text-orange-500">monitor_heart</span>
                             Status Sistem
@@ -249,23 +263,17 @@
                     pengurusanOpen: false,
                     pengurusanTimeout: null
                 }" @click.away="pengurusanOpen = false">
-                    <button @mouseenter="clearTimeout(pengurusanTimeout); pengurusanOpen = true" @mouseleave="pengurusanTimeout = setTimeout(() => pengurusanOpen = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
+                    <button @mouseenter="clearTimeout(pengurusanTimeout); pengurusanOpen = true" @mouseleave="pengurusanTimeout = setTimeout(() => pengurusanOpen = false, 500)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-green-600">fact_check</span>
                         Pengurusan
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="pengurusanOpen ? 'expand_less' : 'expand_more'"></span>
                     </button>
-                    <div x-show="pengurusanOpen" @mouseenter="clearTimeout(pengurusanTimeout); pengurusanOpen = true" @mouseleave="pengurusanTimeout = setTimeout(() => pengurusanOpen = false, 200)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-[9999]">
+                    <div x-show="pengurusanOpen" @mouseenter="clearTimeout(pengurusanTimeout); pengurusanOpen = true" @mouseleave="pengurusanTimeout = setTimeout(() => pengurusanOpen = false, 500)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-[9999]">
 
                         <!-- Ahli Kariah (Existing - No Submenu) -->
                         <a href="{{ route('kariah.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Ahli Kariah
                             <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
-                        </a>
-
-                        <!-- Pengurusan Dokumen (New - No Submenu) -->
-                        <a href="{{ route('documents.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Pengurusan Dokumen
-                            <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
                         </a>
 
                         <!-- Ahli Jawatankuasa Masjid (With Submenu) -->
@@ -275,15 +283,15 @@
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
                             <div x-show="ajkSubOpen" @mouseenter="ajkSubOpen = true" @mouseleave="ajkSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('ajk.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Senarai AJK
                                     <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('ajk.arkib') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Arkib AJK
                                     <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('ajk.laporan') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Laporan AJK
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                                 </a>
@@ -297,23 +305,23 @@
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
                             <div x-show="asnafSubOpen" @mouseenter="asnafSubOpen = true" @mouseleave="asnafSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('asnaf.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Senarai Asnaf
                                     <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('permohonan-zakat.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Permohonan Zakat
                                     <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('agihan-zakat.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Agihan Zakat
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('agihan-zakat.laporan') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Laporan Zakat
                                     <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('tetapan-asnaf.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Tetapan Asnaf
                                     <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
                                 </a>
@@ -327,27 +335,27 @@
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
                             <div x-show="kebajikanSubOpen" @mouseenter="kebajikanSubOpen = true" @mouseleave="kebajikanSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('program-kebajikan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Program Kebajikan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-pink-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('penerima-bantuan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Penerima Bantuan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-yellow-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('permohonan-bantuan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Permohonan Bantuan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('pembayaran-bantuan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Pembayaran Bantuan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('laporan-kebajikan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Laporan Kebajikan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('tetapan-kebajikan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Tetapan Kebajikan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
                                 </a>
@@ -357,208 +365,174 @@
                 </div>
 
                 <!-- Kewangan -->
+                <!-- Kewangan (Simplified) -->
                 <div class="relative" x-data="{
                     kewanganOpen: false,
                     kewanganTimeout: null
                 }"
                 @click.away="kewanganOpen = false">
-                    <button @mouseenter="clearTimeout(kewanganTimeout); kewanganOpen = true" @mouseleave="kewanganTimeout = setTimeout(() => kewanganOpen = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
+                    <button @mouseenter="clearTimeout(kewanganTimeout); kewanganOpen = true" @mouseleave="kewanganTimeout = setTimeout(() => kewanganOpen = false, 500)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-teal-600">account_balance_wallet</span>
                         Kewangan
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="kewanganOpen ? 'expand_less' : 'expand_more'"></span>
                     </button>
-                    <div x-show="kewanganOpen" @mouseenter="clearTimeout(kewanganTimeout); kewanganOpen = true" @mouseleave="kewanganTimeout = setTimeout(() => kewanganOpen = false, 200)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-50">
+                    <div x-show="kewanganOpen" @mouseenter="clearTimeout(kewanganTimeout); kewanganOpen = true" @mouseleave="kewanganTimeout = setTimeout(() => kewanganOpen = false, 500)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-50">
 
-                        <!-- Operasi Harian -->
-                        <div class="relative" x-data="{ sub1Open: false }">
-                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
-                                <span>Operasi Harian</span>
-                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
-                            </button>
-                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Transaksi Harian
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Kutipan Dana
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Khairat Kematian
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Perakaunan -->
-                        <div class="relative" x-data="{ sub1Open: false }">
-                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
-                                <span>Perakaunan</span>
-                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
-                            </button>
-                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Lejar Am
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Laporan Transaksi
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Laporan Jurnal
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Kunci Kira-Kira
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Akaun Untung Rugi
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Imbangan Duga
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-pink-500"></div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Jualan -->
-                        <div class="relative" x-data="{ sub1Open: false }">
-                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
-                                <span>Jualan</span>
-                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
-                            </button>
-                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Sebut Harga
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Pesanan Jualan
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Invois Proforma
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Pesanan Penghantaran
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Invois Jualan
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Pulangan Jualan
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Nota Kredit
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-yellow-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Resit Rasmi
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-pink-500"></div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Pembelian -->
-                        <div class="relative" x-data="{ sub1Open: false }">
-                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
-                                <span>Pembelian</span>
-                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
-                            </button>
-                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Pesanan Pembelian
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Nota Penerimaan Barang
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Invois Pembekal
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Pembelian Tunai
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Baucar Pembayaran
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Pulangan Barang
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Nota Kredit Pembekal
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-yellow-500"></div>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Analisis & Dashboard -->
-                        <div class="relative" x-data="{ sub1Open: false }">
-                            <button @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
-                                <span>Analisis & Dashboard</span>
-                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
-                            </button>
-                            <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Papan Pemuka Kewangan
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
-                                </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                                    Analisis Trend
-                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Operasi -->
-                <div class="relative" x-data="{ operasiOpen: false, operasiTimeout: null }" @click.away="operasiOpen = false">
-                    <button @mouseenter="clearTimeout(operasiTimeout); operasiOpen = true" @mouseleave="operasiTimeout = setTimeout(() => operasiOpen = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
-                        <span class="material-icons text-[8px] mr-1 text-indigo-600">event</span>
-                        Operasi
-                        <span class="material-icons text-[6px] font-extralight ml-1" x-text="operasiOpen ? 'expand_less' : 'expand_more'"></span>
-                    </button>
-                    <div x-show="operasiOpen" @mouseenter="clearTimeout(operasiTimeout); operasiOpen = true" @mouseleave="operasiTimeout = setTimeout(() => operasiOpen = false, 200)" class="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-lg py-2 z-50">
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Program & Pendidikan
-                            <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
-                        </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Fasiliti & Tempahan
+                        <!-- Akaun Bank (No Submenu) -->
+                        <a href="{{ route('akaun-bank.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                            Akaun Bank
                             <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                         </a>
-                        <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
-                            Pengurusan Jenazah
+
+                        <!-- Transaksi Kewangan -->
+                        <a href="{{ route('transaksi-kewangan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative {{ request()->routeIs('transaksi-kewangan.*') ? 'bg-blue-50 text-blue-600 font-medium' : '' }}">
+                            Transaksi Kewangan
+                            <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                        </a>
+
+                        <!-- Laporan Kewangan (No Submenu - uses TABs instead) -->
+                        <a href="{{ route('laporan-kewangan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                            Laporan Kewangan
+                            <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                        </a>
+
+                        <!-- Tetapan Kewangan (No Submenu) -->
+                        <a href="{{ route('tetapan-kewangan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                            Tetapan Kewangan
                             <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
                         </a>
                     </div>
                 </div>
+
+                <!-- Operasi -->
+                @if(auth()->user()->hasPermission('senarai_program', 'read') || 
+                    auth()->user()->hasPermission('jadual_program', 'read') || 
+                    auth()->user()->hasPermission('pendaftaran_peserta', 'read') || 
+                    auth()->user()->hasPermission('senarai_fasiliti', 'read') || 
+                    auth()->user()->hasPermission('tempahan_fasiliti', 'read') || 
+                    auth()->user()->hasPermission('senarai_penceramah', 'read') || 
+                    auth()->user()->hasPermission('jadual_ceramah', 'read') || 
+                    auth()->user()->hasPermission('jadual_imam_bilal', 'read') || 
+                    auth()->user()->hasPermission('urusan_jenazah', 'read') ||
+                    auth()->user()->hasPermission('fasiliti_tempahan', 'read'))
+                <div class="relative" x-data="{ operasiOpen: false, operasiTimeout: null, fasilitiSubOpen: false }" @click.away="operasiOpen = false">
+                    <button @mouseenter="clearTimeout(operasiTimeout); operasiOpen = true" @mouseleave="operasiTimeout = setTimeout(() => operasiOpen = false, 500)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
+                        <span class="material-icons text-[8px] mr-1 text-indigo-600">event</span>
+                        Operasi
+                        <span class="material-icons text-[6px] font-extralight ml-1" x-text="operasiOpen ? 'expand_less' : 'expand_more'"></span>
+                    </button>
+                    <div x-show="operasiOpen" @mouseenter="clearTimeout(operasiTimeout); operasiOpen = true" @mouseleave="operasiTimeout = setTimeout(() => operasiOpen = false, 500)" class="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-lg py-2 z-50">
+                        
+                        <!-- Program & Pendidikan (with submenu) -->
+                        <div class="relative" x-data="{ programSubOpen: false }">
+                            <button @mouseenter="programSubOpen = true" @mouseleave="programSubOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Program & Pendidikan</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                                <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                            </button>
+                            <div x-show="programSubOpen" @mouseenter="programSubOpen = true" @mouseleave="programSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="{{ route('senarai-program.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Senarai Program
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                </a>
+                                <a href="{{ route('jadual-program.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Jadual Program
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="{{ route('pendaftaran-peserta.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Pendaftaran Peserta
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                                <a href="{{ route('laporan-program.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Program
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Fasiliti & Tempahan (with submenu) -->
+                        <div class="relative" x-data="{ fasilitiSubOpen: false }">
+                            <button @mouseenter="fasilitiSubOpen = true" @mouseleave="fasilitiSubOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Fasiliti & Tempahan</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                                <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                            </button>
+                            <div x-show="fasilitiSubOpen" @mouseenter="fasilitiSubOpen = true" @mouseleave="fasilitiSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="{{ route('senarai-fasiliti.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
+                                    Senarai Fasiliti
+                                </a>
+                                <a href="{{ route('tempahan-fasiliti.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
+                                    Tempahan Fasiliti
+                                </a>
+                                <a href="{{ route('pembayaran-sewa.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
+                                    Pembayaran Sewa
+                                </a>
+                                <a href="{{ route('laporan-tempahan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100">
+                                    Laporan Tempahan
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Jadual Tugas (with submenu) -->
+                        <div class="relative" x-data="{ tugasSubOpen: false }">
+                            <button @mouseenter="tugasSubOpen = true" @mouseleave="tugasSubOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Jadual Tugas</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                                <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
+                            </button>
+                            <div x-show="tugasSubOpen" @mouseenter="tugasSubOpen = true" @mouseleave="tugasSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="{{ route('senarai-penceramah.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Senarai Penceramah
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                </a>
+                                <a href="{{ route('jadual-ceramah.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Jadual Ceramah
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
+                                </a>
+                                <a href="{{ route('jadual-imam-bilal.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Jadual Imam & Bilal
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
+                                </a>
+                                <a href="{{ route('laporan-tugas.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Tugas
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Khidmat Komuniti (with submenu) -->
+                        <div class="relative" x-data="{ khidmatSubOpen: false }">
+                            <button @mouseenter="khidmatSubOpen = true" @mouseleave="khidmatSubOpen = false" class="w-full text-left px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative flex items-center justify-between">
+                                <span>Khidmat Komuniti</span>
+                                <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
+                                <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
+                            </button>
+                            <div x-show="khidmatSubOpen" @mouseenter="khidmatSubOpen = true" @mouseleave="khidmatSubOpen = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
+                                <a href="{{ route('urusan-jenazah.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Urusan Jenazah
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
+                                </a>
+                                <a href="{{ route('laporan-khidmat.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Khidmat
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Aset -->
                 <div class="relative" x-data="{
                     asetOpen: false,
                     asetTimeout: null
                 }" @click.away="asetOpen = false">
-                    <button @mouseenter="clearTimeout(asetTimeout); asetOpen = true" @mouseleave="asetTimeout = setTimeout(() => asetOpen = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
+                    <button @mouseenter="clearTimeout(asetTimeout); asetOpen = true" @mouseleave="asetTimeout = setTimeout(() => asetOpen = false, 500)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-gray-700">inventory_2</span>
                         Aset
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="asetOpen ? 'expand_less' : 'expand_more'"></span>
                     </button>
-                    <div x-show="asetOpen" @mouseenter="clearTimeout(asetTimeout); asetOpen = true" @mouseleave="asetTimeout = setTimeout(() => asetOpen = false, 200)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-50">
+                    <div x-show="asetOpen" @mouseenter="clearTimeout(asetTimeout); asetOpen = true" @mouseleave="asetTimeout = setTimeout(() => asetOpen = false, 500)" class="absolute top-full left-0 mt-1 w-72 bg-white rounded-md shadow-lg py-2 z-50">
 
                         <!-- Pengurusan Aset -->
                         <div class="relative" x-data="{ sub1Open: false }">
@@ -567,19 +541,19 @@
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
                             <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('senarai-aset.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Senarai Aset
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('kategori-aset.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Kategori Aset
                                     <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('pemindahan-aset.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Pemindahan Aset
                                     <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('pergerakan-aset.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Pergerakan Aset
                                     <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
                                 </a>
@@ -593,15 +567,15 @@
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
                             <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('jadual-penyelenggaraan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Jadual Penyelenggaraan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('kerja-penyelenggaraan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Kerja Penyelenggaraan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('laporan-penyelenggaraan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Laporan Penyelenggaraan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
                                 </a>
@@ -615,15 +589,15 @@
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
                             <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('jadual-penyusutan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Jadual Penyusutan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('nilai-semasa-aset.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Nilai Semasa
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('trend-penyusutan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Trend Penyusutan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
                                 </a>
@@ -637,15 +611,15 @@
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
                             <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('permohonan-pelupusan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Permohonan Pelupusan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-red-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('kelulusan-pelupusan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Kelulusan Pelupusan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('rekod-pelupusan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Rekod Pelupusan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-gray-500"></div>
                                 </a>
@@ -659,19 +633,27 @@
                                 <span class="material-icons text-[8px] text-gray-400">chevron_right</span>
                             </button>
                             <div x-show="sub1Open" @mouseenter="sub1Open = true" @mouseleave="sub1Open = false" class="absolute top-0 left-full ml-1 w-56 bg-white rounded-md shadow-lg py-2 z-[9998]">
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('laporan-aset.index', ['tab' => 'inventori']) }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Laporan Inventori
                                     <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('laporan-aset.index', ['tab' => 'penyelenggaraan']) }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Laporan Penyelenggaraan
                                     <div class="absolute top-0 right-0 w-1 h-full bg-green-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('laporan-aset.index', ['tab' => 'lokasi']) }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Laporan Lokasi
                                     <div class="absolute top-0 right-0 w-1 h-full bg-orange-500"></div>
                                 </a>
-                                <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                <a href="{{ route('laporan-aset.index', ['tab' => 'pergerakan']) }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Pergerakan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
+                                </a>
+                                <a href="{{ route('laporan-aset.index', ['tab' => 'pemindahan']) }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
+                                    Laporan Pemindahan
+                                    <div class="absolute top-0 right-0 w-1 h-full bg-indigo-500"></div>
+                                </a>
+                                <a href="{{ route('laporan-aset.index', ['tab' => 'dashboard']) }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                                     Dashboard Aset
                                     <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
                                 </a>
@@ -682,12 +664,12 @@
 
                 <!-- Komunikasi -->
                 <div class="relative" x-data="{ open: false, timeout: null }">
-                    <button @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
+                    <button @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 500)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-rose-600">campaign</span>
                         Komunikasi
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="open ? 'expand_less' : 'expand_more'"></span>
                     </button>
-                    <div x-show="open" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 200)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
+                    <div x-show="open" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 500)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
                         <a href="#" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Siaran Mesej
                             <div class="absolute top-0 right-0 w-1 h-full bg-blue-500"></div>
@@ -705,12 +687,12 @@
                 
                 <!-- Fail -->
                 <div class="relative" x-data="{ open: false, timeout: null }">
-                    <button @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
+                    <button @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 500)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-orange-600">folder</span>
                         Fail
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="open ? 'expand_less' : 'expand_more'"></span>
                     </button>
-                    <div x-show="open" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 200)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
+                    <div x-show="open" @mouseenter="clearTimeout(timeout); open = true" @mouseleave="timeout = setTimeout(() => open = false, 500)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
                         <a href="{{ route('documents.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Pengurusan Dokumen
                             <div class="absolute top-0 right-0 w-1 h-full bg-teal-500"></div>
@@ -728,12 +710,12 @@
                 
                 <!-- Pentadbiran Sistem -->
                 <div class="relative" x-data="{ pentadbiranOpen: false, pentadbiranTimeout: null }" @click.away="pentadbiranOpen = false">
-                    <button @mouseenter="clearTimeout(pentadbiranTimeout); pentadbiranOpen = true" @mouseleave="pentadbiranTimeout = setTimeout(() => pentadbiranOpen = false, 200)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
+                    <button @mouseenter="clearTimeout(pentadbiranTimeout); pentadbiranOpen = true" @mouseleave="pentadbiranTimeout = setTimeout(() => pentadbiranOpen = false, 500)" class="flex items-center text-xs font-normal text-gray-700 hover:text-blue-400 focus:outline-none">
                         <span class="material-icons text-[8px] mr-1 text-red-600">admin_panel_settings</span>
                         Pentadbiran Sistem
                         <span class="material-icons text-[6px] font-extralight ml-1" x-text="pentadbiranOpen ? 'expand_less' : 'expand_more'"></span>
                     </button>
-                    <div x-show="pentadbiranOpen" @mouseenter="clearTimeout(pentadbiranTimeout); pentadbiranOpen = true" @mouseleave="pentadbiranTimeout = setTimeout(() => pentadbiranOpen = false, 200)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
+                    <div x-show="pentadbiranOpen" @mouseenter="clearTimeout(pentadbiranTimeout); pentadbiranOpen = true" @mouseleave="pentadbiranTimeout = setTimeout(() => pentadbiranOpen = false, 500)" class="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg py-2 z-50">
                         @if(auth()->user()->hasPermission('settings', 'read'))
                         <a href="{{ route('tetapan.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Tetapan Umum
@@ -761,7 +743,7 @@
                         </a>
                         @endif
 
-                        @if($user->hasPermission('integrations', 'read'))
+                        @if(auth()->user()->hasPermission('integrations', 'read'))
                         <a href="{{ route('integrations.index') }}" class="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100 relative">
                             Integrasi
                             <div class="absolute top-0 right-0 w-1 h-full bg-purple-500"></div>
@@ -955,7 +937,7 @@
                 </a>
                 @endif
 
-                @if($user->hasPermission('integrations', 'read'))
+                @if(auth()->user()->hasPermission('integrations', 'read'))
                 <a href="{{ route('integrations.index') }}" @click="mobileMenuOpen=false" class="block px-3 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-md">
                     <span class="material-icons text-sm mr-2 text-purple-500">integration_instructions</span>
                     Integrasi

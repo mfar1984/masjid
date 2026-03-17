@@ -33,7 +33,7 @@
                         <span class="material-icons text-blue-600 mr-2" style="font-size: 16px;">navigation</span>
                         Navigasi Pantas
                     </h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
                         <button @click="scrollToSection('getting-started')" class="flex items-center justify-center text-blue-700 hover:text-blue-900 p-3 hover:bg-blue-100 rounded-sm transition-colors" style="font-size: 13px;">
                             <span class="material-icons mr-2" style="font-size: 20px;">play_arrow</span>
                             <span>Bermula</span>
@@ -41,6 +41,18 @@
                         <button @click="scrollToSection('dashboard')" class="flex items-center justify-center text-blue-700 hover:text-blue-900 p-3 hover:bg-blue-100 rounded-sm transition-colors" style="font-size: 13px;">
                             <span class="material-icons mr-2" style="font-size: 20px;">dashboard</span>
                             <span>Dashboard</span>
+                        </button>
+                        <button @click="scrollToSection('kariah')" class="flex items-center justify-center text-blue-700 hover:text-blue-900 p-3 hover:bg-blue-100 rounded-sm transition-colors" style="font-size: 13px;">
+                            <span class="material-icons mr-2" style="font-size: 20px;">people</span>
+                            <span>Kariah & AJK</span>
+                        </button>
+                        <button @click="scrollToSection('asnaf-kebajikan')" class="flex items-center justify-center text-blue-700 hover:text-blue-900 p-3 hover:bg-blue-100 rounded-sm transition-colors" style="font-size: 13px;">
+                            <span class="material-icons mr-2" style="font-size: 20px;">volunteer_activism</span>
+                            <span>Asnaf & Kebajikan</span>
+                        </button>
+                        <button @click="scrollToSection('kewangan')" class="flex items-center justify-center text-blue-700 hover:text-blue-900 p-3 hover:bg-blue-100 rounded-sm transition-colors" style="font-size: 13px;">
+                            <span class="material-icons mr-2" style="font-size: 20px;">account_balance</span>
+                            <span>Kewangan</span>
                         </button>
                         <button @click="scrollToSection('integrations')" class="flex items-center justify-center text-blue-700 hover:text-blue-900 p-3 hover:bg-blue-100 rounded-sm transition-colors" style="font-size: 13px;">
                             <span class="material-icons mr-2" style="font-size: 20px;">integration_instructions</span>
@@ -178,7 +190,7 @@
                         <div class="bg-indigo-100 px-4 py-3 border-b border-indigo-200">
                             <h2 class="text-sm font-semibold text-indigo-800 flex items-center">
                                 <span class="material-icons text-indigo-600 mr-2" style="font-size: 16px;">integration_instructions</span>
-                                Sistem Integrasi v1.6
+                                Sistem Integrasi
                             </h2>
                         </div>
                         <div class="p-4 space-y-4">
@@ -379,6 +391,283 @@
                                                 <li>• Assign kepada users</li>
                                             </ul>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kariah & AJK Section -->
+                <div id="kariah" class="mb-8">
+                    <div class="bg-cyan-50 border border-cyan-200 rounded-sm overflow-hidden">
+                        <div class="bg-cyan-100 px-4 py-3 border-b border-cyan-200">
+                            <h2 class="text-sm font-semibold text-cyan-800 flex items-center">
+                                <span class="material-icons text-cyan-600 mr-2" style="font-size: 16px;">people</span>
+                                Ahli Kariah & AJK Masjid
+                            </h2>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <!-- Ahli Kariah -->
+                            <div class="bg-white rounded-sm border border-cyan-200 p-4">
+                                <h3 class="text-xs font-semibold text-gray-900 mb-2 flex items-center">
+                                    <span class="material-icons text-cyan-600 mr-2" style="font-size: 14px;">person_add</span>
+                                    Pengurusan Ahli Kariah
+                                </h3>
+                                <p class="text-xs text-gray-700 mb-2">Modul untuk menguruskan data ahli kariah masjid:</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="bg-blue-50 p-3 rounded-sm border border-blue-200">
+                                        <h4 class="text-xs font-medium text-blue-800 mb-1">Tambah Kariah:</h4>
+                                        <ul class="text-xs text-blue-700 space-y-1">
+                                            <li>• Maklumat peribadi (nama, IC, alamat)</li>
+                                            <li>• Maklumat hubungan (telefon, email)</li>
+                                            <li>• Status keahlian</li>
+                                            <li>• Upload dokumen sokongan</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-green-50 p-3 rounded-sm border border-green-200">
+                                        <h4 class="text-xs font-medium text-green-800 mb-1">Workflow:</h4>
+                                        <ul class="text-xs text-green-700 space-y-1">
+                                            <li>• Approve/Reject permohonan</li>
+                                            <li>• Suspend/Reactivate keahlian</li>
+                                            <li>• Update status ahli</li>
+                                            <li>• Generate laporan kariah</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- AJK Masjid -->
+                            <div class="bg-white rounded-sm border border-cyan-200 p-4">
+                                <h3 class="text-xs font-semibold text-gray-900 mb-2 flex items-center">
+                                    <span class="material-icons text-cyan-600 mr-2" style="font-size: 14px;">badge</span>
+                                    Ahli Jawatankuasa Masjid (AJK)
+                                </h3>
+                                <p class="text-xs text-gray-700 mb-2">Pengurusan ahli jawatankuasa masjid dengan 3 sub-modul:</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div class="bg-purple-50 p-3 rounded-sm border border-purple-200">
+                                        <h4 class="text-xs font-medium text-purple-800 mb-1">AJK Management:</h4>
+                                        <ul class="text-xs text-purple-700 space-y-1">
+                                            <li>• Senarai AJK aktif</li>
+                                            <li>• Maklumat jawatan</li>
+                                            <li>• Tempoh perkhidmatan</li>
+                                            <li>• Status keahlian</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-orange-50 p-3 rounded-sm border border-orange-200">
+                                        <h4 class="text-xs font-medium text-orange-800 mb-1">AJK Arkib:</h4>
+                                        <ul class="text-xs text-orange-700 space-y-1">
+                                            <li>• Rekod AJK tidak aktif</li>
+                                            <li>• Historical data</li>
+                                            <li>• Archive management</li>
+                                            <li>• Restore functionality</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-teal-50 p-3 rounded-sm border border-teal-200">
+                                        <h4 class="text-xs font-medium text-teal-800 mb-1">AJK Laporan:</h4>
+                                        <ul class="text-xs text-teal-700 space-y-1">
+                                            <li>• Statistik AJK</li>
+                                            <li>• Breakdown by jawatan</li>
+                                            <li>• Tempoh perkhidmatan</li>
+                                            <li>• View-only reports</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Asnaf & Kebajikan Section -->
+                <div id="asnaf-kebajikan" class="mb-8">
+                    <div class="bg-pink-50 border border-pink-200 rounded-sm overflow-hidden">
+                        <div class="bg-pink-100 px-4 py-3 border-b border-pink-200">
+                            <h2 class="text-sm font-semibold text-pink-800 flex items-center">
+                                <span class="material-icons text-pink-600 mr-2" style="font-size: 16px;">volunteer_activism</span>
+                                Modul Asnaf & Kebajikan
+                            </h2>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <!-- Asnaf Module -->
+                            <div class="bg-white rounded-sm border border-pink-200 p-4">
+                                <h3 class="text-xs font-semibold text-gray-900 mb-2 flex items-center">
+                                    <span class="material-icons text-pink-600 mr-2" style="font-size: 14px;">mosque</span>
+                                    Modul Asnaf (Zakat)
+                                </h3>
+                                <p class="text-xs text-gray-700 mb-2">Pengurusan bantuan zakat dengan 5 sub-modul:</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="bg-blue-50 p-3 rounded-sm border border-blue-200">
+                                        <h4 class="text-xs font-medium text-blue-800 mb-1">Asnaf & Permohonan:</h4>
+                                        <ul class="text-xs text-blue-700 space-y-1">
+                                            <li>• Data asnaf (8 kategori)</li>
+                                            <li>• Permohonan Zakat dengan workflow</li>
+                                            <li>• Approve/Reject permohonan</li>
+                                            <li>• Agihan Zakat kepada asnaf</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-green-50 p-3 rounded-sm border border-green-200">
+                                        <h4 class="text-xs font-medium text-green-800 mb-1">Laporan & Tetapan:</h4>
+                                        <ul class="text-xs text-green-700 space-y-1">
+                                            <li>• Laporan Zakat (view-only)</li>
+                                            <li>• Tetapan Had Kifayah</li>
+                                            <li>• Tetapan Had Bantuan</li>
+                                            <li>• Workflow & Kategori settings</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Kebajikan Module -->
+                            <div class="bg-white rounded-sm border border-pink-200 p-4">
+                                <h3 class="text-xs font-semibold text-gray-900 mb-2 flex items-center">
+                                    <span class="material-icons text-pink-600 mr-2" style="font-size: 14px;">favorite</span>
+                                    Modul Kebajikan
+                                </h3>
+                                <p class="text-xs text-gray-700 mb-2">Pengurusan bantuan kebajikan umum dengan 6 sub-modul:</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div class="bg-purple-50 p-3 rounded-sm border border-purple-200">
+                                        <h4 class="text-xs font-medium text-purple-800 mb-1">Program & Penerima:</h4>
+                                        <ul class="text-xs text-purple-700 space-y-1">
+                                            <li>• Program Kebajikan</li>
+                                            <li>• Penerima Bantuan</li>
+                                            <li>• Kategori penerima</li>
+                                            <li>• Data management</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-orange-50 p-3 rounded-sm border border-orange-200">
+                                        <h4 class="text-xs font-medium text-orange-800 mb-1">Permohonan & Bayaran:</h4>
+                                        <ul class="text-xs text-orange-700 space-y-1">
+                                            <li>• Permohonan Bantuan</li>
+                                            <li>• Pembayaran Bantuan</li>
+                                            <li>• Workflow system</li>
+                                            <li>• Payment tracking</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-teal-50 p-3 rounded-sm border border-teal-200">
+                                        <h4 class="text-xs font-medium text-teal-800 mb-1">Laporan & Tetapan:</h4>
+                                        <ul class="text-xs text-teal-700 space-y-1">
+                                            <li>• Laporan Kebajikan</li>
+                                            <li>• Tetapan Had Bantuan</li>
+                                            <li>• Tempoh Bantuan</li>
+                                            <li>• Workflow & Kategori</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kewangan Section -->
+                <div id="kewangan" class="mb-8">
+                    <div class="bg-green-50 border border-green-200 rounded-sm overflow-hidden">
+                        <div class="bg-green-100 px-4 py-3 border-b border-green-200">
+                            <h2 class="text-sm font-semibold text-green-800 flex items-center">
+                                <span class="material-icons text-green-600 mr-2" style="font-size: 16px;">account_balance</span>
+                                Modul Kewangan
+                            </h2>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <!-- Akaun Bank & Transaksi -->
+                            <div class="bg-white rounded-sm border border-green-200 p-4">
+                                <h3 class="text-xs font-semibold text-gray-900 mb-2 flex items-center">
+                                    <span class="material-icons text-green-600 mr-2" style="font-size: 14px;">account_balance_wallet</span>
+                                    Akaun Bank & Transaksi Kewangan
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="bg-blue-50 p-3 rounded-sm border border-blue-200">
+                                        <h4 class="text-xs font-medium text-blue-800 mb-1">Akaun Bank:</h4>
+                                        <ul class="text-xs text-blue-700 space-y-1">
+                                            <li>• Pengurusan akaun bank masjid</li>
+                                            <li>• Maklumat bank (nama, no akaun)</li>
+                                            <li>• Baki awal dan semasa</li>
+                                            <li>• Status akaun</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-green-50 p-3 rounded-sm border border-green-200">
+                                        <h4 class="text-xs font-medium text-green-800 mb-1">Transaksi Kewangan:</h4>
+                                        <ul class="text-xs text-green-700 space-y-1">
+                                            <li>• 4 form Pendapatan (Kariah, Derma, Zakat, Lain)</li>
+                                            <li>• 4 form Perbelanjaan (Utiliti, Penyelenggaraan, Gaji, Lain)</li>
+                                            <li>• Kategori integration (Jenis Derma, Jenis Bil)</li>
+                                            <li>• Historical balance calculation</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Laporan Kewangan -->
+                            <div class="bg-white rounded-sm border border-green-200 p-4">
+                                <h3 class="text-xs font-semibold text-gray-900 mb-2 flex items-center">
+                                    <span class="material-icons text-green-600 mr-2" style="font-size: 14px;">assessment</span>
+                                    Laporan Kewangan (8 TABs)
+                                </h3>
+                                <p class="text-xs text-gray-700 mb-2">Laporan kewangan comprehensive dengan 8 TABs:</p>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                                    <div class="bg-purple-50 p-2 rounded-sm border border-purple-200 text-purple-700">
+                                        <strong>1.</strong> Penyata Kewangan
+                                    </div>
+                                    <div class="bg-blue-50 p-2 rounded-sm border border-blue-200 text-blue-700">
+                                        <strong>2.</strong> Laporan Pendapatan
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded-sm border border-red-200 text-red-700">
+                                        <strong>3.</strong> Laporan Perbelanjaan
+                                    </div>
+                                    <div class="bg-teal-50 p-2 rounded-sm border border-teal-200 text-teal-700">
+                                        <strong>4.</strong> Aliran Tunai
+                                    </div>
+                                    <div class="bg-green-50 p-2 rounded-sm border border-green-200 text-green-700">
+                                        <strong>5.</strong> Penyata P&P
+                                    </div>
+                                    <div class="bg-orange-50 p-2 rounded-sm border border-orange-200 text-orange-700">
+                                        <strong>6.</strong> Perbandingan Bulanan
+                                    </div>
+                                    <div class="bg-pink-50 p-2 rounded-sm border border-pink-200 text-pink-700">
+                                        <strong>7.</strong> Laporan Kategori
+                                    </div>
+                                    <div class="bg-indigo-50 p-2 rounded-sm border border-indigo-200 text-indigo-700">
+                                        <strong>8.</strong> Baki Bank
+                                    </div>
+                                </div>
+                                <div class="mt-3 bg-yellow-50 p-3 rounded-sm border border-yellow-200">
+                                    <h4 class="text-xs font-medium text-yellow-800 mb-1 flex items-center">
+                                        <span class="material-icons text-yellow-600 mr-1" style="font-size: 12px;">info</span>
+                                        Features:
+                                    </h4>
+                                    <ul class="text-xs text-yellow-700 space-y-1">
+                                        <li>• Super Admin boleh filter by masjid</li>
+                                        <li>• TAB-level permissions untuk granular access</li>
+                                        <li>• Charts dan visualizations</li>
+                                        <li>• Export capabilities</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Tetapan Kewangan -->
+                            <div class="bg-white rounded-sm border border-green-200 p-4">
+                                <h3 class="text-xs font-semibold text-gray-900 mb-2 flex items-center">
+                                    <span class="material-icons text-green-600 mr-2" style="font-size: 14px;">settings</span>
+                                    Tetapan Kewangan
+                                </h3>
+                                <p class="text-xs text-gray-700 mb-2">Konfigurasi kategori kewangan:</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <div class="bg-blue-50 p-3 rounded-sm border border-blue-200">
+                                        <h4 class="text-xs font-medium text-blue-800 mb-1">Kategori Pendapatan:</h4>
+                                        <ul class="text-xs text-blue-700 space-y-1">
+                                            <li>• Derma Umum, Kutipan Jumaat</li>
+                                            <li>• Zakat Fitrah, Yuran Kariah</li>
+                                            <li>• Custom categories</li>
+                                            <li>• Jenis Derma (sub-category)</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-red-50 p-3 rounded-sm border border-red-200">
+                                        <h4 class="text-xs font-medium text-red-800 mb-1">Kategori Perbelanjaan:</h4>
+                                        <ul class="text-xs text-red-700 space-y-1">
+                                            <li>• Utiliti, Penyelenggaraan</li>
+                                            <li>• Gaji & Elaun, Operasi</li>
+                                            <li>• Custom categories</li>
+                                            <li>• Jenis Bil (sub-category)</li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>

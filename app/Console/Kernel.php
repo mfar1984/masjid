@@ -22,6 +22,11 @@ class Kernel extends ConsoleKernel
                  ->daily()
                  ->at('03:00');
 
+        // Mark late returns for tempahan and pergerakan aset
+        $schedule->command('inventory:mark-late-returns')
+                 ->daily()
+                 ->at('08:00');
+
         // Test command to verify scheduler is working
         $schedule->call(function () {
             \Log::info('Scheduler is working: ' . now());

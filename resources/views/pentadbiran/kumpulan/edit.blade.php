@@ -200,8 +200,8 @@
                                                         <span class="material-icons" style="font-size: 14px !important;">close</span>
                                                     </span>
                                                 @endif
-                                            @elseif($moduleKey === 'fail')
-                                                {{-- Fail: Header sahaja, tiada checkbox --}}
+                                            @elseif(in_array($moduleKey, $headerModules))
+                                                {{-- Header Modules: Tiada checkbox --}}
                                                 <span class="inline-flex items-center justify-center w-5 h-5 bg-gray-100 text-gray-400 rounded-full" title="Header sahaja">
                                                     <span class="material-icons" style="font-size: 14px !important;">remove</span>
                                                 </span>
@@ -235,7 +235,12 @@
 
                                         @foreach($actions['workflow'] as $actionKey => $actionName)
                                         <td class="px-2 py-3 text-center border-b border-gray-200 border-l border-gray-200">
-                                            @if($moduleKey === 'masjids')
+                                            @if(in_array($moduleKey, $headerModules))
+                                                {{-- Header Modules: Tiada checkbox --}}
+                                                <span class="inline-flex items-center justify-center w-5 h-5 bg-gray-100 text-gray-400 rounded-full" title="Header sahaja">
+                                                    <span class="material-icons" style="font-size: 14px !important;">remove</span>
+                                                </span>
+                                            @elseif($moduleKey === 'masjids')
                                                 {{-- Senarai Masjid: Hanya Super Admin sahaja --}}
                                                 <div class="flex flex-col items-center">
                                                     <span class="inline-flex items-center justify-center w-5 h-5 bg-red-100 text-red-500 rounded-full" title="Hanya Super Admin">
@@ -264,6 +269,30 @@
                                                 @endif
                                             @elseif($moduleKey === 'users' && in_array($actionKey, ['approve', 'reject']))
                                                 {{-- Senarai Pengguna: Tidak ada approve/reject --}}
+                                                <span class="inline-flex items-center justify-center w-5 h-5 bg-gray-100 text-gray-400 rounded-full" title="Tidak berkenaan untuk {{ $moduleName }}">
+                                                    <span class="material-icons" style="font-size: 14px !important;">remove</span>
+                                                </span>
+                                            @elseif(in_array($moduleKey, $partialWorkflowModules) && in_array($actionKey, ['approve', 'reject']))
+                                                {{-- Partial Workflow Modules: Hanya approve dan reject sahaja --}}
+                                                @if($role->is_system_role)
+                                                    @if(isset($role->permissions[$moduleKey][$actionKey]) && $role->permissions[$moduleKey][$actionKey])
+                                                        <span class="inline-flex items-center justify-center w-5 h-5 bg-green-100 text-green-600 rounded-full">
+                                                            <span class="material-icons" style="font-size: 14px !important;">check</span>
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center justify-center w-5 h-5 bg-gray-100 text-gray-400 rounded-full">
+                                                            <span class="material-icons" style="font-size: 14px !important;">close</span>
+                                                        </span>
+                                                    @endif
+                                                @else
+                                                    <input type="checkbox"
+                                                           name="permissions[{{ $moduleKey }}][{{ $actionKey }}]"
+                                                           value="1"
+                                                           {{ (old("permissions.{$moduleKey}.{$actionKey}") ?? (isset($role->permissions[$moduleKey][$actionKey]) && $role->permissions[$moduleKey][$actionKey])) ? 'checked' : '' }}
+                                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                                @endif
+                                            @elseif(in_array($moduleKey, $partialWorkflowModules) && in_array($actionKey, ['suspend', 'reactivate']))
+                                                {{-- Partial Workflow Modules: Tidak ada suspend/reactivate --}}
                                                 <span class="inline-flex items-center justify-center w-5 h-5 bg-gray-100 text-gray-400 rounded-full" title="Tidak berkenaan untuk {{ $moduleName }}">
                                                     <span class="material-icons" style="font-size: 14px !important;">remove</span>
                                                 </span>

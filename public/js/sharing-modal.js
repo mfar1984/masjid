@@ -395,8 +395,8 @@ class SharingModal {
 
     updateAccessLevelUI(level) {
         const viewerContainer = document.getElementById('viewerDropdownContainer');
-        const accessButton = document.querySelector('[onclick="toggleAccessDropdown()"] span');
-        const accessDescription = accessButton.parentElement.nextElementSibling;
+        const accessButton = document.getElementById('accessLevelText');
+        const accessDescription = document.getElementById('accessLevelDescription');
 
         if (level === 'restricted') {
             // Hide viewer dropdown for restricted access
@@ -523,6 +523,12 @@ class SharingModal {
     async copyShareLink() {
         if (!this.currentItem) return;
 
+        // Check if access level is restricted
+        if (this.currentAccessLevel === 'restricted') {
+            window.showNotification('Tidak boleh salin pautan untuk akses terhad', 'error');
+            return;
+        }
+
         try {
             const response = await fetch(`/api/documents/sharing/link/${this.currentItem.type}/${this.currentItem.id}`, {
                 method: 'GET',
@@ -564,6 +570,49 @@ class SharingModal {
         this.closeSettings();
     }
 }
+
+// Global notification function
+function showNotification(message, type = 'info') {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+
+    // Set colors based on type
+    if (type === 'success') {
+        notification.className += ' bg-green-500 text-white';
+    } else if (type === 'error') {
+        notification.className += ' bg-red-500 text-white';
+    } else {
+        notification.className += ' bg-blue-500 text-white';
+    }
+
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <span class="material-icons text-sm mr-2">${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}</span>
+            <span style="font-family: 'Poppins', sans-serif; font-size: 12px;">${message}</span>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Make showNotification available globally
+window.showNotification = showNotification;
 
 // Initialize sharing modal
 const sharingModal = new SharingModal();
