@@ -1,1 +1,37 @@
+# Dependencies
 node_modules
+vendor
+
+# Kiro folder
+.kiro/
+
+# Markdown files (except README.md)
+*.md
+!README.md
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.cursor/
+.augment/
+
+# Laravel
+.env
+.phpunit.result.cache
+storage/*.key
+storage/app/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+storage/logs/*
+!storage/app/.gitignore
+!storage/framework/.gitignore
+!storage/logs/.gitignore
+
+# Build files
+public/hot
+public/storage
+public/build
